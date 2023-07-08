@@ -1,0 +1,40 @@
+{
+  "labyswaypoints": {
+    "settings": {
+      "name": "Laby's Waypoints",
+      "enabled": {
+        "name": "Enabled"
+      },
+      "permanentHotkey": {
+        "name": "Create permanent Waypoint",
+        "description": "Creates a permanent Waypoint that will never get deleted automatically."
+      },
+      "serverHotkey": {
+        "name": "Create temporary Waypoint",
+        "description": "Creates a Waypoint that gets deleted once you disconnect from the server."
+      },
+      "openWaypoints": {
+        "name": "Waypoints"
+      }
+    },
+    "gui":{
+      "manage": {
+        "remove": {
+          "title": "Do you really want to remove this waypoint?"
+        },
+        "name": "Name",
+        "color": "Color",
+        "x": "X",
+        "y": "Y",
+        "z": "Z"
+      },
+      "overview": {
+        "temporary": "This waypoint will be deleted once you disconnect from this server."
+      },
+      "create": {
+        "permanent": "Create permanent waypoint",
+        "temporary": "Create temporary waypoint"
+      }
+    }
+  }
+}

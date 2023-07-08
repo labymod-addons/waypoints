@@ -1,0 +1,7 @@
+@import super();
+
+.manage-container {
+  .input-container {
+    border-radius: 8;
+  }
+}
