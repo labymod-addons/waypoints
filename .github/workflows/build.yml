@@ -26,6 +26,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build --full-stacktrace
+      - name: Publish api
+        run: ./gradlew publish --full-stacktrace
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
