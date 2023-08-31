@@ -1,5 +1,6 @@
 package net.labymod.addons.waypoints.listener;
 
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.addons.waypoints.WaypointsConfiguration;
 import net.labymod.addons.waypoints.activity.WaypointsActivity;
@@ -39,13 +40,14 @@ public class WaypointHotkeyListener {
     WaypointsActivity activity = new WaypointsActivity(false);
 
     activity.setAction(Action.ADD);
-    activity.setModifier(waypoint -> waypoint.meta().setType(type));
+    activity.setModifier(waypoint -> waypoint.setType(type));
     activity.setManageTitle(Component.translatable("labyswaypoints.gui.create." + switch (type) {
       case PERMANENT -> "permanent";
       case SERVER_SESSION -> "temporary";
     }));
 
     Laby.labyAPI().minecraft().minecraftWindow().displayScreen(activity);
+    System.out.println(Waypoints.getWaypointObjects().size());
   }
 
 }

@@ -7,7 +7,7 @@ import net.labymod.api.util.Color;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 @Referenceable
-public interface WaypointBuilder {
+public interface WaypointBuilder{
 
   static WaypointBuilder newBuilder() {
     return Waypoints.getReferences().waypointBuilder();
@@ -21,6 +21,6 @@ public interface WaypointBuilder {
 
   WaypointBuilder location(FloatVector3 location);
 
-  Waypoint build();
+  WaypointMeta build();
 
 }

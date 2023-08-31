@@ -39,12 +39,12 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   }
 
   @Override
-  public Waypoint build() {
+  public WaypointMeta build() {
     Preconditions.notNull(this.title, "Missing title");
     Preconditions.notNull(this.color, "Missing color");
     Preconditions.notNull(this.type, "Missing type");
     Preconditions.notNull(this.location, "Missing location");
 
-    return new DefaultWaypoint(new WaypointMeta(this.title, this.color, this.type, this.location));
+    return new WaypointMeta(this.title, this.color, this.type, this.location);
   }
 }

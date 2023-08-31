@@ -1,20 +1,17 @@
 package net.labymod.addons.waypoints.activity;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Consumer;
+import net.labymod.addons.waypoints.WaypointService;
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
-import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.serializer.plain.PlainTextComponentSerializer;
 import net.labymod.api.client.entity.player.ClientPlayer;
 import net.labymod.api.client.gui.mouse.MutableMouse;
-import net.labymod.api.client.gui.screen.LabyScreen;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.activity.Activity;
 import net.labymod.api.client.gui.screen.activity.AutoActivity;
@@ -34,7 +31,6 @@ import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalLi
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.math.vector.FloatVector3;
-import org.jetbrains.annotations.Nullable;
 
 @AutoActivity
 @Link("manage.lss")
@@ -55,7 +51,7 @@ public class WaypointsActivity extends Activity {
   private Action action;
 
   private Component manageTitle;
-  private Consumer<Waypoint> modifier;
+  private Consumer<WaypointMeta> modifier;
 
   public WaypointsActivity(boolean overview) {
     this.overview = overview;
@@ -84,7 +80,7 @@ public class WaypointsActivity extends Activity {
 
     if (this.overview) {
       for (Waypoint waypoint : this.waypointService.getAllWaypoints()) {
-        this.waypointList.addChild(new WaypointWidget(waypoint));
+        this.waypointList.addChild(new WaypointWidget(waypoint.meta()));
       }
 
       container.addFlexibleContent(new ScrollWidget(this.waypointList));
@@ -132,6 +128,7 @@ public class WaypointsActivity extends Activity {
                 .location(player != null ? player.eyePosition() : new FloatVector3(0F, 80F, 0F))
                 .build()
         );
+
         overlayWidget = this.initializeManageContainer(newWaypoint);
         break;
       case EDIT:
@@ -164,6 +161,7 @@ public class WaypointsActivity extends Activity {
 
     menu.addEntry(ButtonWidget.i18n("labymod.ui.button.remove", () -> {
       this.waypointService.removeWaypoint(waypointWidget.getWaypoint());
+      System.out.println();
       this.waypointList.session().setSelectedEntry(null);
       this.setAction(null);
     }));
@@ -189,7 +187,7 @@ public class WaypointsActivity extends Activity {
     this.inputWidget = new FlexibleContentWidget();
     this.inputWidget.addId("input-list");
 
-    Waypoint waypoint = waypointWidget.getWaypoint();
+    WaypointMeta waypointMeta = waypointWidget.getWaypoint();
 
     DivWidget nameLabelList = new DivWidget();
     nameLabelList.addId("input-name-list");
@@ -198,7 +196,7 @@ public class WaypointsActivity extends Activity {
 
     TextFieldWidget nameInput = new TextFieldWidget();
     nameInput.addId("input-text");
-    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(waypoint.title()));
+    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(waypointMeta.getTitle()));
     nameInput.maximalLength(50);
     nameInput.updateListener(newValue -> doneButton.setEnabled(!newValue.trim().isEmpty()));
     nameLabelList.addChild(nameInput);
@@ -210,7 +208,7 @@ public class WaypointsActivity extends Activity {
     colorLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.color"))
         .addId("input-label");
 
-    ColorPickerWidget colorPicker = ColorPickerWidget.of(waypoint.color());
+    ColorPickerWidget colorPicker = ColorPickerWidget.of(waypointMeta.getColor());
     colorPicker.addId("input-color");
     colorLabelList.addChild(colorPicker);
 
@@ -223,7 +221,7 @@ public class WaypointsActivity extends Activity {
 
     TextFieldWidget xInput = new TextFieldWidget();
     xInput.addId("input-text");
-    xInput.setText(String.valueOf((int) waypoint.meta().getLocation().getX()));
+    xInput.setText(String.valueOf((int) waypointMeta.getLocation().getX()));
     xLabelList.addChild(xInput);
 
     this.inputWidget.addContent(xLabelList);
@@ -235,7 +233,7 @@ public class WaypointsActivity extends Activity {
 
     TextFieldWidget yInput = new TextFieldWidget();
     yInput.addId("input-text");
-    yInput.setText(String.valueOf((int) waypoint.meta().getLocation().getY()));
+    yInput.setText(String.valueOf((int) waypointMeta.getLocation().getY()));
     yLabelList.addChild(yInput);
 
     this.inputWidget.addContent(yLabelList);
@@ -247,7 +245,7 @@ public class WaypointsActivity extends Activity {
 
     TextFieldWidget zInput = new TextFieldWidget();
     zInput.addId("input-text");
-    zInput.setText(String.valueOf((int) waypoint.meta().getLocation().getZ()));
+    zInput.setText(String.valueOf((int) waypointMeta.getLocation().getZ()));
     zLabelList.addChild(zInput);
 
     this.inputWidget.addContent(zLabelList);
@@ -258,11 +256,10 @@ public class WaypointsActivity extends Activity {
     doneButton.setEnabled(!nameInput.getText().trim().isEmpty());
     doneButton.setPressable(() -> {
       // Remove the old waypoint in case this is an edit( or the exact same waypoint already exists)
-      boolean permanent = this.waypointService.removeWaypoint(waypoint);
+      boolean permanent = this.waypointService.removeWaypoint(waypointMeta);
 
-      WaypointMeta meta = waypoint.meta();
       try {
-        meta.setLocation(new FloatVector3(
+        waypointMeta.setLocation(new FloatVector3(
             Integer.parseInt(xInput.getText()),
             Integer.parseInt(yInput.getText()),
             Integer.parseInt(zInput.getText())
@@ -271,17 +268,17 @@ public class WaypointsActivity extends Activity {
         return;
       }
 
-      meta.setTitle(Component.text(nameInput.getText()));
-      meta.setColor(colorPicker.value());
+      waypointMeta.setTitle(Component.text(nameInput.getText()));
+      waypointMeta.setColor(colorPicker.value());
       if (permanent) {
-        meta.setType(WaypointType.PERMANENT);
+        waypointMeta.setType(WaypointType.PERMANENT);
       }
 
       if (this.modifier != null) {
-        this.modifier.accept(waypoint);
+        this.modifier.accept(waypointMeta);
       }
 
-      this.waypointService.addWaypoint(waypoint);
+      this.waypointService.addWaypoint(waypointMeta);
 
       this.setAction(null);
     });
@@ -338,7 +335,7 @@ public class WaypointsActivity extends Activity {
     this.manageTitle = manageTitle;
   }
 
-  public void setModifier(Consumer<Waypoint> modifier) {
+  public void setModifier(Consumer<WaypointMeta> modifier) {
     this.modifier = modifier;
   }
 

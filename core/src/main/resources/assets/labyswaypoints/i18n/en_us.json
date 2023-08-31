@@ -13,6 +13,10 @@
         "name": "Create temporary Waypoint",
         "description": "Creates a Waypoint that gets deleted once you disconnect from the server."
       },
+      "alwaysShowWaypoints": {
+        "name": "Always Show Waypoints",
+        "description": "View your Waypoints over the whole map."
+      },
       "openWaypoints": {
         "name": "Waypoints"
       }

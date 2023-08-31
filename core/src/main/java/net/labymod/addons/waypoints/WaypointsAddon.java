@@ -1,6 +1,7 @@
 package net.labymod.addons.waypoints;
 
 import javax.inject.Singleton;
+import net.labymod.addons.waypoints.listener.GameTickListener;
 import net.labymod.addons.waypoints.listener.ServerWaypointListener;
 import net.labymod.addons.waypoints.listener.WaypointHotkeyListener;
 import net.labymod.addons.waypoints.waypoint.DefaultWaypointService;
@@ -21,10 +22,12 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
 
     this.registerListener(new WaypointHotkeyListener(this));
     this.registerListener(new ServerWaypointListener());
+    this.registerListener(new GameTickListener(this));
   }
 
   @Override
   protected Class<WaypointsConfiguration> configurationClass() {
     return WaypointsConfiguration.class;
   }
+
 }

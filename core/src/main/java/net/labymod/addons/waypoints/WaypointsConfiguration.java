@@ -25,6 +25,9 @@ public class WaypointsConfiguration extends AddonConfig {
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> serverHotkey = new ConfigProperty<>(Key.NONE);
 
+  @SwitchSetting
+  private final ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(false);
+
   @Exclude
   private Collection<WaypointMeta> waypoints = new ArrayList<>();
 
@@ -41,8 +44,12 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.serverHotkey;
   }
 
+  public ConfigProperty<Boolean> alwaysShowWaypoints() {
+    return this.alwaysShowWaypoints;
+  }
+
   @ActivitySetting
-  @MethodOrder(after = "serverHotkey")
+  @MethodOrder(after = "alwaysShowWaypoints")
   public Activity openWaypoints() {
     return new WaypointsActivity(true);
   }

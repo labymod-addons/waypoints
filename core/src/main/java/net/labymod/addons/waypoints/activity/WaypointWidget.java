@@ -1,7 +1,7 @@
 package net.labymod.addons.waypoints.activity;
 
-import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.WaypointTextures;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
@@ -14,10 +14,10 @@ import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 @AutoWidget
 public class WaypointWidget extends SimpleWidget {
 
-  private final Waypoint waypoint;
+  private final WaypointMeta meta;
 
-  public WaypointWidget(Waypoint waypoint) {
-    this.waypoint = waypoint;
+  public WaypointWidget(WaypointMeta meta) {
+    this.meta = meta;
   }
 
   @Override
@@ -25,15 +25,15 @@ public class WaypointWidget extends SimpleWidget {
     super.initialize(parent);
 
     IconWidget avatar = new IconWidget(WaypointTextures.MARKER_ICON);
-    avatar.color().set(this.waypoint.color().get());
+    avatar.color().set(this.meta.getColor().get());
     avatar.addId("avatar");
     this.addChild(avatar);
 
-    ComponentWidget title = ComponentWidget.component(this.waypoint.title());
+    ComponentWidget title = ComponentWidget.component(this.meta.getTitle());
     title.addId("title");
     this.addChild(title);
 
-    if (this.waypoint.type() == WaypointType.SERVER_SESSION) {
+    if (this.meta.getType() == WaypointType.SERVER_SESSION) {
       IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
 
       typeWidget.addId("type");
@@ -43,7 +43,7 @@ public class WaypointWidget extends SimpleWidget {
     }
   }
 
-  public Waypoint getWaypoint() {
-    return this.waypoint;
+  public WaypointMeta getWaypoint() {
+    return this.meta;
   }
 }
