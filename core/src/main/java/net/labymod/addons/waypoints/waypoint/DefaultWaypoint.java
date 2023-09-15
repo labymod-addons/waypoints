@@ -1,20 +1,26 @@
 package net.labymod.addons.waypoints.waypoint;
 
-import net.labymod.addons.waypoints.WaypointTextures;
+import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.utils.RenderUtils;
 import net.labymod.api.Laby;
-import net.labymod.api.client.render.RenderPipeline;
+import net.labymod.api.client.gfx.GFXBridge;
 import net.labymod.api.client.render.matrix.Stack;
 import net.labymod.api.client.world.MinecraftCamera;
 import net.labymod.api.client.world.object.AbstractWorldObject;
 import org.jetbrains.annotations.NotNull;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
-
+  private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
+  private final WaypointsAddon addon;
 
-  public DefaultWaypoint(WaypointMeta meta) {
-    super(meta.getLocation());
 
+  public DefaultWaypoint(WaypointsAddon addon ,WaypointMeta meta) {
+    super(Waypoints.getWaypointObjects().get(meta).getLocation());
+
+    this.addon = addon;
+    this.waypointObjectMeta = Waypoints.getWaypointObjects().get(meta);
     this.meta = meta;
   }
 
@@ -29,29 +35,23 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       float z, float delta, boolean darker) {
     stack.push();
 
+    GFXBridge gfx = Laby.gfx();
+    gfx.storeBlaze3DStates();
+
+    stack.scale(0.04F * waypointObjectMeta.getScale());
+
     this.rotateHorizontally(cam, stack);
+    this.rotateVertically(cam, stack);
 
-    stack.scale(0.03F);
+    RenderUtils.renderBackground(addon, meta, stack);
+    RenderUtils.renderIcon(addon, this.color().get(), stack, meta);
+    RenderUtils.renderText(meta, stack);
 
-    RenderPipeline render = Laby.labyAPI().renderPipeline();
-
-    render.componentRenderer().builder()
-        .text(this.meta.getTitle())
-        .pos(0, -12F)
-        .centered(true)
-        .shadow(false)
-        .render(stack);
-
-    WaypointTextures.MARKER_ICON.render(
-        stack,
-        -6.25F,
-        0,
-        13.5F,
-        24F,
-        false,
-        this.color().get()
-    );
+    gfx.restoreBlaze3DStates();
 
     stack.pop();
   }
+
+
+
 }
