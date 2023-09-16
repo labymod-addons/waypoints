@@ -44,14 +44,11 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     this.rotateVertically(cam, stack);
 
     RenderUtils.renderBackground(addon, meta, stack);
-    RenderUtils.renderIcon(addon, this.color().get(), stack, meta);
+    RenderUtils.renderIcon(addon, this.color().get(), stack);
     RenderUtils.renderText(meta, stack);
 
     gfx.restoreBlaze3DStates();
 
     stack.pop();
   }
-
-
-
 }

@@ -24,8 +24,6 @@ public class RenderUtils {
   private static float rect_y;
 
   public static void renderBackground(WaypointsAddon addon, WaypointMeta meta, Stack stack) {
-    if(!addon.configuration().background().get()) return;
-
     Component text = Waypoints.getWaypointObjects().get(meta).formatTitle();
 
     marginBetweenTextAndIcon = icon_width == 0F ? 0F : 2F;
@@ -33,18 +31,20 @@ public class RenderUtils {
     rect_x = (COMPONENT_RENDERER.width(text) + icon_width + marginBetweenTextAndIcon) / 2;
     rect_y = COMPONENT_RENDERER.height() / 2;
 
+    if(!addon.configuration().background().get()) return;
+
     RECTANGLE_RENDERER
         .pos(
-             rect_x + PADDING,
-             rect_y + PADDING,
-             -rect_x - PADDING,
+            rect_x + PADDING,
+            rect_y + PADDING,
+            -rect_x - PADDING,
             -rect_y - PADDING
-            )
+        )
         .color(1275068416)
         .render(stack);
   }
 
-  public static void renderIcon(WaypointsAddon addon, int color,Stack stack, WaypointMeta meta) {
+  public static void renderIcon(WaypointsAddon addon, int color,Stack stack) {
     if(!addon.configuration().icon().get()) {
       icon_width = 0F;
       icon_height = 0F;

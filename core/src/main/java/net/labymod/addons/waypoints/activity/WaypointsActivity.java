@@ -3,9 +3,10 @@ package net.labymod.addons.waypoints.activity;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointsConfiguration;
+import net.labymod.addons.waypoints.activity.container.ManageContainer;
+import net.labymod.addons.waypoints.activity.container.RemoveContainer;
 import net.labymod.addons.waypoints.activity.widgets.HeaderWidget;
 import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
-import net.labymod.addons.waypoints.activity.widgets.WaypointWidget;
 import net.labymod.addons.waypoints.utils.WidgetUtils;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
@@ -15,7 +16,6 @@ import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
-import net.labymod.api.client.component.serializer.plain.PlainTextComponentSerializer;
 import net.labymod.api.client.entity.player.ClientPlayer;
 import net.labymod.api.client.gui.mouse.MutableMouse;
 import net.labymod.api.client.gui.screen.Parent;
@@ -26,12 +26,9 @@ import net.labymod.api.client.gui.screen.key.InputType;
 import net.labymod.api.client.gui.screen.key.Key;
 import net.labymod.api.client.gui.screen.key.MouseButton;
 import net.labymod.api.client.gui.screen.widget.Widget;
-import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.DivWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.ButtonWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.CheckBoxWidget.State;
-import net.labymod.api.client.gui.screen.widget.widgets.input.TextFieldWidget;
-import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.ScrollWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
@@ -48,6 +45,7 @@ public class WaypointsActivity extends Activity {
   private final boolean overview;
   private final VerticalListWidget<WaypointListItemWidget> waypointList;
   private WaypointListItemWidget selectedWaypoint;
+  private ButtonWidget addButton;
   private ButtonWidget removeButton;
   private ButtonWidget editButton;
   private FlexibleContentWidget inputWidget;
@@ -55,7 +53,6 @@ public class WaypointsActivity extends Activity {
   private Component manageTitle;
   private Consumer<WaypointMeta> modifier;
   private final HeaderWidget headerWidget;
-  private final WaypointsConfiguration configuration;
 
   public WaypointsActivity(boolean overview, WaypointsConfiguration configuration) {
     this.overview = overview;
@@ -64,7 +61,6 @@ public class WaypointsActivity extends Activity {
     this.waypointList = new VerticalListWidget<>();
     this.waypointList.addId("waypoints-list");
     this.headerWidget = new HeaderWidget(configuration);
-    this.configuration = configuration;
     this.waypointList.setSelectCallback(waypointListItemWidget -> {
       WaypointListItemWidget selectedWidget = this.waypointList.session().getSelectedEntry();
       if (selectedWidget == null
@@ -116,7 +112,9 @@ public class WaypointsActivity extends Activity {
       HorizontalListWidget menu = new HorizontalListWidget();
       menu.addId("overview-button-menu");
 
-      menu.addEntry(ButtonWidget.i18n("labymod.ui.button.add", () -> this.setAction(Action.ADD)));
+      this.addButton = ButtonWidget.i18n("labymod.ui.button.add", () -> this.setAction(Action.ADD));
+      this.addButton.setEnabled(Laby.labyAPI().minecraft().isIngame());
+      menu.addEntry(addButton);
 
       this.editButton = ButtonWidget.i18n("labymod.ui.button.edit",
           () -> this.setAction(Action.EDIT));
@@ -156,166 +154,25 @@ public class WaypointsActivity extends Activity {
                 .world("PLACEHOLDER")
                 .build()
         );
-        overlayWidget = this.initializeManageContainer(newWaypoint);
+
+        this.inputWidget = new FlexibleContentWidget();
+        ManageContainer manageContainerAdd = new ManageContainer(newWaypoint, this.manageTitle, this.modifier, this.inputWidget, this);
+        overlayWidget = manageContainerAdd.initializeManageContainer();
         break;
       case EDIT:
-        overlayWidget = this.initializeManageContainer(this.selectedWaypoint);
+        this.inputWidget = new FlexibleContentWidget();
+        ManageContainer manageContainerWidgetEdit = new ManageContainer(this.selectedWaypoint, this.manageTitle, this.modifier, this.inputWidget, this);
+        overlayWidget = manageContainerWidgetEdit.initializeManageContainer();
         break;
       case REMOVE:
-        overlayWidget = this.initializeRemoveContainer(this.selectedWaypoint);
+        this.inputWidget = new FlexibleContentWidget();
+        RemoveContainer removeContainer = new RemoveContainer(this.selectedWaypoint, this.waypointList, this.inputWidget, this);
+        overlayWidget = removeContainer.initializeRemoveContainer();
         break;
     }
 
     manageContainer.addChild(overlayWidget);
     this.document().addChild(manageContainer);
-  }
-
-  private FlexibleContentWidget initializeRemoveContainer(
-      WaypointListItemWidget waypointListItemWidget) {
-    this.inputWidget = new FlexibleContentWidget();
-    this.inputWidget.addId("remove-container");
-
-    ComponentWidget confirmationWidget = ComponentWidget.i18n(
-        "labyswaypoints.gui.manage.remove.title");
-    confirmationWidget.addId("remove-confirmation");
-    this.inputWidget.addContent(confirmationWidget);
-
-    WaypointWidget previewWidget = new WaypointWidget(waypointListItemWidget.getWaypointMeta());
-    previewWidget.addId("remove-preview");
-    this.inputWidget.addContent(previewWidget);
-
-    HorizontalListWidget menu = new HorizontalListWidget();
-    menu.addId("remove-button-menu");
-
-    menu.addEntry(ButtonWidget.i18n("labymod.ui.button.remove", () -> {
-      this.waypointService.removeWaypoint(waypointListItemWidget.getWaypointMeta());
-      this.waypointList.session().setSelectedEntry(null);
-      this.setAction(null);
-    }));
-
-    menu.addEntry(ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.setAction(null)));
-    this.inputWidget.addContent(menu);
-
-    return this.inputWidget;
-  }
-
-  private DivWidget initializeManageContainer(WaypointListItemWidget waypointListItemWidget) {
-    ButtonWidget doneButton = ButtonWidget.i18n("labymod.ui.button.done");
-
-    DivWidget inputContainer = new DivWidget();
-    inputContainer.addId("input-container");
-
-    if (this.manageTitle != null) {
-      ComponentWidget manageTitle = ComponentWidget.component(this.manageTitle);
-      manageTitle.addId("title");
-      inputContainer.addChild(manageTitle);
-    }
-
-    this.inputWidget = new FlexibleContentWidget();
-    this.inputWidget.addId("input-list");
-
-    WaypointMeta meta = waypointListItemWidget.getWaypointMeta();
-
-    DivWidget nameLabelList = new DivWidget();
-    nameLabelList.addId("input-name-list");
-    nameLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.name"))
-        .addId("input-label");
-
-    TextFieldWidget nameInput = new TextFieldWidget();
-    nameInput.addId("input-text");
-    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(meta.getTitle()));
-    nameInput.maximalLength(50);
-    nameInput.updateListener(newValue -> doneButton.setEnabled(!newValue.trim().isEmpty()));
-    nameLabelList.addChild(nameInput);
-
-    this.inputWidget.addContent(nameLabelList);
-
-    DivWidget colorLabelList = new DivWidget();
-    colorLabelList.addId("input-name-list");
-    colorLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.color"))
-        .addId("input-label");
-
-    ColorPickerWidget colorPicker = ColorPickerWidget.of(meta.getColor());
-    colorPicker.addId("input-color");
-    colorLabelList.addChild(colorPicker);
-
-    this.inputWidget.addContent(colorLabelList);
-
-    DivWidget xLabelList = new DivWidget();
-    xLabelList.addId("input-name-list");
-    xLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.x"))
-        .addId("input-label");
-
-    TextFieldWidget xInput = new TextFieldWidget();
-    xInput.addId("input-text");
-    xInput.setText(String.valueOf((int) meta.getLocation().getX()));
-    xLabelList.addChild(xInput);
-
-    this.inputWidget.addContent(xLabelList);
-
-    DivWidget yLabelList = new DivWidget();
-    yLabelList.addId("input-name-list");
-    yLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.y"))
-        .addId("input-label");
-
-    TextFieldWidget yInput = new TextFieldWidget();
-    yInput.addId("input-text");
-    yInput.setText(String.valueOf((int) meta.getLocation().getY()));
-    yLabelList.addChild(yInput);
-
-    this.inputWidget.addContent(yLabelList);
-
-    DivWidget zLabelList = new DivWidget();
-    zLabelList.addId("input-name-list");
-    zLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.z"))
-        .addId("input-label");
-
-    TextFieldWidget zInput = new TextFieldWidget();
-    zInput.addId("input-text");
-    zInput.setText(String.valueOf((int) meta.getLocation().getZ()));
-    zLabelList.addChild(zInput);
-
-    this.inputWidget.addContent(zLabelList);
-
-    HorizontalListWidget buttonList = new HorizontalListWidget();
-    buttonList.addId("edit-button-menu");
-
-    doneButton.setEnabled(!nameInput.getText().trim().isEmpty());
-    doneButton.setPressable(() -> {
-      // Remove the old waypoint in case this is an edit( or the exact same waypoint already exists)
-      boolean permanent = this.waypointService.removeWaypoint(meta);
-
-      try {
-        meta.setLocation(new FloatVector3(
-            Integer.parseInt(xInput.getText()),
-            Integer.parseInt(yInput.getText()),
-            Integer.parseInt(zInput.getText())
-        ));
-      } catch (NumberFormatException ignored) {
-        return;
-      }
-
-      meta.setTitle(Component.text(nameInput.getText()));
-      meta.setColor(colorPicker.value());
-      if (permanent) {
-        meta.setType(WaypointType.PERMANENT);
-      }
-
-      if (this.modifier != null) {
-        this.modifier.accept(meta);
-      }
-
-      this.waypointService.addWaypoint(meta);
-
-      this.setAction(null);
-    });
-
-    buttonList.addEntry(doneButton);
-
-    buttonList.addEntry(ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.setAction(null)));
-    inputContainer.addChild(this.inputWidget);
-    this.inputWidget.addContent(buttonList);
-    return inputContainer;
   }
 
   @Override
