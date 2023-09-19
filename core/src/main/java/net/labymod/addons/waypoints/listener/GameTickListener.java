@@ -3,6 +3,7 @@ package net.labymod.addons.waypoints.listener;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
 import net.labymod.api.client.entity.player.ClientPlayer;
@@ -34,7 +35,7 @@ public class GameTickListener {
     for (Waypoint waypoint : Waypoints.getReferences().waypointService().getAllWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = Waypoints.getWaypointObjects().get(waypoint.meta());
 
-      if (waypoint.meta().isVisible() && waypoint.meta().getWorld().equals("PLACEHOLDER")) {
+      if (waypoint.meta().isVisible() && waypoint.meta().getWorld().equals("PLACEHOLDER") || waypoint.meta().getWorld().equals("LEGACY_WAYPOINT")) {
         float DeltaX = playerPosition.getX() - waypoint.meta().getLocation().getX();
         float DeltaY = playerPosition.getY() - waypoint.meta().getLocation().getY();
         float DeltaZ = playerPosition.getZ() - waypoint.meta().getLocation().getZ();
