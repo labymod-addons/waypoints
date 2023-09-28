@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.api.Laby;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
@@ -32,8 +31,7 @@ public class DefaultWaypointService implements WaypointService {
 
     for (WaypointMeta meta : this.addon.configuration().getWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
-      Waypoints.getWaypointObjects().put(meta, waypointObjectMeta);
-      Waypoint waypoint = new DefaultWaypoint(addon, meta);
+      Waypoint waypoint = new DefaultWaypoint(addon, meta, waypointObjectMeta);
 
       this.waypoints.add(waypoint);
       this.worldObjectRegistry.register(waypoint);
@@ -47,8 +45,8 @@ public class DefaultWaypointService implements WaypointService {
 
   @Override
   public void addWaypoint(WaypointMeta meta) {
-    Waypoints.getWaypointObjects().put(meta, new WaypointObjectMeta(meta));
-    Waypoint waypoint = new DefaultWaypoint(addon, meta);
+    WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
+    Waypoint waypoint = new DefaultWaypoint(addon, meta, waypointObjectMeta);
     this.waypoints.add(waypoint);
 
     this.worldObjectRegistry.register(waypoint);
@@ -66,12 +64,17 @@ public class DefaultWaypointService implements WaypointService {
 
     if (this.addon.configuration().getWaypoints().remove(meta)) {
       this.addon.saveConfiguration();
-      Waypoints.getWaypointObjects().remove(meta);
-
       return true;
     }
 
     return false;
+  }
+
+  public void removeWaypointFromRegistry(WaypointMeta meta) {
+    Waypoint waypoint = getWaypoint(meta);
+    if (waypoint != null) {
+      this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
+    }
   }
 
   @Override
@@ -92,12 +95,13 @@ public class DefaultWaypointService implements WaypointService {
     }
   }
 
-  public void removeWaypointFromRegistry(WaypointMeta meta) {
+  @Override
+  public Waypoint getWaypoint(WaypointMeta meta) {
     for (Waypoint waypoint : this.waypoints) {
       if (waypoint.meta() == meta) {
-        this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
+        return waypoint;
       }
     }
+    return null;
   }
-
 }

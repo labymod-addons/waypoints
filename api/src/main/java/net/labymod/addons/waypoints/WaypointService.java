@@ -20,4 +20,6 @@ public interface WaypointService {
   boolean removeWaypoint(WaypointMeta meta);
 
   void removeWaypoints(Predicate<Waypoint> predicate);
+
+  Waypoint getWaypoint(WaypointMeta meta);
 }

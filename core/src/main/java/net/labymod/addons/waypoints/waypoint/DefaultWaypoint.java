@@ -1,6 +1,5 @@
 package net.labymod.addons.waypoints.waypoint;
 
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.addons.waypoints.utils.RenderUtils;
 import net.labymod.api.Laby;
@@ -11,22 +10,29 @@ import net.labymod.api.client.world.object.AbstractWorldObject;
 import org.jetbrains.annotations.NotNull;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
+
   private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
   private final WaypointsAddon addon;
 
 
-  public DefaultWaypoint(WaypointsAddon addon ,WaypointMeta meta) {
-    super(Waypoints.getWaypointObjects().get(meta).getLocation());
+  public DefaultWaypoint(WaypointsAddon addon, WaypointMeta meta,
+      WaypointObjectMeta waypointObjectMeta) {
+    super(waypointObjectMeta.getLocation());
 
     this.addon = addon;
-    this.waypointObjectMeta = Waypoints.getWaypointObjects().get(meta);
+    this.waypointObjectMeta = waypointObjectMeta;
     this.meta = meta;
   }
 
   @Override
   public WaypointMeta meta() {
     return this.meta;
+  }
+
+  @Override
+  public WaypointObjectMeta waypointObjectMeta() {
+    return this.waypointObjectMeta;
   }
 
   @Override
@@ -38,14 +44,15 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     GFXBridge gfx = Laby.gfx();
     gfx.storeBlaze3DStates();
 
-    stack.scale(0.04F * waypointObjectMeta.getScale());
+    stack.scale(0.04F * this.waypointObjectMeta.getScale());
 
     this.rotateHorizontally(cam, stack);
     this.rotateVertically(cam, stack);
 
-    RenderUtils.renderBackground(addon, meta, stack);
-    RenderUtils.renderIcon(addon, this.color().get(), stack);
-    RenderUtils.renderText(meta, stack);
+    //TODO Fix glitching Background
+    RenderUtils.renderBackground(this.addon, this, stack);
+    RenderUtils.renderIcon(this.addon, this.color().get(), stack);
+    RenderUtils.renderText(this, stack);
 
     gfx.restoreBlaze3DStates();
 

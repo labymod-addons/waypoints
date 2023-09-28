@@ -21,7 +21,8 @@ public class RemoveContainer {
 
 
   public RemoveContainer(WaypointListItemWidget selectedWaypoint,
-      VerticalListWidget<WaypointListItemWidget> waypointList, FlexibleContentWidget inputWidget, WaypointsActivity activity) {
+      VerticalListWidget<WaypointListItemWidget> waypointList, FlexibleContentWidget inputWidget,
+      WaypointsActivity activity) {
     this.selectedWaypoint = selectedWaypoint;
     this.waypointList = waypointList;
     this.inputWidget = inputWidget;
@@ -46,11 +47,12 @@ public class RemoveContainer {
 
     menu.addEntry(ButtonWidget.i18n("labymod.ui.button.remove", () -> {
       this.waypointService.removeWaypoint(selectedWaypoint.getWaypointMeta());
-      this.waypointList.session().setSelectedEntry(null);
+      this.waypointList.listSession().setSelectedEntry(null);
       this.activity.setAction(null);
     }));
 
-    menu.addEntry(ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.activity.setAction(null)));
+    menu.addEntry(
+        ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.activity.setAction(null)));
     this.inputWidget.addContent(menu);
 
     return this.inputWidget;

@@ -14,7 +14,8 @@ public class WaypointMeta {
   private String world;
 
 
-  public WaypointMeta(Component title, Color color, WaypointType type, FloatVector3 location, boolean visible,
+  public WaypointMeta(Component title, Color color, WaypointType type, FloatVector3 location,
+      boolean visible,
       String world) {
     this.title = title;
     this.color = color;

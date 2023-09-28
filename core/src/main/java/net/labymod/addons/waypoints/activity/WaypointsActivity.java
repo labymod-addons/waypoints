@@ -2,18 +2,16 @@ package net.labymod.addons.waypoints.activity;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import net.labymod.addons.waypoints.WaypointsConfiguration;
+import net.labymod.addons.waypoints.WaypointService;
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.activity.container.ManageContainer;
 import net.labymod.addons.waypoints.activity.container.RemoveContainer;
 import net.labymod.addons.waypoints.activity.widgets.HeaderWidget;
 import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
-import net.labymod.addons.waypoints.utils.WidgetUtils;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
-import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.ClientPlayer;
@@ -44,6 +42,8 @@ public class WaypointsActivity extends Activity {
   private final WaypointService waypointService;
   private final boolean overview;
   private final VerticalListWidget<WaypointListItemWidget> waypointList;
+  private final HeaderWidget headerWidget;
+  private ArrayList<WaypointListItemWidget> waypointWidgets;
   private WaypointListItemWidget selectedWaypoint;
   private ButtonWidget addButton;
   private ButtonWidget removeButton;
@@ -52,17 +52,17 @@ public class WaypointsActivity extends Activity {
   private Action action;
   private Component manageTitle;
   private Consumer<WaypointMeta> modifier;
-  private final HeaderWidget headerWidget;
 
-  public WaypointsActivity(boolean overview, WaypointsConfiguration configuration) {
+  public WaypointsActivity(boolean overview) {
     this.overview = overview;
     this.waypointService = Waypoints.getReferences().waypointService();
 
     this.waypointList = new VerticalListWidget<>();
+    this.waypointWidgets = new ArrayList<>();
     this.waypointList.addId("waypoints-list");
-    this.headerWidget = new HeaderWidget(configuration);
+    this.headerWidget = new HeaderWidget(this);
     this.waypointList.setSelectCallback(waypointListItemWidget -> {
-      WaypointListItemWidget selectedWidget = this.waypointList.session().getSelectedEntry();
+      WaypointListItemWidget selectedWidget = this.waypointList.listSession().getSelectedEntry();
       if (selectedWidget == null
           || selectedWidget.getWaypointMeta() != waypointListItemWidget.getWaypointMeta()) {
         this.editButton.setEnabled(true);
@@ -89,25 +89,26 @@ public class WaypointsActivity extends Activity {
         listItemWidgets.add(listItemWidget);
 
         listItemWidget.getCheckbox().setPressable(() -> {
-          listItemWidget.getWaypointMeta().setVisible(!listItemWidget.getWaypointMeta().isVisible());
+          listItemWidget.getWaypointMeta()
+              .setVisible(!listItemWidget.getWaypointMeta().isVisible());
           listItemWidget.opacity().set(listItemWidget.getWaypointMeta().isVisible() ? 1F : 0.5F);
 
           if (listItemWidget.getCheckbox().state() == State.CHECKED) {
             headerWidget.getCheckbox().setState(State.CHECKED);
           }
 
-          if (!WidgetUtils.hasVisibleWaypoint()) {
+          if (!this.hasVisibleWaypoint()) {
             headerWidget.getCheckbox().setState(State.UNCHECKED);
           }
         });
       }
 
-      WidgetUtils.setWaypointWidgets(listItemWidgets);
+      this.setWaypointWidgets(listItemWidgets);
 
       container.addContent(headerWidget);
       container.addFlexibleContent(new ScrollWidget(this.waypointList));
 
-      this.selectedWaypoint = this.waypointList.session().getSelectedEntry();
+      this.selectedWaypoint = this.waypointList.listSession().getSelectedEntry();
 
       HorizontalListWidget menu = new HorizontalListWidget();
       menu.addId("overview-button-menu");
@@ -156,23 +157,50 @@ public class WaypointsActivity extends Activity {
         );
 
         this.inputWidget = new FlexibleContentWidget();
-        ManageContainer manageContainerAdd = new ManageContainer(newWaypoint, this.manageTitle, this.modifier, this.inputWidget, this);
+        ManageContainer manageContainerAdd = new ManageContainer(newWaypoint, this.manageTitle,
+            this.modifier, this.inputWidget, this);
         overlayWidget = manageContainerAdd.initializeManageContainer();
         break;
       case EDIT:
         this.inputWidget = new FlexibleContentWidget();
-        ManageContainer manageContainerWidgetEdit = new ManageContainer(this.selectedWaypoint, this.manageTitle, this.modifier, this.inputWidget, this);
+        ManageContainer manageContainerWidgetEdit = new ManageContainer(this.selectedWaypoint,
+            this.manageTitle, this.modifier, this.inputWidget, this);
         overlayWidget = manageContainerWidgetEdit.initializeManageContainer();
         break;
       case REMOVE:
         this.inputWidget = new FlexibleContentWidget();
-        RemoveContainer removeContainer = new RemoveContainer(this.selectedWaypoint, this.waypointList, this.inputWidget, this);
+        RemoveContainer removeContainer = new RemoveContainer(this.selectedWaypoint,
+            this.waypointList, this.inputWidget, this);
         overlayWidget = removeContainer.initializeRemoveContainer();
         break;
     }
 
     manageContainer.addChild(overlayWidget);
     this.document().addChild(manageContainer);
+  }
+
+  public void setWaypointWidgets(ArrayList<WaypointListItemWidget> waypointWidgets) {
+    this.waypointWidgets = waypointWidgets;
+  }
+
+  public void handleWaypointWidgetStyle() {
+
+    boolean OneEntryChecked = this.hasVisibleWaypoint();
+
+    for (WaypointListItemWidget waypointWidget : waypointWidgets) {
+      waypointWidget.getCheckbox().setState(OneEntryChecked ? State.UNCHECKED : State.CHECKED);
+      waypointWidget.getWaypointMeta().setVisible(!OneEntryChecked);
+      waypointWidget.opacity().set(OneEntryChecked ? 0.5F : 1F);
+    }
+  }
+
+  public boolean hasVisibleWaypoint() {
+    for (Waypoint waypoint : Waypoints.getReferences().waypointService().getAllWaypoints()) {
+      if (waypoint.meta().isVisible()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -185,7 +213,7 @@ public class WaypointsActivity extends Activity {
       return super.mouseClicked(mouse, mouseButton);
     } finally {
       if (this.overview) {
-        this.selectedWaypoint = this.waypointList.session().getSelectedEntry();
+        this.selectedWaypoint = this.waypointList.listSession().getSelectedEntry();
         this.removeButton.setEnabled(this.selectedWaypoint != null);
         this.editButton.setEnabled(this.selectedWaypoint != null);
       }

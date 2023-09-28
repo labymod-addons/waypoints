@@ -58,9 +58,9 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
     Preconditions.notNull(this.color, "Missing color");
     Preconditions.notNull(this.type, "Missing type");
     Preconditions.notNull(this.location, "Missing location");
-    Preconditions.notNull(this.visible, "Missing location");
-    Preconditions.notNull(this.world, "Missing location");
+    Preconditions.notNull(this.world, "Missing world");
 
-    return new WaypointMeta(this.title, this.color, this.type, this.location, this.visible, this.world);
+    return new WaypointMeta(this.title, this.color, this.type, this.location, this.visible,
+        this.world);
   }
 }

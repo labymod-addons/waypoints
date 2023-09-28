@@ -1,5 +1,7 @@
 package net.labymod.addons.waypoints;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import net.labymod.addons.waypoints.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.api.addon.AddonConfig;
@@ -12,8 +14,6 @@ import net.labymod.api.configuration.loader.annotation.Exclude;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.configuration.settings.annotation.SettingSection;
 import net.labymod.api.util.MethodOrder;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class WaypointsConfiguration extends AddonConfig {
 
@@ -26,17 +26,17 @@ public class WaypointsConfiguration extends AddonConfig {
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> serverHotkey = new ConfigProperty<>(Key.NONE);
 
-  @SettingSection("Settings")
+/*  @SettingSection("Settings")
   @SwitchSetting
-  private ConfigProperty<Boolean> background = new ConfigProperty<>(false);
+  private final ConfigProperty<Boolean> background = new ConfigProperty<>(false);*/
 
   @SwitchSetting
-  private ConfigProperty<Boolean> icon = new ConfigProperty<>(true);
+  private final ConfigProperty<Boolean> icon = new ConfigProperty<>(true);
   @SwitchSetting
-  private ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(false);
+  private final ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(false);
 
   @Exclude
-  private Collection<WaypointMeta> waypoints = new ArrayList<>();
+  private final Collection<WaypointMeta> waypoints = new ArrayList<>();
 
 
   @Override
@@ -52,9 +52,9 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.serverHotkey;
   }
 
-  public ConfigProperty<Boolean> background() {
+/*  public ConfigProperty<Boolean> background() {
     return background;
-  }
+  }*/
 
   public ConfigProperty<Boolean> icon() {
     return icon;
@@ -68,7 +68,7 @@ public class WaypointsConfiguration extends AddonConfig {
   @ActivitySetting
   @MethodOrder(after = "alwaysShowWaypoints")
   public Activity openWaypoints() {
-    return new WaypointsActivity(true, this);
+    return new WaypointsActivity(true);
   }
 
   public Collection<WaypointMeta> getWaypoints() {

@@ -1,9 +1,11 @@
 package net.labymod.addons.waypoints.activity.container;
 
+import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
+import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.client.component.Component;
@@ -16,7 +18,6 @@ import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerW
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
 import net.labymod.api.util.math.vector.FloatVector3;
-import java.util.function.Consumer;
 
 public class ManageContainer {
 
@@ -29,7 +30,8 @@ public class ManageContainer {
 
 
   public ManageContainer(WaypointListItemWidget waypointListItemWidget, Component manageTitle,
-      Consumer<WaypointMeta> modifier, FlexibleContentWidget inputWidget, WaypointsActivity activity) {
+      Consumer<WaypointMeta> modifier, FlexibleContentWidget inputWidget,
+      WaypointsActivity activity) {
     this.waypointListItemWidget = waypointListItemWidget;
     this.manageTitle = manageTitle;
     this.modifier = modifier;
@@ -133,7 +135,12 @@ public class ManageContainer {
         return;
       }
 
-      meta.setTitle(Component.text(nameInput.getText()));
+      if (nameInput.getText().length() > 0) {
+        meta.setTitle(Component.text(nameInput.getText()));
+      } else {
+        meta.setTitle(Component.text("New Waypoint"));
+      }
+
       meta.setColor(colorPicker.value());
       if (permanent) {
         meta.setType(WaypointType.PERMANENT);
@@ -145,15 +152,21 @@ public class ManageContainer {
 
       this.waypointService.addWaypoint(meta);
 
+      Waypoint waypoint = this.waypointService.getWaypoint(meta);
+
+      if (waypoint != null) {
+        waypoint.waypointObjectMeta().clearTitleCache();
+      }
+
       this.activity.setAction(null);
     });
 
     buttonList.addEntry(doneButton);
 
-    buttonList.addEntry(ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.activity.setAction(null)));
+    buttonList.addEntry(
+        ButtonWidget.i18n("labymod.ui.button.cancel", () -> this.activity.setAction(null)));
     inputContainer.addChild(this.inputWidget);
     this.inputWidget.addContent(buttonList);
     return inputContainer;
   }
-
 }

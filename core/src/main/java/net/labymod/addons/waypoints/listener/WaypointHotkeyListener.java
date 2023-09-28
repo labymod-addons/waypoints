@@ -36,7 +36,7 @@ public class WaypointHotkeyListener {
   }
 
   private void createWaypoint(WaypointType type) {
-    WaypointsActivity activity = new WaypointsActivity(false, addon.configuration());
+    WaypointsActivity activity = new WaypointsActivity(false);
 
     activity.setAction(Action.ADD);
     activity.setModifier(meta -> meta.setType(type));

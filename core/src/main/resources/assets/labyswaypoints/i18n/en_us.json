@@ -21,13 +21,13 @@
         "name": "Create temporary Waypoint",
         "description": "Creates a Waypoint that gets deleted once you disconnect from the server."
       },
-      "background":  {
+      "background": {
         "name": "Background"
       },
-      "icon":  {
+      "icon": {
         "name": "Icon"
       },
-      "alwaysShowWaypoints":  {
+      "alwaysShowWaypoints": {
         "name": "Waypoints Always Visible",
         "description": "Waypoints will be visible, even if they are far away."
       },
@@ -35,7 +35,7 @@
         "name": "Waypoints"
       }
     },
-    "gui":{
+    "gui": {
       "manage": {
         "remove": {
           "title": "Do you really want to remove this waypoint?"
