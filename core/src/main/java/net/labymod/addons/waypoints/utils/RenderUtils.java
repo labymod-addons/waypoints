@@ -25,7 +25,6 @@ public class RenderUtils {
   private static float rect_y;
 
   public static void renderBackground(WaypointsAddon addon, Waypoint waypoint, Stack stack) {
-    boolean TEMPORARY = true;
     Component text = waypoint.waypointObjectMeta().formatTitle();
 
     marginBetweenTextAndIcon = icon_width == 0F ? 0F : 2F;
@@ -33,9 +32,8 @@ public class RenderUtils {
     rect_x = (COMPONENT_RENDERER.width(text) + icon_width + marginBetweenTextAndIcon) / 2;
     rect_y = COMPONENT_RENDERER.height() / 2;
 
-    //if(!addon.configuration().background().get()) return;
-    if (TEMPORARY == true) {
-      return; //Prevent the background from rendering until bug is fixed
+    if (!addon.configuration().background().get()) {
+      return;
     }
 
     RECTANGLE_RENDERER

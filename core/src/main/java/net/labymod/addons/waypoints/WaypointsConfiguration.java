@@ -26,9 +26,9 @@ public class WaypointsConfiguration extends AddonConfig {
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> serverHotkey = new ConfigProperty<>(Key.NONE);
 
-/*  @SettingSection("Settings")
+  @SettingSection("Settings")
   @SwitchSetting
-  private final ConfigProperty<Boolean> background = new ConfigProperty<>(false);*/
+  private final ConfigProperty<Boolean> background = new ConfigProperty<>(false);
 
   @SwitchSetting
   private final ConfigProperty<Boolean> icon = new ConfigProperty<>(true);
@@ -52,16 +52,16 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.serverHotkey;
   }
 
-/*  public ConfigProperty<Boolean> background() {
-    return background;
-  }*/
+  public ConfigProperty<Boolean> background() {
+    return this.background;
+  }
 
   public ConfigProperty<Boolean> icon() {
-    return icon;
+    return this.icon;
   }
 
   public ConfigProperty<Boolean> alwaysShowWaypoints() {
-    return alwaysShowWaypoints;
+    return this.alwaysShowWaypoints;
   }
 
   @SettingSection("Waypoints")

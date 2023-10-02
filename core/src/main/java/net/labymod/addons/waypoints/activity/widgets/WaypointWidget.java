@@ -21,17 +21,19 @@ public class WaypointWidget extends SimpleWidget {
   public WaypointWidget(WaypointMeta meta) {
     this.meta = meta;
     this.title = ComponentWidget.component(this.meta.getTitle());
+    this.title.addId("title");
   }
 
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    title.textColor().set(meta.getColor().get());
-    icon.color().set(meta.getColor().get());
+    this.title.textColor().set(this.meta.getColor().get());
+    this.addChild(this.title);
 
-    icon.addId("icon");
-    title.addId("title");
+    this.icon.color().set(this.meta.getColor().get());
+    this.icon.addId("icon");
+    this.addChild(icon);
 
     if (this.meta.getType() == WaypointType.SERVER_SESSION) {
       IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
@@ -41,9 +43,5 @@ public class WaypointWidget extends SimpleWidget {
 
       this.addChild(typeWidget);
     }
-
-    this.addChild(icon);
-    this.addChild(title);
-
   }
 }

@@ -21,9 +21,4 @@ public interface Waypoint extends WorldObject {
   default WaypointType type() {
     return this.meta().getType();
   }
-
-  @Override
-  default boolean isSeeThrough() {
-    return true;
-  }
 }

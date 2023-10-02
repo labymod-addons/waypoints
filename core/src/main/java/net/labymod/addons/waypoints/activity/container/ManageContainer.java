@@ -54,7 +54,7 @@ public class ManageContainer {
 
     this.inputWidget.addId("input-list");
 
-    WaypointMeta meta = waypointListItemWidget.getWaypointMeta();
+    WaypointMeta meta = this.waypointListItemWidget.getWaypointMeta();
 
     DivWidget nameLabelList = new DivWidget();
     nameLabelList.addId("input-name-list");

@@ -38,7 +38,7 @@ public class RemoveContainer {
     confirmationWidget.addId("remove-confirmation");
     this.inputWidget.addContent(confirmationWidget);
 
-    WaypointWidget previewWidget = new WaypointWidget(selectedWaypoint.getWaypointMeta());
+    WaypointWidget previewWidget = new WaypointWidget(this.selectedWaypoint.getWaypointMeta());
     previewWidget.addId("remove-preview");
     this.inputWidget.addContent(previewWidget);
 
@@ -46,7 +46,7 @@ public class RemoveContainer {
     menu.addId("remove-button-menu");
 
     menu.addEntry(ButtonWidget.i18n("labymod.ui.button.remove", () -> {
-      this.waypointService.removeWaypoint(selectedWaypoint.getWaypointMeta());
+      this.waypointService.removeWaypoint(this.selectedWaypoint.getWaypointMeta());
       this.waypointList.listSession().setSelectedEntry(null);
       this.activity.setAction(null);
     }));

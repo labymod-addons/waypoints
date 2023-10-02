@@ -42,7 +42,7 @@ public class WaypointMeta {
   }
 
   public WaypointType getType() {
-    return type;
+    return this.type;
   }
 
   public void setType(WaypointType type) {
@@ -58,7 +58,7 @@ public class WaypointMeta {
   }
 
   public boolean isVisible() {
-    return visible;
+    return this.visible;
   }
 
   public void setVisible(boolean visible) {
@@ -66,7 +66,7 @@ public class WaypointMeta {
   }
 
   public String getWorld() {
-    return world;
+    return this.world;
   }
 
   public void setWorld(String world) {

@@ -94,18 +94,18 @@ public class WaypointsActivity extends Activity {
           listItemWidget.opacity().set(listItemWidget.getWaypointMeta().isVisible() ? 1F : 0.5F);
 
           if (listItemWidget.getCheckbox().state() == State.CHECKED) {
-            headerWidget.getCheckbox().setState(State.CHECKED);
+            this.headerWidget.getCheckbox().setState(State.CHECKED);
           }
 
           if (!this.hasVisibleWaypoint()) {
-            headerWidget.getCheckbox().setState(State.UNCHECKED);
+            this.headerWidget.getCheckbox().setState(State.UNCHECKED);
           }
         });
       }
 
       this.setWaypointWidgets(listItemWidgets);
 
-      container.addContent(headerWidget);
+      container.addContent(this.headerWidget);
       container.addFlexibleContent(new ScrollWidget(this.waypointList));
 
       this.selectedWaypoint = this.waypointList.listSession().getSelectedEntry();
@@ -115,7 +115,7 @@ public class WaypointsActivity extends Activity {
 
       this.addButton = ButtonWidget.i18n("labymod.ui.button.add", () -> this.setAction(Action.ADD));
       this.addButton.setEnabled(Laby.labyAPI().minecraft().isIngame());
-      menu.addEntry(addButton);
+      menu.addEntry(this.addButton);
 
       this.editButton = ButtonWidget.i18n("labymod.ui.button.edit",
           () -> this.setAction(Action.EDIT));
@@ -185,13 +185,15 @@ public class WaypointsActivity extends Activity {
 
   public void handleWaypointWidgetStyle() {
 
-    boolean OneEntryChecked = this.hasVisibleWaypoint();
+    boolean oneEntryChecked = this.hasVisibleWaypoint();
 
-    for (WaypointListItemWidget waypointWidget : waypointWidgets) {
-      waypointWidget.getCheckbox().setState(OneEntryChecked ? State.UNCHECKED : State.CHECKED);
-      waypointWidget.getWaypointMeta().setVisible(!OneEntryChecked);
-      waypointWidget.opacity().set(OneEntryChecked ? 0.5F : 1F);
+    for (WaypointListItemWidget waypointWidget : this.waypointWidgets) {
+      waypointWidget.getCheckbox().setState(oneEntryChecked ? State.UNCHECKED : State.CHECKED);
+      waypointWidget.getWaypointMeta().setVisible(!oneEntryChecked);
+      waypointWidget.opacity().set(oneEntryChecked ? 0.5F : 1F);
     }
+
+    Waypoints.setWaypointsRenderCache(false);
   }
 
   public boolean hasVisibleWaypoint() {

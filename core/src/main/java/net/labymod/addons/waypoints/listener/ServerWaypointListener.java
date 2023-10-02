@@ -5,18 +5,26 @@ import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.network.server.ServerDisconnectEvent;
+import net.labymod.api.event.client.network.server.SubServerSwitchEvent;
 import net.labymod.api.event.client.world.WorldLeaveEvent;
 
 public class ServerWaypointListener {
 
   @Subscribe
-  public void clearTemporaryWaypoints(ServerDisconnectEvent event) {
+  public void clearWaypointsCache(ServerDisconnectEvent event) {
     this.clearTemporaryWaypoints();
+    Waypoints.setWaypointsRenderCache(false);
   }
 
   @Subscribe
-  public void clearTemporaryWaypoints(WorldLeaveEvent event) {
+  public void clearWaypointsCache(WorldLeaveEvent event) {
     this.clearTemporaryWaypoints();
+    Waypoints.setWaypointsRenderCache(false);
+  }
+
+  @Subscribe
+  public void clearWaypointsCache(SubServerSwitchEvent event) {
+    Waypoints.setWaypointsRenderCache(false);
   }
 
   private void clearTemporaryWaypoints() {

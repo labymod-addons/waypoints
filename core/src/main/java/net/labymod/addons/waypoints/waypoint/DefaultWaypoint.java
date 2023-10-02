@@ -49,7 +49,8 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     this.rotateHorizontally(cam, stack);
     this.rotateVertically(cam, stack);
 
-    //TODO Fix glitching Background
+    gfx.depthMask(false);
+
     RenderUtils.renderBackground(this.addon, this, stack);
     RenderUtils.renderIcon(this.addon, this.color().get(), stack);
     RenderUtils.renderText(this, stack);

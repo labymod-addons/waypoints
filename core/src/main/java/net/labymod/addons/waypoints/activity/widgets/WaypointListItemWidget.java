@@ -18,24 +18,24 @@ public class WaypointListItemWidget extends SimpleWidget {
     this.meta = meta;
     this.checkbox = new CheckBoxWidget();
     this.waypointWidget = new WaypointWidget(meta);
+    this.waypointWidget.addId("preview");
   }
 
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    this.opacity().set(meta.isVisible() ? 1F : 0.5F);
-    checkbox.setState(meta.isVisible() ? State.CHECKED : State.UNCHECKED);
+    this.opacity().set(this.meta.isVisible() ? 1F : 0.5F);
 
-    checkbox.addId("checkbox");
-    waypointWidget.addId("preview");
+    this.checkbox.setState(this.meta.isVisible() ? State.CHECKED : State.UNCHECKED);
+    this.checkbox.addId("checkbox");
+    this.addChild(this.checkbox);
 
-    this.addChild(checkbox);
-    this.addChild(waypointWidget);
+    this.addChild(this.waypointWidget);
   }
 
   public CheckBoxWidget getCheckbox() {
-    return checkbox;
+    return this.checkbox;
   }
 
   public WaypointMeta getWaypointMeta() {
