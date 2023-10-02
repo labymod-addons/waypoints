@@ -152,7 +152,7 @@ public class WaypointsActivity extends Activity {
                 .type(WaypointType.PERMANENT)
                 .location(player != null ? player.eyePosition() : new FloatVector3(0F, 80F, 0F))
                 .visible(true)
-                .world("LEGACY_WAYPOINT")
+                .world("PLACEHOLDER")
                 .build()
         );
 
