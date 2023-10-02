@@ -82,6 +82,7 @@ public class WaypointsUpdateListener {
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
         waypointObjectMeta.setScale(4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE);
+        waypointObjectMeta.getLocation().set(waypoint.meta().getLocation());
       } else {
         waypointObjectMeta.setScale(5F);
         float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
