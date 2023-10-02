@@ -11,7 +11,7 @@ public class WaypointObjectMeta {
   private final FloatVector3 location;
   private float scale;
   private float distanceToPlayer;
-  private Component cashedTitle;
+  private Component cachedTitle;
 
   public WaypointObjectMeta(WaypointMeta meta) {
     this.scale = 0;
@@ -43,13 +43,13 @@ public class WaypointObjectMeta {
   }
 
   public void clearTitleCache() {
-    this.cashedTitle = null;
+    this.cachedTitle = null;
   }
 
   public Component formatTitle() {
     //TODO more Formatting Options
-    if (this.cashedTitle != null) {
-      return this.cashedTitle;
+    if (this.cachedTitle != null) {
+      return this.cachedTitle;
     }
 
     int distanceToPlayer = Math.round(this.distanceToPlayer);
@@ -70,7 +70,7 @@ public class WaypointObjectMeta {
     title.append(formattedDistance);
     title.append(bracket2);
 
-    this.cashedTitle = title;
+    this.cachedTitle = title;
 
     return title;
   }
