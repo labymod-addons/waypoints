@@ -49,7 +49,7 @@ public class WaypointsUpdateListener {
         && this.alwaysShowWaypoints == this.addon.configuration()
         .alwaysShowWaypoints().get()) {
       Waypoints.setWaypointsRenderCache(true);
-    } else {
+    } else if (this.alwaysShowWaypoints != this.addon.configuration().alwaysShowWaypoints().get()) {
       this.alwaysShowWaypoints = this.addon.configuration().alwaysShowWaypoints().get();
       Waypoints.setWaypointsRenderCache(false);
     }
