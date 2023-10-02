@@ -74,4 +74,9 @@ public class WaypointsConfiguration extends AddonConfig {
   public Collection<WaypointMeta> getWaypoints() {
     return this.waypoints;
   }
+
+  @Override
+  public int getConfigVersion() {
+    return 2;
+  }
 }
