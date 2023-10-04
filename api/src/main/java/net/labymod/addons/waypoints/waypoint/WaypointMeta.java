@@ -3,6 +3,7 @@ package net.labymod.addons.waypoints.waypoint;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.math.vector.FloatVector3;
+import org.jetbrains.annotations.Nullable;
 
 public class WaypointMeta {
 
@@ -11,12 +12,13 @@ public class WaypointMeta {
   private WaypointType type;
   private FloatVector3 location;
   private boolean visible;
+  @Nullable
   private String world;
 
 
   public WaypointMeta(Component title, Color color, WaypointType type, FloatVector3 location,
       boolean visible,
-      String world) {
+      @Nullable String world) {
     this.title = title;
     this.color = color;
     this.type = type;
@@ -65,11 +67,12 @@ public class WaypointMeta {
     this.visible = visible;
   }
 
+  @Nullable
   public String getWorld() {
     return this.world;
   }
 
-  public void setWorld(String world) {
+  public void setWorld(@Nullable String world) {
     this.world = world;
   }
 }

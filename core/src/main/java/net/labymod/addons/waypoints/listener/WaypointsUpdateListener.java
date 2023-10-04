@@ -61,7 +61,7 @@ public class WaypointsUpdateListener {
 
   private boolean shouldRenderWaypoint(Waypoint waypoint) {
     String world = waypoint.meta().getWorld();
-    return waypoint.meta().isVisible() && "PLACEHOLDER".equals(world);
+    return waypoint.meta().isVisible() && (world == null || world.equals("PLACEHOLDER"));
   }
 
   private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,

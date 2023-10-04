@@ -26,7 +26,6 @@ public class ConfigurationVersionUpdateListener {
 
           JsonObject waypoint = waypointElement.getAsJsonObject();
 
-          waypoint.addProperty("world", "PLACEHOLDER");
           waypoint.addProperty("visible", true);
         }
       }
