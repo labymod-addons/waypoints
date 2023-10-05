@@ -12,7 +12,7 @@ import net.labymod.api.event.client.render.GameRenderEvent;
 import net.labymod.api.util.math.vector.FloatVector3;
 import org.jetbrains.annotations.NotNull;
 
-public class WaypointsUpdateListener {
+public class WaypointUpdateListener {
 
   private static final float DEFAULT_SIZE = 1F;
   private static final float TARGET_DISTANCE = 110.0F;
@@ -20,7 +20,7 @@ public class WaypointsUpdateListener {
 
   private boolean alwaysShowWaypoints;
 
-  public WaypointsUpdateListener(WaypointsAddon addon) {
+  public WaypointUpdateListener(WaypointsAddon addon) {
     this.addon = addon;
     this.alwaysShowWaypoints = addon.configuration().alwaysShowWaypoints().get();
   }
@@ -50,6 +50,7 @@ public class WaypointsUpdateListener {
         .alwaysShowWaypoints().get()) {
       Waypoints.setWaypointsRenderCache(true);
     } else if (this.alwaysShowWaypoints != this.addon.configuration().alwaysShowWaypoints().get()) {
+      System.out.println("AHOI!");
       this.alwaysShowWaypoints = this.addon.configuration().alwaysShowWaypoints().get();
       Waypoints.setWaypointsRenderCache(false);
     }

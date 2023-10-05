@@ -1,14 +1,14 @@
 package net.labymod.addons.waypoints.waypoint;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Predicate;
+import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.api.Laby;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
 import net.labymod.api.models.Implements;
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.function.Predicate;
 
 @Singleton
 @Implements(WaypointService.class)

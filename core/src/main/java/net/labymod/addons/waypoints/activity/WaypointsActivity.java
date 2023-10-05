@@ -100,6 +100,7 @@ public class WaypointsActivity extends Activity {
           if (!this.hasVisibleWaypoint()) {
             this.headerWidget.getCheckbox().setState(State.UNCHECKED);
           }
+          Waypoints.setWaypointsRenderCache(false);
         });
       }
 
