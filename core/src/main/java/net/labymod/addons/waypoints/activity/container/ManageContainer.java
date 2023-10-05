@@ -122,7 +122,7 @@ public class ManageContainer {
 
     doneButton.setEnabled(!nameInput.getText().trim().isEmpty());
     doneButton.setPressable(() -> {
-      // Remove the old waypoint in case this is an edit( or the exact same waypoint already exists)
+      // Remove the old waypoint in case this is an edit (or the exact same waypoint already exists)
       boolean permanent = this.waypointService.removeWaypoint(meta);
 
       try {
@@ -132,7 +132,7 @@ public class ManageContainer {
             Integer.parseInt(zInput.getText())
         ));
       } catch (NumberFormatException ignored) {
-        return;
+        if (!permanent) return;
       }
 
       if (nameInput.getText().length() > 0) {

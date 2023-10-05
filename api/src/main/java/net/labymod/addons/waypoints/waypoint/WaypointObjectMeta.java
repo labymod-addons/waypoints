@@ -47,7 +47,7 @@ public class WaypointObjectMeta {
   }
 
   public Component formatTitle() {
-    //TODO more Formatting Options
+    // TODO more Formatting Options
     if (this.cachedTitle != null) {
       return this.cachedTitle;
     }
