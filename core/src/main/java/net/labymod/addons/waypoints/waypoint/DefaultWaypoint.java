@@ -1,7 +1,6 @@
 package net.labymod.addons.waypoints.waypoint;
 
 import net.labymod.addons.waypoints.WaypointsAddon;
-import net.labymod.addons.waypoints.utils.RenderUtils;
 import net.labymod.api.Laby;
 import net.labymod.api.client.gfx.GFXBridge;
 import net.labymod.api.client.render.matrix.Stack;
@@ -51,9 +50,9 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     gfx.depthMask(false);
 
-    RenderUtils.renderBackground(this.addon, this, stack);
-    RenderUtils.renderIcon(this.addon, this.color().get(), stack);
-    RenderUtils.renderText(this, stack);
+    WaypointRenderer.renderBackground(this.addon, this, stack);
+    WaypointRenderer.renderIcon(this.addon, this.color().get(), stack);
+    WaypointRenderer.renderText(this, stack);
 
     gfx.restoreBlaze3DStates();
 

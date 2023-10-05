@@ -1,7 +1,8 @@
-package net.labymod.addons.waypoints.utils;
+package net.labymod.addons.waypoints.waypoint;
 
 import net.labymod.addons.waypoints.WaypointTextures;
 import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
@@ -9,7 +10,7 @@ import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
 
-public class RenderUtils {
+public class WaypointRenderer {
 
   private final static RectangleRenderer RECTANGLE_RENDERER = Laby.labyAPI().renderPipeline()
       .rectangleRenderer();
