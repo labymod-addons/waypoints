@@ -50,7 +50,6 @@ public class WaypointUpdateListener {
         .alwaysShowWaypoints().get()) {
       Waypoints.setWaypointsRenderCache(true);
     } else if (this.alwaysShowWaypoints != this.addon.configuration().alwaysShowWaypoints().get()) {
-      System.out.println("AHOI!");
       this.alwaysShowWaypoints = this.addon.configuration().alwaysShowWaypoints().get();
       Waypoints.setWaypointsRenderCache(false);
     }
