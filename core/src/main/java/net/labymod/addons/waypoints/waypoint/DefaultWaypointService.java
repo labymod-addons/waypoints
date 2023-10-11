@@ -30,7 +30,8 @@ public class DefaultWaypointService implements WaypointService {
     this.addon = addon;
 
     for (WaypointMeta meta : this.addon.configuration().getWaypoints()) {
-      Waypoint waypoint = new DefaultWaypoint(meta);
+      WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
+      Waypoint waypoint = new DefaultWaypoint(this.addon, meta, waypointObjectMeta);
 
       this.waypoints.add(waypoint);
       this.worldObjectRegistry.register(waypoint);
@@ -43,30 +44,37 @@ public class DefaultWaypointService implements WaypointService {
   }
 
   @Override
-  public void addWaypoint(Waypoint waypoint) {
+  public void addWaypoint(WaypointMeta meta) {
+    WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
+    Waypoint waypoint = new DefaultWaypoint(this.addon, meta, waypointObjectMeta);
     this.waypoints.add(waypoint);
 
     this.worldObjectRegistry.register(waypoint);
 
     if (waypoint.type() == WaypointType.PERMANENT) {
-      this.addon.configuration().getWaypoints().add(waypoint.meta());
+      this.addon.configuration().getWaypoints().add(meta);
       this.addon.saveConfiguration();
     }
   }
 
   @Override
-  public boolean removeWaypoint(Waypoint waypoint) {
-    this.waypoints.remove(waypoint);
+  public boolean removeWaypoint(WaypointMeta meta) {
+    this.removeWaypointFromRegistry(meta);
+    this.waypoints.removeIf((Waypoint waypoint) -> waypoint.meta() == meta);
 
-    this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
-
-    if (this.addon.configuration().getWaypoints().remove(waypoint.meta())) {
+    if (this.addon.configuration().getWaypoints().remove(meta)) {
       this.addon.saveConfiguration();
-
       return true;
     }
 
     return false;
+  }
+
+  public void removeWaypointFromRegistry(WaypointMeta meta) {
+    Waypoint waypoint = this.getWaypoint(meta);
+    if (waypoint != null) {
+      this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
+    }
   }
 
   @Override
@@ -85,5 +93,15 @@ public class DefaultWaypointService implements WaypointService {
     if (modified) {
       this.addon.saveConfiguration();
     }
+  }
+
+  @Override
+  public Waypoint getWaypoint(WaypointMeta meta) {
+    for (Waypoint waypoint : this.waypoints) {
+      if (waypoint.meta() == meta) {
+        return waypoint;
+      }
+    }
+    return null;
   }
 }

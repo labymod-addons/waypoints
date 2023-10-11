@@ -21,6 +21,11 @@ public interface WaypointBuilder {
 
   WaypointBuilder location(FloatVector3 location);
 
-  Waypoint build();
+  WaypointBuilder visible(boolean visible);
+
+  WaypointBuilder world(String world);
+
+  WaypointMeta build();
+
 
 }

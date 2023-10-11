@@ -5,6 +5,14 @@
       "enabled": {
         "name": "Enabled"
       },
+      "header": {
+        "Waypoints": {
+          "name": "Waypoints"
+        },
+        "Settings": {
+          "name": "Settings"
+        }
+      },
       "permanentHotkey": {
         "name": "Create permanent Waypoint",
         "description": "Creates a permanent Waypoint that will never get deleted automatically."
@@ -13,11 +21,21 @@
         "name": "Create temporary Waypoint",
         "description": "Creates a Waypoint that gets deleted once you disconnect from the server."
       },
+      "background": {
+        "name": "Background"
+      },
+      "icon": {
+        "name": "Icon"
+      },
+      "alwaysShowWaypoints": {
+        "name": "Waypoints Always Visible",
+        "description": "Waypoints will be visible, even if they are far away."
+      },
       "openWaypoints": {
         "name": "Waypoints"
       }
     },
-    "gui":{
+    "gui": {
       "manage": {
         "remove": {
           "title": "Do you really want to remove this waypoint?"

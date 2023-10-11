@@ -13,6 +13,8 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   private Color color;
   private WaypointType type;
   private FloatVector3 location;
+  private boolean visible;
+  private String world;
 
   @Override
   public WaypointBuilder title(Component title) {
@@ -39,12 +41,25 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   }
 
   @Override
-  public Waypoint build() {
+  public WaypointBuilder visible(boolean visible) {
+    this.visible = visible;
+    return this;
+  }
+
+  @Override
+  public WaypointBuilder world(String world) {
+    this.world = world;
+    return this;
+  }
+
+  @Override
+  public WaypointMeta build() {
     Preconditions.notNull(this.title, "Missing title");
     Preconditions.notNull(this.color, "Missing color");
     Preconditions.notNull(this.type, "Missing type");
     Preconditions.notNull(this.location, "Missing location");
 
-    return new DefaultWaypoint(new WaypointMeta(this.title, this.color, this.type, this.location));
+    return new WaypointMeta(this.title, this.color, this.type, this.location, this.visible,
+        this.world);
   }
 }

@@ -8,6 +8,8 @@ public interface Waypoint extends WorldObject {
 
   WaypointMeta meta();
 
+  WaypointObjectMeta waypointObjectMeta();
+
   default Component title() {
     return this.meta().getTitle();
   }

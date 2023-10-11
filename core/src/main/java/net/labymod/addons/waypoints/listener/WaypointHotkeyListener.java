@@ -39,7 +39,7 @@ public class WaypointHotkeyListener {
     WaypointsActivity activity = new WaypointsActivity(false);
 
     activity.setAction(Action.ADD);
-    activity.setModifier(waypoint -> waypoint.meta().setType(type));
+    activity.setModifier(meta -> meta.setType(type));
     activity.setManageTitle(Component.translatable("labyswaypoints.gui.create." + switch (type) {
       case PERMANENT -> "permanent";
       case SERVER_SESSION -> "temporary";

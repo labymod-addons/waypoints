@@ -1,7 +1,7 @@
-package net.labymod.addons.waypoints.activity;
+package net.labymod.addons.waypoints.activity.widgets;
 
-import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.WaypointTextures;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
@@ -14,26 +14,28 @@ import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 @AutoWidget
 public class WaypointWidget extends SimpleWidget {
 
-  private final Waypoint waypoint;
+  private final WaypointMeta meta;
+  private final IconWidget icon = new IconWidget(WaypointTextures.MARKER_ICON);
+  private final ComponentWidget title;
 
-  public WaypointWidget(Waypoint waypoint) {
-    this.waypoint = waypoint;
+  public WaypointWidget(WaypointMeta meta) {
+    this.meta = meta;
+    this.title = ComponentWidget.component(this.meta.getTitle());
+    this.title.addId("title");
   }
 
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    IconWidget avatar = new IconWidget(WaypointTextures.MARKER_ICON);
-    avatar.color().set(this.waypoint.color().get());
-    avatar.addId("avatar");
-    this.addChild(avatar);
+    this.title.textColor().set(this.meta.getColor().get());
+    this.addChild(this.title);
 
-    ComponentWidget title = ComponentWidget.component(this.waypoint.title());
-    title.addId("title");
-    this.addChild(title);
+    this.icon.color().set(this.meta.getColor().get());
+    this.icon.addId("icon");
+    this.addChild(icon);
 
-    if (this.waypoint.type() == WaypointType.SERVER_SESSION) {
+    if (this.meta.getType() == WaypointType.SERVER_SESSION) {
       IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
 
       typeWidget.addId("type");
@@ -41,9 +43,5 @@ public class WaypointWidget extends SimpleWidget {
 
       this.addChild(typeWidget);
     }
-  }
-
-  public Waypoint getWaypoint() {
-    return this.waypoint;
   }
 }

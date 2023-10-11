@@ -31,60 +31,91 @@
   }
 }
 
-Waypoint {
-  width: 100%;
-  height: 24;
-  padding: 1;
+Header {
+    width: 100%;
+    height: 24;
+    padding: 1;
+    border: 0 0 0 1 #2c2c2c;
 
-  .avatar {
-    left: 4;
-    top: 2;
-    width: 16;
-    height: width;
-    clickable: true;
-
-    margin-top: 2;
-  }
-
-  .title {
-    left: 22;
-    top: 50%;
-    alignment-y: center;
-  }
-
-  .type {
-    right: 5;
-    top: 50%;
-    alignment-y: center;
-
-    height: 80%;
-    width: height;
-  }
-
-  .custom-name {
-    left: 22;
-    top: 13;
-  }
-
-  &:selected {
-    padding: 0;
-    border: 1 gray;
-    background-color: black;
-  }
-
-  &.disabled {
-    .avatar {
-      opacity: 0.5;
+    .checkbox {
+        left: 4;
+        top: 2;
+        width: 16;
+        height: width;
+        clickable: true;
+        margin-top: 2;
     }
 
     .title {
-      opacity: 0.5;
+        left: 25;
+        top: 50%;
+        alignment-y: center;
+    }
+}
+
+Waypoint {
+    width: 100%;
+    height: 2;
+    padding: 1;
+
+    .icon {
+        left: 25;
+        height: 16;
+        width: 9;
+        top: 50%;
+        alignment-y: center;
     }
 
-    .custom-name {
-      opacity: 0.5;
+    .title {
+        left: 38;
+        top: 50%;
+        alignment-y: center;
     }
-  }
+
+    .type {
+        right: 5;
+        top: 50%;
+        alignment-y: center;
+
+        height: 80%;
+        width: height;
+    }
+}
+
+WaypointListItem {
+    width: 100%;
+    height: 24;
+    padding: 1;
+
+    .checkbox {
+        left: 4;
+        top: 2;
+        width: 16;
+        height: width;
+        clickable: true;
+        margin-top: 2;
+    }
+
+    .preview {
+        alignment-y: center;
+        height: 100%;
+    }
+
+    &:selected {
+        padding: 0;
+        border: 1 gray;
+        background-color: black;
+    }
+
+    &.disabled {
+        .avatar {
+            opacity: 0.5;
+        }
+
+        .title {
+            opacity: 0.5;
+        }
+    }
 }
 
 .overview-button-menu {
