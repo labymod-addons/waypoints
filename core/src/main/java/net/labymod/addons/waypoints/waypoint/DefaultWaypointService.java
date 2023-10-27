@@ -15,32 +15,82 @@ import net.labymod.api.models.Implements;
 public class DefaultWaypointService implements WaypointService {
 
   private final WorldObjectRegistry worldObjectRegistry;
-
-  private final Collection<Waypoint> waypoints;
-
+  private Collection<Waypoint> waypoints;
   private WaypointsAddon addon;
+  private Collection<Waypoint> visibleWaypoints;
+  private String actualWorld;
+  private String actualServer;
+  private byte actualDimension;
+  private boolean waypointsRenderCache = false;
 
   public DefaultWaypointService() {
     this.worldObjectRegistry = Laby.references().worldObjectRegistry();
 
     this.waypoints = new ArrayList<>();
+    this.visibleWaypoints = new ArrayList<>();
   }
 
   public void load(WaypointsAddon addon) {
     this.addon = addon;
 
+    Collection<Waypoint> newWaypoints = new ArrayList<>();
+
     for (WaypointMeta meta : this.addon.configuration().getWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
       Waypoint waypoint = new DefaultWaypoint(this.addon, meta, waypointObjectMeta);
 
-      this.waypoints.add(waypoint);
-      this.worldObjectRegistry.register(waypoint);
+      newWaypoints.add(waypoint);
     }
+
+    this.waypoints = newWaypoints;
   }
 
-  @Override
-  public Collection<Waypoint> getAllWaypoints() {
-    return this.waypoints;
+  public void refreshWaypoints() {
+    Collection<Waypoint> newWaypoints = new ArrayList<>();
+
+    try {
+      // When added to API Laby.references().integratedServer().getLocalWorld().folderName()
+      this.actualWorld = Laby.references().integratedServer().getLocalWorld().worldName();
+    } catch (NullPointerException e) {
+      this.actualWorld = null;
+    }
+
+    try {
+      this.actualServer = Laby.references().serverController().getCurrentServerData().address()
+          .toString();
+    } catch (NullPointerException e) {
+      this.actualServer = "SINGLEPLAYER";
+    }
+
+    try {
+      this.actualDimension = 0;
+      // When added to API Laby.labyAPI().minecraft().clientWorld().dimension()
+    } catch (NullPointerException e) {
+      this.actualDimension = 0;
+    }
+
+    for (Waypoint waypoint : this.waypoints) {
+      WaypointMeta meta = waypoint.meta();
+
+      this.removeWaypointFromRegistry(meta);
+
+      if (
+          meta.isVisible()
+              && (
+              meta.server() == null
+                  || (meta.server().equals("SINGLEPLAYER") && meta.world().equals(this.actualWorld))
+                  || (!meta.server().equals("SINGLEPLAYER") && meta.server()
+                  .equals(this.actualServer))
+          )
+              && meta.dimension() == this.actualDimension
+      ) {
+        newWaypoints.add(waypoint);
+        this.worldObjectRegistry.register(waypoint);
+      }
+    }
+
+    this.visibleWaypoints = newWaypoints;
+    this.setWaypointsRenderCache(false);
   }
 
   @Override
@@ -98,10 +148,46 @@ public class DefaultWaypointService implements WaypointService {
   @Override
   public Waypoint getWaypoint(WaypointMeta meta) {
     for (Waypoint waypoint : this.waypoints) {
-      if (waypoint.meta() == meta) {
+      if (waypoint.meta().equals(meta)) {
         return waypoint;
       }
     }
     return null;
+  }
+
+  @Override
+  public Collection<Waypoint> getAllWaypoints() {
+    return this.waypoints;
+  }
+
+  //*@code \
+  @Override
+  public Collection<Waypoint> getVisibleWaypoints() {
+    return this.visibleWaypoints;
+  }
+
+  @Override
+  public boolean isWaypointsRenderCache() {
+    return this.waypointsRenderCache;
+  }
+
+  @Override
+  public void setWaypointsRenderCache(boolean waypointsRenderCache) {
+    this.waypointsRenderCache = waypointsRenderCache;
+  }
+
+  @Override
+  public String getActualWorld() {
+    return this.actualWorld;
+  }
+
+  @Override
+  public String getActualServer() {
+    return this.actualServer;
+  }
+
+  @Override
+  public byte getActualDimension() {
+    return this.actualDimension;
   }
 }

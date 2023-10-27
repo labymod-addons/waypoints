@@ -49,6 +49,7 @@ public class RemoveContainer {
       this.waypointService.removeWaypoint(this.selectedWaypoint.getWaypointMeta());
       this.waypointList.listSession().setSelectedEntry(null);
       this.activity.setAction(null);
+      this.waypointService.refreshWaypoints();
     }));
 
     menu.addEntry(

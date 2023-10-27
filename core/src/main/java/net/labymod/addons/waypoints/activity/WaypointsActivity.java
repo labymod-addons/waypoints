@@ -100,7 +100,6 @@ public class WaypointsActivity extends Activity {
           if (!this.hasVisibleWaypoint()) {
             this.headerWidget.getCheckbox().setState(State.UNCHECKED);
           }
-          Waypoints.setWaypointsRenderCache(false);
         });
       }
 
@@ -153,7 +152,9 @@ public class WaypointsActivity extends Activity {
                 .type(WaypointType.PERMANENT)
                 .location(player != null ? player.eyePosition() : new FloatVector3(0F, 80F, 0F))
                 .visible(true)
-                .world(null)
+                .world(this.waypointService.getActualWorld())
+                .server(this.waypointService.getActualServer())
+                .dimension(this.waypointService.getActualDimension())
                 .build()
         );
 
@@ -193,12 +194,10 @@ public class WaypointsActivity extends Activity {
       waypointWidget.getWaypointMeta().setVisible(!oneEntryChecked);
       waypointWidget.opacity().set(oneEntryChecked ? 0.5F : 1F);
     }
-
-    Waypoints.setWaypointsRenderCache(false);
   }
 
   public boolean hasVisibleWaypoint() {
-    for (Waypoint waypoint : Waypoints.getReferences().waypointService().getAllWaypoints()) {
+    for (Waypoint waypoint : this.waypointService.getAllWaypoints()) {
       if (waypoint.meta().isVisible()) {
         return true;
       }

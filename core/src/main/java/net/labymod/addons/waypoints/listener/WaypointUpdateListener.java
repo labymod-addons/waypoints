@@ -1,5 +1,6 @@
 package net.labymod.addons.waypoints.listener;
 
+import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
@@ -17,11 +18,12 @@ public class WaypointUpdateListener {
   private static final float DEFAULT_SIZE = 1F;
   private static final float TARGET_DISTANCE = 110.0F;
   private final WaypointsAddon addon;
-
+  private final WaypointService waypointService;
   private boolean alwaysShowWaypoints;
 
   public WaypointUpdateListener(WaypointsAddon addon) {
     this.addon = addon;
+    this.waypointService = Waypoints.getReferences().waypointService();
     this.alwaysShowWaypoints = addon.configuration().alwaysShowWaypoints().get();
   }
 
@@ -35,23 +37,18 @@ public class WaypointUpdateListener {
 
     @NotNull FloatVector3 playerPosition = player.position();
 
-    for (Waypoint waypoint : Waypoints.getReferences().waypointService().getAllWaypoints()) {
+    for (Waypoint waypoint : this.waypointService.getVisibleWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
 
-      if (this.shouldRenderWaypoint(waypoint)) {
-        this.updateWaypoint(playerPosition, waypoint, waypointObjectMeta);
-      } else {
-        waypointObjectMeta.setScale(0F);
-      }
+      this.updateWaypoint(playerPosition, waypoint, waypointObjectMeta);
     }
 
-    if (!Waypoints.isWaypointsRenderCache()
-        && this.alwaysShowWaypoints == this.addon.configuration()
-        .alwaysShowWaypoints().get()) {
-      Waypoints.setWaypointsRenderCache(true);
+    if (!this.waypointService.isWaypointsRenderCache()
+        && this.alwaysShowWaypoints == this.addon.configuration().alwaysShowWaypoints().get()) {
+      this.waypointService.setWaypointsRenderCache(true);
     } else if (this.alwaysShowWaypoints != this.addon.configuration().alwaysShowWaypoints().get()) {
       this.alwaysShowWaypoints = this.addon.configuration().alwaysShowWaypoints().get();
-      Waypoints.setWaypointsRenderCache(false);
+      this.waypointService.setWaypointsRenderCache(false);
     }
   }
 
@@ -59,21 +56,16 @@ public class WaypointUpdateListener {
     return Laby.labyAPI().minecraft().isIngame() && player != null && event.phase() != Phase.POST;
   }
 
-  private boolean shouldRenderWaypoint(Waypoint waypoint) {
-    String world = waypoint.meta().getWorld();
-    return waypoint.meta().isVisible() && (world == null || world.equals("PLACEHOLDER"));
-  }
-
   private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,
       WaypointObjectMeta waypointObjectMeta) {
-    float deltaX = playerPosition.getX() - waypoint.meta().getLocation().getX();
-    float deltaY = playerPosition.getY() - waypoint.meta().getLocation().getY();
-    float deltaZ = playerPosition.getZ() - waypoint.meta().getLocation().getZ();
+    float deltaX = playerPosition.getX() - waypoint.meta().location().getX();
+    float deltaY = playerPosition.getY() - waypoint.meta().location().getY();
+    float deltaZ = playerPosition.getZ() - waypoint.meta().location().getZ();
 
     float distanceToPlayer = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 
     if (distanceToPlayer == waypointObjectMeta.getDistanceToPlayer()
-        && Waypoints.isWaypointsRenderCache()) {
+        && this.waypointService.isWaypointsRenderCache()) {
       return;
     }
 
@@ -82,7 +74,7 @@ public class WaypointUpdateListener {
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
         waypointObjectMeta.setScale(4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE);
-        waypointObjectMeta.getLocation().set(waypoint.meta().getLocation());
+        waypointObjectMeta.getLocation().set(waypoint.meta().location());
       } else {
         waypointObjectMeta.setScale(5F);
         float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
@@ -95,7 +87,7 @@ public class WaypointUpdateListener {
       }
     } else {
       waypointObjectMeta.setScale(DEFAULT_SIZE);
-      waypointObjectMeta.getLocation().set(waypoint.meta().getLocation());
+      waypointObjectMeta.getLocation().set(waypoint.meta().location());
     }
   }
 }

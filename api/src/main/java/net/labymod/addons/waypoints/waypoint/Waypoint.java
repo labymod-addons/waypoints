@@ -11,14 +11,14 @@ public interface Waypoint extends WorldObject {
   WaypointObjectMeta waypointObjectMeta();
 
   default Component title() {
-    return this.meta().getTitle();
+    return this.meta().title();
   }
 
   default Color color() {
-    return this.meta().getColor();
+    return this.meta().color();
   }
 
   default WaypointType type() {
-    return this.meta().getType();
+    return this.meta().type();
   }
 }

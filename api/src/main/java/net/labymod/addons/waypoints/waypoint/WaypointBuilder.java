@@ -25,6 +25,10 @@ public interface WaypointBuilder {
 
   WaypointBuilder world(String world);
 
+  WaypointBuilder server(String server);
+
+  WaypointBuilder dimension(byte dimension);
+
   WaypointMeta build();
 
 

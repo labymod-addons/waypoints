@@ -63,7 +63,7 @@ public class ManageContainer {
 
     TextFieldWidget nameInput = new TextFieldWidget();
     nameInput.addId("input-text");
-    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(meta.getTitle()));
+    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(meta.title()));
     nameInput.maximalLength(50);
     nameInput.updateListener(newValue -> doneButton.setEnabled(!newValue.trim().isEmpty()));
     nameLabelList.addChild(nameInput);
@@ -75,7 +75,7 @@ public class ManageContainer {
     colorLabelList.addChild(ComponentWidget.i18n("labyswaypoints.gui.manage.color"))
         .addId("input-label");
 
-    ColorPickerWidget colorPicker = ColorPickerWidget.of(meta.getColor());
+    ColorPickerWidget colorPicker = ColorPickerWidget.of(meta.color());
     colorPicker.addId("input-color");
     colorLabelList.addChild(colorPicker);
 
@@ -88,7 +88,7 @@ public class ManageContainer {
 
     TextFieldWidget xInput = new TextFieldWidget();
     xInput.addId("input-text");
-    xInput.setText(String.valueOf((int) meta.getLocation().getX()));
+    xInput.setText(String.valueOf((int) meta.location().getX()));
     xLabelList.addChild(xInput);
 
     this.inputWidget.addContent(xLabelList);
@@ -100,7 +100,7 @@ public class ManageContainer {
 
     TextFieldWidget yInput = new TextFieldWidget();
     yInput.addId("input-text");
-    yInput.setText(String.valueOf((int) meta.getLocation().getY()));
+    yInput.setText(String.valueOf((int) meta.location().getY()));
     yLabelList.addChild(yInput);
 
     this.inputWidget.addContent(yLabelList);
@@ -112,7 +112,7 @@ public class ManageContainer {
 
     TextFieldWidget zInput = new TextFieldWidget();
     zInput.addId("input-text");
-    zInput.setText(String.valueOf((int) meta.getLocation().getZ()));
+    zInput.setText(String.valueOf((int) meta.location().getZ()));
     zLabelList.addChild(zInput);
 
     this.inputWidget.addContent(zLabelList);
@@ -132,7 +132,9 @@ public class ManageContainer {
             Integer.parseInt(zInput.getText())
         ));
       } catch (NumberFormatException ignored) {
-        if (!permanent) return;
+        if (!permanent) {
+          return;
+        }
       }
 
       if (nameInput.getText().length() > 0) {
@@ -159,6 +161,7 @@ public class ManageContainer {
       }
 
       this.activity.setAction(null);
+      this.waypointService.refreshWaypoints();
     });
 
     buttonList.addEntry(doneButton);
