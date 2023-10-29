@@ -8,7 +8,7 @@ import net.labymod.api.util.math.vector.FloatVector3;
 public class WaypointObjectMeta {
 
   private final WaypointMeta meta;
-  private final FloatVector3 location;
+  private final FloatVector3 position;
   private float scale;
   private float distanceToPlayer;
   private Component cachedTitle;
@@ -16,13 +16,12 @@ public class WaypointObjectMeta {
   public WaypointObjectMeta(WaypointMeta meta) {
     this.scale = 0;
 
-    FloatVector3 waypointLocation = new FloatVector3(meta.location());
     this.meta = meta;
-    this.location = waypointLocation;
+    this.position = meta.location().copy();
   }
 
-  public FloatVector3 getLocation() {
-    return this.location;
+  public FloatVector3 position() {
+    return this.position;
   }
 
   public float getScale() {

@@ -101,7 +101,7 @@ public class DefaultWaypointService implements WaypointService {
 
     this.worldObjectRegistry.register(waypoint);
 
-    if (waypoint.type() == WaypointType.PERMANENT) {
+    if (waypoint.meta().type() == WaypointType.PERMANENT) {
       this.addon.configuration().getWaypoints().add(meta);
       this.addon.saveConfiguration();
     }

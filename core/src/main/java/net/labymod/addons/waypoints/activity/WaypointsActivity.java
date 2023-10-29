@@ -89,21 +89,15 @@ public class WaypointsActivity extends Activity {
         listItemWidgets.add(listItemWidget);
 
         listItemWidget.getCheckbox().setPressable(() -> {
-          listItemWidget.getWaypointMeta()
-              .setVisible(!listItemWidget.getWaypointMeta().isVisible());
-          listItemWidget.opacity().set(listItemWidget.getWaypointMeta().isVisible() ? 1F : 0.5F);
+        this.handleWaypointWidgetStyle(
+            listItemWidget, !listItemWidget.getWaypointMeta().isVisible()
+        );
 
-          if (listItemWidget.getCheckbox().state() == State.CHECKED) {
-            this.headerWidget.getCheckbox().setState(State.CHECKED);
-          }
-
-          if (!this.hasVisibleWaypoint()) {
-            this.headerWidget.getCheckbox().setState(State.UNCHECKED);
-          }
+          this.headerWidget.getCheckbox().setState(this.hasVisibleWaypoint() ? State.CHECKED :  State.UNCHECKED);
         });
       }
 
-      this.setWaypointWidgets(listItemWidgets);
+      this.waypointWidgets = listItemWidgets;
 
       container.addContent(this.headerWidget);
       container.addFlexibleContent(new ScrollWidget(this.waypointList));
@@ -181,28 +175,21 @@ public class WaypointsActivity extends Activity {
     this.document().addChild(manageContainer);
   }
 
-  public void setWaypointWidgets(ArrayList<WaypointListItemWidget> waypointWidgets) {
-    this.waypointWidgets = waypointWidgets;
-  }
-
-  public void handleWaypointWidgetStyle() {
-
-    boolean oneEntryChecked = this.hasVisibleWaypoint();
-
-    for (WaypointListItemWidget waypointWidget : this.waypointWidgets) {
-      waypointWidget.getCheckbox().setState(oneEntryChecked ? State.UNCHECKED : State.CHECKED);
-      waypointWidget.getWaypointMeta().setVisible(!oneEntryChecked);
-      waypointWidget.opacity().set(oneEntryChecked ? 0.5F : 1F);
-    }
+  public ArrayList<WaypointListItemWidget> getWaypointWidgets() {
+    return waypointWidgets;
   }
 
   public boolean hasVisibleWaypoint() {
     for (Waypoint waypoint : this.waypointService.getAllWaypoints()) {
-      if (waypoint.meta().isVisible()) {
-        return true;
-      }
+      if (waypoint.meta().isVisible()) return true;
     }
     return false;
+  }
+
+  public void handleWaypointWidgetStyle(WaypointListItemWidget waypointWidget, boolean visibility) {
+    waypointWidget.getWaypointMeta().setVisible(visibility);
+    waypointWidget.opacity().set(visibility ? 1F : 0.5F);
+    waypointWidget.getCheckbox().setState(visibility ? State.CHECKED : State.UNCHECKED);
   }
 
   @Override

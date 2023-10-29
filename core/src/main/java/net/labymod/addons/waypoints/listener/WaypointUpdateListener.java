@@ -29,6 +29,7 @@ public class WaypointUpdateListener {
 
   @Subscribe
   public void tick(GameRenderEvent event) {
+
     ClientPlayer player = Laby.labyAPI().minecraft().getClientPlayer();
 
     if (!this.shouldRenderWaypoints(event, player)) {
@@ -58,11 +59,14 @@ public class WaypointUpdateListener {
 
   private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,
       WaypointObjectMeta waypointObjectMeta) {
-    float deltaX = playerPosition.getX() - waypoint.meta().location().getX();
-    float deltaY = playerPosition.getY() - waypoint.meta().location().getY();
-    float deltaZ = playerPosition.getZ() - waypoint.meta().location().getZ();
 
-    float distanceToPlayer = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+    FloatVector3 distanceVector = new FloatVector3(
+      playerPosition.getX() - waypoint.meta().location().getX(),
+      playerPosition.getY() - waypoint.meta().location().getY(),
+      playerPosition.getZ() - waypoint.meta().location().getZ()
+    );
+
+    float distanceToPlayer = (float) distanceVector.length();
 
     if (distanceToPlayer == waypointObjectMeta.getDistanceToPlayer()
         && this.waypointService.isWaypointsRenderCache()) {
@@ -74,20 +78,22 @@ public class WaypointUpdateListener {
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
         waypointObjectMeta.setScale(4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE);
-        waypointObjectMeta.getLocation().set(waypoint.meta().location());
+        waypointObjectMeta.position().set(waypoint.meta().location());
       } else {
         waypointObjectMeta.setScale(5F);
         float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
 
-        float newX = playerPosition.getX() - (deltaX * normalizationFactor);
-        float newY = playerPosition.getY() - (deltaY * normalizationFactor);
-        float newZ = playerPosition.getZ() - (deltaZ * normalizationFactor);
+        FloatVector3 newPosition = new FloatVector3(
+            playerPosition.getX() - (distanceVector.getX() * normalizationFactor),
+            playerPosition.getY() - (distanceVector.getY() * normalizationFactor),
+            playerPosition.getZ() - (distanceVector.getZ() * normalizationFactor)
+        );
 
-        waypointObjectMeta.getLocation().set(new FloatVector3(newX, newY, newZ));
+        waypointObjectMeta.position().set(newPosition);
       }
     } else {
       waypointObjectMeta.setScale(DEFAULT_SIZE);
-      waypointObjectMeta.getLocation().set(waypoint.meta().location());
+      waypointObjectMeta.position().set(waypoint.meta().location());
     }
   }
 }
