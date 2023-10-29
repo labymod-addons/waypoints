@@ -20,7 +20,7 @@ public class DefaultWaypointService implements WaypointService {
   private Collection<Waypoint> visibleWaypoints;
   private String actualWorld;
   private String actualServer;
-  private byte actualDimension;
+  private String actualDimension;
   private boolean waypointsRenderCache = false;
 
   public DefaultWaypointService() {
@@ -49,8 +49,7 @@ public class DefaultWaypointService implements WaypointService {
     Collection<Waypoint> newWaypoints = new ArrayList<>();
 
     try {
-      // When added to API Laby.references().integratedServer().getLocalWorld().folderName()
-      this.actualWorld = Laby.references().integratedServer().getLocalWorld().worldName();
+      this.actualWorld = Laby.references().integratedServer().getLocalWorld().folderName();
     } catch (NullPointerException e) {
       this.actualWorld = null;
     }
@@ -60,13 +59,6 @@ public class DefaultWaypointService implements WaypointService {
           .toString();
     } catch (NullPointerException e) {
       this.actualServer = "SINGLEPLAYER";
-    }
-
-    try {
-      this.actualDimension = 0;
-      // When added to API Laby.labyAPI().minecraft().clientWorld().dimension()
-    } catch (NullPointerException e) {
-      this.actualDimension = 0;
     }
 
     for (Waypoint waypoint : this.waypoints) {
@@ -82,7 +74,7 @@ public class DefaultWaypointService implements WaypointService {
                   || (!meta.server().equals("SINGLEPLAYER") && meta.server()
                   .equals(this.actualServer))
           )
-              && meta.dimension() == this.actualDimension
+              && (meta.dimension() == null || meta.dimension().equals(this.actualDimension))
       ) {
         newWaypoints.add(waypoint);
         this.worldObjectRegistry.register(waypoint);
@@ -160,7 +152,6 @@ public class DefaultWaypointService implements WaypointService {
     return this.waypoints;
   }
 
-  //*@code \
   @Override
   public Collection<Waypoint> getVisibleWaypoints() {
     return this.visibleWaypoints;
@@ -177,17 +168,22 @@ public class DefaultWaypointService implements WaypointService {
   }
 
   @Override
-  public String getActualWorld() {
+  public String actualWorld() {
     return this.actualWorld;
   }
 
   @Override
-  public String getActualServer() {
+  public String actualServer() {
     return this.actualServer;
   }
 
   @Override
-  public byte getActualDimension() {
+  public String actualDimension() {
     return this.actualDimension;
+  }
+
+  @Override
+  public void setActualDimension(String dimension) {
+    this.actualDimension = dimension;
   }
 }

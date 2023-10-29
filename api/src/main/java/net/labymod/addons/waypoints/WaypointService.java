@@ -31,9 +31,11 @@ public interface WaypointService {
 
   void setWaypointsRenderCache(boolean waypointRenderCache);
 
-  String getActualWorld();
+  String actualWorld();
 
-  String getActualServer();
+  String actualServer();
 
-  byte getActualDimension();
+  String actualDimension();
+
+  void setActualDimension(String dimension);
 }

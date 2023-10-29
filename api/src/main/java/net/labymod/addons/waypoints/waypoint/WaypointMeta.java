@@ -11,7 +11,7 @@ public class WaypointMeta {
   @Nullable
   private final String world;
   private final String server;
-  private final byte dimension;
+  private final String dimension;
   private Component title;
   private Color color;
   private WaypointType type;
@@ -20,7 +20,7 @@ public class WaypointMeta {
 
 
   public WaypointMeta(Component title, Color color, WaypointType type, FloatVector3 location,
-      boolean visible, @Nullable String world, String server, byte dimension) {
+      boolean visible, @Nullable String world, String server, String dimension) {
     this.title = title;
     this.color = color;
     this.type = type;
@@ -81,7 +81,7 @@ public class WaypointMeta {
     return server;
   }
 
-  public byte dimension() {
+  public String dimension() {
     return dimension;
   }
 }

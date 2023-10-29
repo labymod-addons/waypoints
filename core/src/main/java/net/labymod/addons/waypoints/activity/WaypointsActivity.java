@@ -89,11 +89,12 @@ public class WaypointsActivity extends Activity {
         listItemWidgets.add(listItemWidget);
 
         listItemWidget.getCheckbox().setPressable(() -> {
-        this.handleWaypointWidgetStyle(
-            listItemWidget, !listItemWidget.getWaypointMeta().isVisible()
-        );
+          this.handleWaypointWidgetStyle(
+              listItemWidget, !listItemWidget.getWaypointMeta().isVisible()
+          );
 
-          this.headerWidget.getCheckbox().setState(this.hasVisibleWaypoint() ? State.CHECKED :  State.UNCHECKED);
+          this.headerWidget.getCheckbox()
+              .setState(this.hasVisibleWaypoint() ? State.CHECKED : State.UNCHECKED);
         });
       }
 
@@ -146,9 +147,9 @@ public class WaypointsActivity extends Activity {
                 .type(WaypointType.PERMANENT)
                 .location(player != null ? player.eyePosition() : new FloatVector3(0F, 80F, 0F))
                 .visible(true)
-                .world(this.waypointService.getActualWorld())
-                .server(this.waypointService.getActualServer())
-                .dimension(this.waypointService.getActualDimension())
+                .world(this.waypointService.actualWorld())
+                .server(this.waypointService.actualServer())
+                .dimension(this.waypointService.actualDimension())
                 .build()
         );
 
@@ -181,7 +182,9 @@ public class WaypointsActivity extends Activity {
 
   public boolean hasVisibleWaypoint() {
     for (Waypoint waypoint : this.waypointService.getAllWaypoints()) {
-      if (waypoint.meta().isVisible()) return true;
+      if (waypoint.meta().isVisible()) {
+        return true;
+      }
     }
     return false;
   }

@@ -61,9 +61,9 @@ public class WaypointUpdateListener {
       WaypointObjectMeta waypointObjectMeta) {
 
     FloatVector3 distanceVector = new FloatVector3(
-      playerPosition.getX() - waypoint.meta().location().getX(),
-      playerPosition.getY() - waypoint.meta().location().getY(),
-      playerPosition.getZ() - waypoint.meta().location().getZ()
+        playerPosition.getX() - waypoint.meta().location().getX(),
+        playerPosition.getY() - waypoint.meta().location().getY(),
+        playerPosition.getZ() - waypoint.meta().location().getZ()
     );
 
     float distanceToPlayer = (float) distanceVector.length();

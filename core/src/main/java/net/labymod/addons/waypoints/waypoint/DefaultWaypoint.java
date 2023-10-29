@@ -15,15 +15,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
-  private final WaypointObjectMeta waypointObjectMeta;
-  private final WaypointMeta meta;
-  private final WaypointsAddon addon;
-
   private static final RectangleRenderer RECTANGLE_RENDERER = Laby.labyAPI().renderPipeline()
       .rectangleRenderer();
   private static final ComponentRenderer COMPONENT_RENDERER = Laby.labyAPI().renderPipeline()
       .componentRenderer();
-
+  private final WaypointObjectMeta waypointObjectMeta;
+  private final WaypointMeta meta;
+  private final WaypointsAddon addon;
   private float marginBetweenTextAndIcon;
   private float icon_width;
   private float icon_height;
@@ -81,7 +79,8 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     this.marginBetweenTextAndIcon = this.icon_width == 0F ? 0F : 2F;
 
-    this.rectX = (COMPONENT_RENDERER.width(text) + this.icon_width + this.marginBetweenTextAndIcon) / 2;
+    this.rectX =
+        (COMPONENT_RENDERER.width(text) + this.icon_width + this.marginBetweenTextAndIcon) / 2;
     this.rectY = COMPONENT_RENDERER.height() / 2;
 
     if (!addon.configuration().background().get()) {

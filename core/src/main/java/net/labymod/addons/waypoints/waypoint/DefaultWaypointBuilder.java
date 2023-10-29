@@ -16,7 +16,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   private boolean visible;
   private String world;
   private String server;
-  private byte dimension;
+  private String dimension;
 
   @Override
   public WaypointBuilder title(Component title) {
@@ -61,7 +61,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   }
 
   @Override
-  public WaypointBuilder dimension(byte dimension) {
+  public WaypointBuilder dimension(String dimension) {
     this.dimension = dimension;
     return this;
   }
@@ -73,6 +73,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
     Preconditions.notNull(this.type, "Missing type");
     Preconditions.notNull(this.location, "Missing location");
     Preconditions.notNull(this.server, "Missing server");
+    Preconditions.notNull(this.dimension, "Missing dimension");
 
     return new WaypointMeta(this.title, this.color, this.type, this.location, this.visible,
         this.world, this.server, this.dimension);
