@@ -69,12 +69,12 @@ public class DefaultWaypointService implements WaypointService {
       if (
           meta.isVisible()
               && (
-              meta.server() == null
-                  || (meta.server().equals("SINGLEPLAYER") && meta.world().equals(this.actualWorld))
-                  || (!meta.server().equals("SINGLEPLAYER") && meta.server()
+              meta.getServer() == null
+                  || (meta.getServer().equals("SINGLEPLAYER") && meta.getWorld().equals(this.actualWorld))
+                  || (!meta.getServer().equals("SINGLEPLAYER") && meta.getServer()
                   .equals(this.actualServer))
           )
-              && (meta.dimension() == null || meta.dimension().equals(this.actualDimension))
+              && (meta.getDimension() == null || meta.getDimension().equals(this.actualDimension))
       ) {
         newWaypoints.add(waypoint);
         this.worldObjectRegistry.register(waypoint);
@@ -93,7 +93,7 @@ public class DefaultWaypointService implements WaypointService {
 
     this.worldObjectRegistry.register(waypoint);
 
-    if (waypoint.meta().type() == WaypointType.PERMANENT) {
+    if (waypoint.type() == WaypointType.PERMANENT) {
       this.addon.configuration().getWaypoints().add(meta);
       this.addon.saveConfiguration();
     }

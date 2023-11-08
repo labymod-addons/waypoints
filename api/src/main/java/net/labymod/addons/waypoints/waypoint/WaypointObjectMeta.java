@@ -17,7 +17,7 @@ public class WaypointObjectMeta {
     this.scale = 0;
 
     this.meta = meta;
-    this.position = meta.location().copy();
+    this.position = meta.getLocation().copy();
   }
 
   public FloatVector3 position() {
@@ -53,8 +53,8 @@ public class WaypointObjectMeta {
 
     int distanceToPlayer = Math.round(this.distanceToPlayer);
 
-    Component title = this.meta.title().copy();
-    title.color(TextColor.color(this.meta.color().get()));
+    Component title = this.meta.getTitle().copy();
+    title.color(TextColor.color(this.meta.getColor().get()));
 
     Component bracket1 = Component.text(" [");
     bracket1.color(TextColor.color(Colors.BRACKET_COLOR));

@@ -31,7 +31,7 @@ public class WaypointMeta {
     this.dimension = dimension;
   }
 
-  public Component title() {
+  public Component getTitle() {
     return this.title;
   }
 
@@ -39,7 +39,7 @@ public class WaypointMeta {
     this.title = title;
   }
 
-  public Color color() {
+  public Color getColor() {
     return this.color;
   }
 
@@ -47,7 +47,7 @@ public class WaypointMeta {
     this.color = color;
   }
 
-  public WaypointType type() {
+  public WaypointType getType() {
     return this.type;
   }
 
@@ -55,7 +55,7 @@ public class WaypointMeta {
     this.type = type;
   }
 
-  public FloatVector3 location() {
+  public FloatVector3 getLocation() {
     return this.location;
   }
 
@@ -73,15 +73,15 @@ public class WaypointMeta {
   }
 
   @Nullable
-  public String world() {
+  public String getWorld() {
     return this.world;
   }
 
-  public String server() {
+  public String getServer() {
     return server;
   }
 
-  public String dimension() {
+  public String getDimension() {
     return dimension;
   }
 }

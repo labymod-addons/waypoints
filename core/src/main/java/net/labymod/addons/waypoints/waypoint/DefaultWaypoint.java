@@ -115,7 +115,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
         this.icon_width,
         this.icon_height,
         false,
-        this.meta().color().get()
+        this.meta().getColor().get()
     );
   }
 

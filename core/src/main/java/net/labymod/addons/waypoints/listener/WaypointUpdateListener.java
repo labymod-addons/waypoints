@@ -60,13 +60,13 @@ public class WaypointUpdateListener {
   private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,
       WaypointObjectMeta waypointObjectMeta) {
 
-    FloatVector3 distanceVector = new FloatVector3(
-        playerPosition.getX() - waypoint.meta().location().getX(),
-        playerPosition.getY() - waypoint.meta().location().getY(),
-        playerPosition.getZ() - waypoint.meta().location().getZ()
+    FloatVector3 distanceVec = new FloatVector3(
+        playerPosition.getX() - waypoint.meta().getLocation().getX(),
+        playerPosition.getY() - waypoint.meta().getLocation().getY(),
+        playerPosition.getZ() - waypoint.meta().getLocation().getZ()
     );
 
-    float distanceToPlayer = (float) distanceVector.length();
+    float distanceToPlayer = (float) distanceVec.length();
 
     if (distanceToPlayer == waypointObjectMeta.getDistanceToPlayer()
         && this.waypointService.isWaypointsRenderCache()) {
@@ -78,22 +78,22 @@ public class WaypointUpdateListener {
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
         waypointObjectMeta.setScale(4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE);
-        waypointObjectMeta.position().set(waypoint.meta().location());
+        waypointObjectMeta.position().set(waypoint.meta().getLocation());
       } else {
         waypointObjectMeta.setScale(5F);
         float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
 
         FloatVector3 newPosition = new FloatVector3(
-            playerPosition.getX() - (distanceVector.getX() * normalizationFactor),
-            playerPosition.getY() - (distanceVector.getY() * normalizationFactor),
-            playerPosition.getZ() - (distanceVector.getZ() * normalizationFactor)
+            playerPosition.getX() - (distanceVec.getX() * normalizationFactor),
+            playerPosition.getY() - (distanceVec.getY() * normalizationFactor),
+            playerPosition.getZ() - (distanceVec.getZ() * normalizationFactor)
         );
 
         waypointObjectMeta.position().set(newPosition);
       }
     } else {
       waypointObjectMeta.setScale(DEFAULT_SIZE);
-      waypointObjectMeta.position().set(waypoint.meta().location());
+      waypointObjectMeta.position().set(waypoint.meta().getLocation());
     }
   }
 }

@@ -53,7 +53,7 @@ public class ServerWaypointListener {
 
   private void clearTemporaryWaypoints() {
     this.waypointService.removeWaypoints(
-        waypoint -> waypoint.meta().type() == WaypointType.SERVER_SESSION);
+        waypoint -> waypoint.type() == WaypointType.SERVER_SESSION);
     this.waypointService.setWaypointsRenderCache(true);
   }
 
