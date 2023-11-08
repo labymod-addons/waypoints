@@ -70,7 +70,8 @@ public class DefaultWaypointService implements WaypointService {
           meta.isVisible()
               && (
               meta.getServer() == null
-                  || (meta.getServer().equals("SINGLEPLAYER") && meta.getWorld().equals(this.actualWorld))
+                  || (meta.getServer().equals("SINGLEPLAYER") && meta.getWorld()
+                  .equals(this.actualWorld))
                   || (!meta.getServer().equals("SINGLEPLAYER") && meta.getServer()
                   .equals(this.actualServer))
           )
