@@ -11,7 +11,6 @@ import net.labymod.api.event.Phase;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.render.GameRenderEvent;
 import net.labymod.api.util.math.vector.FloatVector3;
-import org.jetbrains.annotations.NotNull;
 
 public class WaypointUpdateListener {
 
@@ -32,11 +31,11 @@ public class WaypointUpdateListener {
 
     ClientPlayer player = Laby.labyAPI().minecraft().getClientPlayer();
 
-    if (!this.shouldRenderWaypoints(event, player)) {
+    if (!this.shouldRenderWaypoints(event) || player == null) {
       return;
     }
 
-    @NotNull FloatVector3 playerPosition = player.position();
+    FloatVector3 playerPosition = player.position();
 
     for (Waypoint waypoint : this.waypointService.getVisibleWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
@@ -53,8 +52,8 @@ public class WaypointUpdateListener {
     }
   }
 
-  private boolean shouldRenderWaypoints(GameRenderEvent event, ClientPlayer player) {
-    return Laby.labyAPI().minecraft().isIngame() && player != null && event.phase() != Phase.POST;
+  private boolean shouldRenderWaypoints(GameRenderEvent event) {
+    return Laby.labyAPI().minecraft().isIngame() && event.phase() != Phase.POST;
   }
 
   private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,

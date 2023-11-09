@@ -2,13 +2,16 @@ package net.labymod.addons.waypoints.waypoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Predicate;
 import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.api.Laby;
+import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
 import net.labymod.api.models.Implements;
+import net.labymod.api.server.LocalWorld;
 
 @Singleton
 @Implements(WaypointService.class)
@@ -48,16 +51,18 @@ public class DefaultWaypointService implements WaypointService {
   public void refreshWaypoints() {
     Collection<Waypoint> newWaypoints = new ArrayList<>();
 
-    try {
-      this.actualWorld = Laby.references().integratedServer().getLocalWorld().folderName();
-    } catch (NullPointerException e) {
+    LocalWorld localWorld = Laby.references().integratedServer().getLocalWorld();
+    ServerData serverData = Laby.references().serverController().getCurrentServerData();
+
+    if(localWorld != null) {
+      this.actualWorld = localWorld.folderName();
+    } else {
       this.actualWorld = null;
     }
 
-    try {
-      this.actualServer = Laby.references().serverController().getCurrentServerData().address()
-          .toString();
-    } catch (NullPointerException e) {
+    if(serverData != null) {
+      this.actualServer = serverData.address().toString();
+    } else {
       this.actualServer = "SINGLEPLAYER";
     }
 
@@ -70,8 +75,8 @@ public class DefaultWaypointService implements WaypointService {
           meta.isVisible()
               && (
               meta.getServer() == null
-                  || (meta.getServer().equals("SINGLEPLAYER") && meta.getWorld()
-                  .equals(this.actualWorld))
+                  || (meta.getServer().equals("SINGLEPLAYER") && Objects.equals(meta.getWorld(),
+                  this.actualWorld))
                   || (!meta.getServer().equals("SINGLEPLAYER") && meta.getServer()
                   .equals(this.actualServer))
           )
