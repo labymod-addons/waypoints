@@ -3,6 +3,7 @@ package net.labymod.addons.waypoints.waypoint;
 import net.labymod.addons.waypoints.WaypointsAddon;
 import net.labymod.api.Laby;
 import net.labymod.api.client.gfx.GFXBridge;
+import net.labymod.api.client.gfx.color.GFXAlphaFunction;
 import net.labymod.api.client.render.matrix.Stack;
 import net.labymod.api.client.world.MinecraftCamera;
 import net.labymod.api.client.world.object.AbstractWorldObject;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
+  private static final float BACKGROUND_DEPTH = 0.01F;
   private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
   private final WaypointsAddon addon;
@@ -41,20 +43,20 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     stack.push();
 
     GFXBridge gfx = Laby.gfx();
-    gfx.storeBlaze3DStates();
 
     stack.scale(0.04F * this.waypointObjectMeta.getScale());
 
     this.rotateHorizontally(cam, stack);
     this.rotateVertically(cam, stack);
 
-    gfx.depthMask(false);
-
+    stack.push();
+    stack.translate(0, 0, BACKGROUND_DEPTH);
+    gfx.depthFunc(GFXAlphaFunction.NEVER);
     WaypointRenderer.renderBackground(this.addon, this, stack);
+    gfx.depthFunc(GFXAlphaFunction.LEQUAL);
+    stack.pop();
     WaypointRenderer.renderIcon(this.addon, this.color().get(), stack);
     WaypointRenderer.renderText(this, stack);
-
-    gfx.restoreBlaze3DStates();
 
     stack.pop();
   }
