@@ -19,6 +19,7 @@ public class HeaderWidget extends SimpleWidget {
   public HeaderWidget(WaypointsActivity activity) {
     this.checkbox = new CheckBoxWidget();
     this.activity = activity;
+
     this.title = ComponentWidget.component(Component.text("Name"));
     this.title.addId("title");
   }
@@ -27,15 +28,20 @@ public class HeaderWidget extends SimpleWidget {
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    this.checkbox.setState(
-        this.activity.hasVisibleWaypoint() ? State.CHECKED : State.UNCHECKED);
-
-    this.checkbox.setPressable(() -> activity.handleWaypointWidgetStyle());
-
+    this.checkbox.setState(this.activity.hasVisibleWaypoint() ? State.CHECKED : State.UNCHECKED);
+    this.checkbox.setPressable(() -> this.handleWaypointWidgetStyle());
     this.checkbox.addId("checkbox");
 
     this.addChild(this.checkbox);
     this.addChild(this.title);
+  }
+
+  public void handleWaypointWidgetStyle() {
+    for (WaypointListItemWidget waypointWidget : this.activity.getWaypointWidgets()) {
+      this.activity.handleWaypointWidgetStyle(
+          waypointWidget, this.checkbox.state() == State.CHECKED
+      );
+    }
   }
 
   public CheckBoxWidget getCheckbox() {

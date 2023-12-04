@@ -9,7 +9,7 @@ import net.labymod.api.reference.annotation.Referenceable;
 @Referenceable
 public interface WaypointService {
 
-  Collection<Waypoint> getAllWaypoints();
+  void refreshWaypoints();
 
   void addWaypoint(WaypointMeta meta);
 
@@ -22,4 +22,20 @@ public interface WaypointService {
   void removeWaypoints(Predicate<Waypoint> predicate);
 
   Waypoint getWaypoint(WaypointMeta meta);
+
+  Collection<Waypoint> getAllWaypoints();
+
+  Collection<Waypoint> getVisibleWaypoints();
+
+  boolean isWaypointsRenderCache();
+
+  void setWaypointsRenderCache(boolean waypointRenderCache);
+
+  String actualWorld();
+
+  String actualServer();
+
+  String actualDimension();
+
+  void setActualDimension(String dimension);
 }

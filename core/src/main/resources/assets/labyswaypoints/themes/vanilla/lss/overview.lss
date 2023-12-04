@@ -120,7 +120,7 @@ WaypointListItem {
 
 .overview-button-menu {
   width: 90%;
-  height: 20;
+  height: 30;
   left: 50%;
   alignment-x: center;
   bottom: 5;

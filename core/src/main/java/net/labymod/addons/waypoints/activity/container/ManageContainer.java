@@ -132,7 +132,9 @@ public class ManageContainer {
             Integer.parseInt(zInput.getText())
         ));
       } catch (NumberFormatException ignored) {
-        if (!permanent) return;
+        if (!permanent) {
+          return;
+        }
       }
 
       if (nameInput.getText().length() > 0) {
@@ -159,6 +161,7 @@ public class ManageContainer {
       }
 
       this.activity.setAction(null);
+      this.waypointService.refreshWaypoints();
     });
 
     buttonList.addEntry(doneButton);
