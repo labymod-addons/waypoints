@@ -6,6 +6,7 @@ import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.GFXBridge;
+import net.labymod.api.client.gfx.color.GFXAlphaFunction;
 import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
+  private static final float BACKGROUND_DEPTH = 0.01F;
   private static final RectangleRenderer RECTANGLE_RENDERER = Laby.labyAPI().renderPipeline()
       .rectangleRenderer();
   private static final ComponentRenderer COMPONENT_RENDERER = Laby.labyAPI().renderPipeline()
@@ -55,20 +57,23 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     stack.push();
 
     GFXBridge gfx = Laby.gfx();
-    gfx.storeBlaze3DStates();
 
     stack.scale(0.04F * this.waypointObjectMeta.getScale());
 
     this.rotateHorizontally(cam, stack);
     this.rotateVertically(cam, stack);
 
-    gfx.depthMask(false);
+    stack.push();
+    stack.translate(0, 0, BACKGROUND_DEPTH);
+    gfx.depthFunc(GFXAlphaFunction.NEVER);
 
     this.renderBackground(stack, 2F);
+
+    gfx.depthFunc(GFXAlphaFunction.LEQUAL);
+    stack.pop();
+
     this.renderIcon(stack);
     this.renderText(stack);
-
-    gfx.restoreBlaze3DStates();
 
     stack.pop();
   }
