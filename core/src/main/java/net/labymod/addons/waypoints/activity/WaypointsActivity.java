@@ -149,7 +149,8 @@ public class WaypointsActivity extends Activity {
                 .visible(true)
                 .world(this.waypointService.actualWorld())
                 .server(this.waypointService.actualServer())
-                .dimension(this.waypointService.actualDimension())
+                .dimension(this.waypointService.actualDimension() != null
+                    ? this.waypointService.actualDimension() : "labymod:unknown")
                 .build()
         );
 
