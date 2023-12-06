@@ -22,22 +22,29 @@ public class ServerWaypointListener {
 
   @Subscribe
   public void reloadWaypoints(ServerJoinEvent event) {
-    this.reloadWaypoints();
+    this.waypointService.setActualDimension(
+        Laby.labyAPI().minecraft().clientWorld().dimension().toString());
+    this.waypointService.refreshWaypoints();
   }
 
   @Subscribe
   public void reloadWaypoints(WorldEnterEvent event) {
-    this.reloadWaypoints();
+    this.waypointService.setActualDimension(
+        Laby.labyAPI().minecraft().clientWorld().dimension().toString());
+    this.waypointService.refreshWaypoints();
   }
 
   @Subscribe
   public void reloadWaypoints(DimensionChangeEvent event) {
-    this.reloadWaypoints();
+    this.waypointService.setActualDimension(event.toDimension().toString());
+    this.waypointService.refreshWaypoints();
   }
 
   @Subscribe
   public void reloadWaypoints(SubServerSwitchEvent event) {
-    this.reloadWaypoints();
+    this.waypointService.setActualDimension(
+        Laby.labyAPI().minecraft().clientWorld().dimension().toString());
+    this.waypointService.refreshWaypoints();
   }
 
   @Subscribe
@@ -55,11 +62,5 @@ public class ServerWaypointListener {
     this.waypointService.removeWaypoints(
         waypoint -> waypoint.type() == WaypointType.SERVER_SESSION);
     this.waypointService.setWaypointsRenderCache(true);
-  }
-
-  private void reloadWaypoints() {
-    this.waypointService.setActualDimension(
-        Laby.labyAPI().minecraft().clientWorld().dimension().toString());
-    this.waypointService.refreshWaypoints();
   }
 }
