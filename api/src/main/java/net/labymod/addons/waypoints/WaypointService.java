@@ -9,6 +9,8 @@ import net.labymod.api.reference.annotation.Referenceable;
 @Referenceable
 public interface WaypointService {
 
+  String SINGLELAYER_SERVER = "SINGLEPLAYER";
+
   void refreshWaypoints();
 
   void addWaypoint(WaypointMeta meta);

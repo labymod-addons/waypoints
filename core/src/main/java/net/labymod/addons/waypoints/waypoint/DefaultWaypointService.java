@@ -54,16 +54,16 @@ public class DefaultWaypointService implements WaypointService {
     LocalWorld localWorld = Laby.references().integratedServer().getLocalWorld();
     ServerData serverData = Laby.references().serverController().getCurrentServerData();
 
-    if(localWorld != null) {
+    if (localWorld != null) {
       this.actualWorld = localWorld.folderName();
     } else {
       this.actualWorld = null;
     }
 
-    if(serverData != null) {
+    if (serverData != null) {
       this.actualServer = serverData.address().toString();
     } else {
-      this.actualServer = "SINGLEPLAYER";
+      this.actualServer = SINGLELAYER_SERVER;
     }
 
     for (Waypoint waypoint : this.waypoints) {
@@ -71,15 +71,14 @@ public class DefaultWaypointService implements WaypointService {
 
       this.removeWaypointFromRegistry(meta);
 
+      boolean singlePlayer = meta.getServer().equals(SINGLELAYER_SERVER);
       if (
           meta.isVisible()
-              && (
-              meta.getServer() == null
-                  || (meta.getServer().equals("SINGLEPLAYER") && Objects.equals(meta.getWorld(),
-                  this.actualWorld))
-                  || (!meta.getServer().equals("SINGLEPLAYER") && meta.getServer()
-                  .equals(this.actualServer))
-          )
+              &&
+              (meta.getServer() == null
+                  || (singlePlayer && Objects.equals(meta.getWorld(), this.actualWorld))
+                  || (!singlePlayer && meta.getServer().equals(this.actualServer))
+              )
               && (meta.getDimension() == null || meta.getDimension().equals(this.actualDimension))
       ) {
         newWaypoints.add(waypoint);

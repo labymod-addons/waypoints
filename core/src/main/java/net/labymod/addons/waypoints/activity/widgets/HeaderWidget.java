@@ -20,7 +20,7 @@ public class HeaderWidget extends SimpleWidget {
     this.checkbox = new CheckBoxWidget();
     this.activity = activity;
 
-    this.title = ComponentWidget.component(Component.text("Name"));
+    this.title = ComponentWidget.component(Component.translatable("labyswaypoints.gui.showWaypoints"));
     this.title.addId("title");
   }
 

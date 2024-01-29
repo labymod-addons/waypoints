@@ -18,9 +18,16 @@ public class WaypointMeta {
   private FloatVector3 location;
   private boolean visible;
 
-
-  public WaypointMeta(Component title, Color color, WaypointType type, FloatVector3 location,
-      boolean visible, @Nullable String world, String server, String dimension) {
+  public WaypointMeta(
+      Component title,
+      Color color,
+      WaypointType type,
+      FloatVector3 location,
+      boolean visible,
+      @Nullable String world,
+      String server,
+      String dimension
+  ) {
     this.title = title;
     this.color = color;
     this.type = type;
@@ -68,8 +75,10 @@ public class WaypointMeta {
   }
 
   public void setVisible(boolean visible) {
-    this.visible = visible;
-    Waypoints.getReferences().waypointService().refreshWaypoints();
+    if (this.visible != visible) {
+      this.visible = visible;
+      Waypoints.getReferences().waypointService().refreshWaypoints();
+    }
   }
 
   @Nullable

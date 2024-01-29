@@ -18,17 +18,18 @@ public class WaypointUpdateListener {
   private static final float TARGET_DISTANCE = 110.0F;
   private final WaypointsAddon addon;
   private final WaypointService waypointService;
-  private boolean alwaysShowWaypoints;
 
   public WaypointUpdateListener(WaypointsAddon addon) {
     this.addon = addon;
     this.waypointService = Waypoints.getReferences().waypointService();
-    this.alwaysShowWaypoints = addon.configuration().alwaysShowWaypoints().get();
+
+    this.addon.configuration().alwaysShowWaypoints().addChangeListener(
+        value -> this.waypointService.setWaypointsRenderCache(false)
+    );
   }
 
   @Subscribe
-  public void tick(GameRenderEvent event) {
-
+  public void onGameRender(GameRenderEvent event) {
     ClientPlayer player = Laby.labyAPI().minecraft().getClientPlayer();
 
     if (!this.shouldRenderWaypoints(event) || player == null) {
@@ -43,21 +44,18 @@ public class WaypointUpdateListener {
       this.updateWaypoint(playerPosition, waypoint, waypointObjectMeta);
     }
 
-    if (!this.waypointService.isWaypointsRenderCache()
-        && this.alwaysShowWaypoints == this.addon.configuration().alwaysShowWaypoints().get()) {
-      this.waypointService.setWaypointsRenderCache(true);
-    } else if (this.alwaysShowWaypoints != this.addon.configuration().alwaysShowWaypoints().get()) {
-      this.alwaysShowWaypoints = this.addon.configuration().alwaysShowWaypoints().get();
-      this.waypointService.setWaypointsRenderCache(false);
-    }
+    this.waypointService.setWaypointsRenderCache(true);
   }
 
   private boolean shouldRenderWaypoints(GameRenderEvent event) {
     return Laby.labyAPI().minecraft().isIngame() && event.phase() != Phase.POST;
   }
 
-  private void updateWaypoint(FloatVector3 playerPosition, Waypoint waypoint,
-      WaypointObjectMeta waypointObjectMeta) {
+  private void updateWaypoint(
+      FloatVector3 playerPosition,
+      Waypoint waypoint,
+      WaypointObjectMeta waypointObjectMeta
+  ) {
 
     FloatVector3 distanceVec = new FloatVector3(
         playerPosition.getX() - waypoint.meta().getLocation().getX(),
@@ -73,6 +71,7 @@ public class WaypointUpdateListener {
     }
 
     waypointObjectMeta.setDistanceToPlayer(distanceToPlayer);
+    waypointObjectMeta.setOutOfRange(false);
 
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
@@ -91,6 +90,7 @@ public class WaypointUpdateListener {
         waypointObjectMeta.position().set(newPosition);
       }
     } else {
+      waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
       waypointObjectMeta.setScale(DEFAULT_SIZE);
       waypointObjectMeta.position().set(waypoint.meta().getLocation());
     }

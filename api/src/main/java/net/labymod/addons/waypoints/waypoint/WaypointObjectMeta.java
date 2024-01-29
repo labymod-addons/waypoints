@@ -11,6 +11,7 @@ public class WaypointObjectMeta {
   private final FloatVector3 position;
   private float scale;
   private float distanceToPlayer;
+  private boolean outOfRange;
   private Component cachedTitle;
 
   public WaypointObjectMeta(WaypointMeta meta) {
@@ -39,6 +40,14 @@ public class WaypointObjectMeta {
   public void setDistanceToPlayer(float distanceToPlayer) {
     this.clearTitleCache();
     this.distanceToPlayer = distanceToPlayer;
+  }
+
+  public boolean isOutOfRange() {
+    return this.outOfRange;
+  }
+
+  public void setOutOfRange(boolean outOfRange) {
+    this.outOfRange = outOfRange;
   }
 
   public void clearTitleCache() {
