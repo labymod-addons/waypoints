@@ -71,7 +71,7 @@ public class DefaultWaypointService implements WaypointService {
 
       this.removeWaypointFromRegistry(meta);
 
-      boolean singlePlayer = meta.getServer().equals(SINGLELAYER_SERVER);
+      boolean singlePlayer = SINGLELAYER_SERVER.equals(waypoint.meta().getServer());
       if (
           meta.isVisible()
               &&
