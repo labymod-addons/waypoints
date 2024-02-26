@@ -18,7 +18,8 @@ import net.labymod.api.util.MethodOrder;
 public class WaypointsConfiguration extends AddonConfig {
 
   @SwitchSetting
-  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true);
+  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true)
+      .addChangeListener(value -> Waypoints.refresh());
 
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> permanentHotkey = new ConfigProperty<>(Key.M);

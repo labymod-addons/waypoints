@@ -18,4 +18,19 @@ public class Waypoints {
 
     Waypoints.references = references;
   }
+
+
+  public static void refresh() {
+    ReferenceStorage references = getReferences();
+    if (references == null) {
+      return;
+    }
+
+    WaypointService waypointService = references.waypointService();
+    if (waypointService == null) {
+      return;
+    }
+
+    waypointService.refreshWaypoints();
+  }
 }
