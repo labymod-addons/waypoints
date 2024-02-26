@@ -77,7 +77,7 @@ public class WaypointMeta {
   public void setVisible(boolean visible) {
     if (this.visible != visible) {
       this.visible = visible;
-      Waypoints.getReferences().waypointService().refreshWaypoints();
+      Waypoints.refresh();
     }
   }
 

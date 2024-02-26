@@ -46,6 +46,7 @@ public class DefaultWaypointService implements WaypointService {
     }
 
     this.waypoints = newWaypoints;
+    this.refreshWaypoints();
   }
 
   public void refreshWaypoints() {
