@@ -31,6 +31,10 @@
         "name": "Waypoints Always Visible",
         "description": "Waypoints will be visible, even if they are far away."
       },
+      "showHudIndicators": {
+        "name": "Show Waypoint HUD indicators",
+        "description": "Indicators for Waypoints behind the player will be displayed in the HUD."
+      },
       "openWaypoints": {
         "name": "Waypoints"
       }

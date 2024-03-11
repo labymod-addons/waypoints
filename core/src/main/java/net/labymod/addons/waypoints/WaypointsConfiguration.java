@@ -33,12 +33,15 @@ public class WaypointsConfiguration extends AddonConfig {
 
   @SwitchSetting
   private final ConfigProperty<Boolean> icon = new ConfigProperty<>(true);
+
   @SwitchSetting
   private final ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(false);
 
+  @SwitchSetting
+  private final ConfigProperty<Boolean> showHudIndicators = new ConfigProperty<>(true);
+
   @Exclude
   private final Collection<WaypointMeta> waypoints = new ArrayList<>();
-
 
   @Override
   public ConfigProperty<Boolean> enabled() {
@@ -65,9 +68,13 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.alwaysShowWaypoints;
   }
 
+  public ConfigProperty<Boolean> showHudIndicators() {
+    return this.showHudIndicators;
+  }
+
   @SettingSection("Waypoints")
   @ActivitySetting
-  @MethodOrder(after = "alwaysShowWaypoints")
+  @MethodOrder(after = "showHudIndicators")
   public Activity openWaypoints() {
     return new WaypointsActivity(true);
   }
