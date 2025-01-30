@@ -6,7 +6,7 @@ import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.GFXBridge;
-import net.labymod.api.client.gfx.color.GFXAlphaFunction;
+import net.labymod.api.client.gfx.GlConst;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
@@ -93,11 +93,11 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     stack.push();
     stack.translate(0, 0, BACKGROUND_DEPTH);
-    gfx.depthFunc(GFXAlphaFunction.NEVER);
+    gfx.depthFunc(GlConst.GL_NEVER);
 
     this.renderBackground(stack, 2F);
 
-    gfx.depthFunc(GFXAlphaFunction.LEQUAL);
+    gfx.depthFunc(GlConst.GL_LEQUAL);
     stack.pop();
 
     this.renderIcon(stack);
