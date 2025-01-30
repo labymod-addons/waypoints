@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.event.RefreshWaypointsEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
@@ -89,6 +90,7 @@ public class DefaultWaypointService implements WaypointService {
 
     this.visibleWaypoints = newWaypoints;
     this.setWaypointsRenderCache(false);
+    Laby.fireEvent(new RefreshWaypointsEvent());
   }
 
   @Override
