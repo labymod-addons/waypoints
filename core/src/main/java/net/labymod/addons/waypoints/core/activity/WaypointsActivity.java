@@ -1,13 +1,13 @@
-package net.labymod.addons.waypoints.activity;
+package net.labymod.addons.waypoints.core.activity;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
-import net.labymod.addons.waypoints.activity.container.ManageContainer;
-import net.labymod.addons.waypoints.activity.container.RemoveContainer;
-import net.labymod.addons.waypoints.activity.widgets.HeaderWidget;
-import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
+import net.labymod.addons.waypoints.core.activity.container.ManageContainer;
+import net.labymod.addons.waypoints.core.activity.container.RemoveContainer;
+import net.labymod.addons.waypoints.core.activity.widgets.HeaderWidget;
+import net.labymod.addons.waypoints.core.activity.widgets.WaypointListItemWidget;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
@@ -55,7 +55,7 @@ public class WaypointsActivity extends Activity {
 
   public WaypointsActivity(boolean overview) {
     this.overview = overview;
-    this.waypointService = Waypoints.getReferences().waypointService();
+    this.waypointService = Waypoints.references().waypointService();
 
     this.waypointList = new VerticalListWidget<>();
     this.waypointWidgets = new ArrayList<>();
@@ -178,7 +178,7 @@ public class WaypointsActivity extends Activity {
   }
 
   public ArrayList<WaypointListItemWidget> getWaypointWidgets() {
-    return waypointWidgets;
+    return this.waypointWidgets;
   }
 
   public boolean hasVisibleWaypoint() {

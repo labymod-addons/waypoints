@@ -10,7 +10,7 @@ import net.labymod.api.util.math.vector.FloatVector3;
 public interface WaypointBuilder {
 
   static WaypointBuilder newBuilder() {
-    return Waypoints.getReferences().waypointBuilder();
+    return Waypoints.references().waypointBuilder();
   }
 
   WaypointBuilder title(Component title);

@@ -1,5 +1,8 @@
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.core.waypoint;
 
+import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.models.Implements;
 import net.labymod.api.util.Color;

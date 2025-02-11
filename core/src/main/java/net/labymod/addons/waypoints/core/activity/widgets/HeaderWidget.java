@@ -1,6 +1,6 @@
-package net.labymod.addons.waypoints.activity.widgets;
+package net.labymod.addons.waypoints.core.activity.widgets;
 
-import net.labymod.addons.waypoints.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;

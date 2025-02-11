@@ -1,4 +1,4 @@
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.core.waypoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,8 +6,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
-import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.event.RefreshWaypointsEvent;
+import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.world.object.WorldObjectRegistry;

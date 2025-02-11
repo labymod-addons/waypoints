@@ -1,4 +1,4 @@
-package net.labymod.addons.waypoints.activity.widgets;
+package net.labymod.addons.waypoints.core.activity.widgets;
 
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;

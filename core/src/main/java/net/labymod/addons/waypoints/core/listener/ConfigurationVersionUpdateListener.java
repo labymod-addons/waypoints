@@ -1,8 +1,8 @@
-package net.labymod.addons.waypoints.listener;
+package net.labymod.addons.waypoints.core.listener;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.labymod.addons.waypoints.WaypointsConfiguration;
+import net.labymod.addons.waypoints.core.WaypointsConfiguration;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.labymod.config.ConfigurationVersionUpdateEvent;
 

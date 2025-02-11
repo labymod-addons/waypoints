@@ -1,8 +1,11 @@
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.core.waypoint;
 
 import net.labymod.addons.waypoints.WaypointTextures;
-import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.utils.Colors;
+import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.GFXBridge;

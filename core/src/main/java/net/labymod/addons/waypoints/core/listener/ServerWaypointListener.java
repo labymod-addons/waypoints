@@ -1,4 +1,4 @@
-package net.labymod.addons.waypoints.listener;
+package net.labymod.addons.waypoints.core.listener;
 
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
@@ -17,7 +17,7 @@ public class ServerWaypointListener {
   private final WaypointService waypointService;
 
   public ServerWaypointListener() {
-    this.waypointService = Waypoints.getReferences().waypointService();
+    this.waypointService = Waypoints.references().waypointService();
   }
 
   @Subscribe

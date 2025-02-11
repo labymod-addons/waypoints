@@ -1,4 +1,4 @@
-package net.labymod.addons.waypoints.activity.widgets;
+package net.labymod.addons.waypoints.core.activity.widgets;
 
 import net.labymod.addons.waypoints.WaypointTextures;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
@@ -33,7 +33,7 @@ public class WaypointWidget extends SimpleWidget {
 
     this.icon.color().set(this.meta.getColor().get());
     this.icon.addId("icon");
-    this.addChild(icon);
+    this.addChild(this.icon);
 
     if (this.meta.getType() == WaypointType.SERVER_SESSION) {
       IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);

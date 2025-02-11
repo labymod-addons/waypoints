@@ -1,10 +1,10 @@
-package net.labymod.addons.waypoints.activity.container;
+package net.labymod.addons.waypoints.core.activity.container;
 
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
-import net.labymod.addons.waypoints.activity.WaypointsActivity;
-import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
-import net.labymod.addons.waypoints.activity.widgets.WaypointWidget;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.core.activity.widgets.WaypointListItemWidget;
+import net.labymod.addons.waypoints.core.activity.widgets.WaypointWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.ButtonWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
@@ -26,7 +26,7 @@ public class RemoveContainer {
     this.selectedWaypoint = selectedWaypoint;
     this.waypointList = waypointList;
     this.inputWidget = inputWidget;
-    this.waypointService = Waypoints.getReferences().waypointService();
+    this.waypointService = Waypoints.references().waypointService();
     this.activity = activity;
   }
 

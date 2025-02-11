@@ -1,8 +1,9 @@
-package net.labymod.addons.waypoints;
+package net.labymod.addons.waypoints.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import net.labymod.addons.waypoints.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.api.addon.AddonConfig;
 import net.labymod.api.client.gui.screen.activity.Activity;

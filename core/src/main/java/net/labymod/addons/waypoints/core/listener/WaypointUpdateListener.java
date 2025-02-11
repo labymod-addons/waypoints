@@ -1,8 +1,8 @@
-package net.labymod.addons.waypoints.listener;
+package net.labymod.addons.waypoints.core.listener;
 
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
-import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
@@ -21,7 +21,7 @@ public class WaypointUpdateListener {
 
   public WaypointUpdateListener(WaypointsAddon addon) {
     this.addon = addon;
-    this.waypointService = Waypoints.getReferences().waypointService();
+    this.waypointService = Waypoints.references().waypointService();
 
     this.addon.configuration().alwaysShowWaypoints().addChangeListener(
         value -> this.waypointService.setWaypointsRenderCache(false)

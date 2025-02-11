@@ -1,9 +1,9 @@
-package net.labymod.addons.waypoints.listener;
+package net.labymod.addons.waypoints.core.listener;
 
-import net.labymod.addons.waypoints.WaypointsAddon;
-import net.labymod.addons.waypoints.WaypointsConfiguration;
-import net.labymod.addons.waypoints.activity.WaypointsActivity;
-import net.labymod.addons.waypoints.activity.WaypointsActivity.Action;
+import net.labymod.addons.waypoints.core.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsConfiguration;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity.Action;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;

@@ -1,6 +1,7 @@
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.core.waypoint;
 
 import net.labymod.addons.waypoints.WaypointTextures;
+import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 import net.labymod.api.util.bounds.ModifyReason;

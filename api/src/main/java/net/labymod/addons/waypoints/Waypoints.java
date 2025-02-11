@@ -1,13 +1,19 @@
 package net.labymod.addons.waypoints;
 
 import net.labymod.addons.waypoints.api.generated.ReferenceStorage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 public class Waypoints {
 
   private static ReferenceStorage references;
 
-  public static ReferenceStorage getReferences() {
+  public static @NotNull ReferenceStorage references() {
+    if (references == null) {
+      throw new IllegalStateException("Waypoints is not initialized yet");
+    }
+
     return Waypoints.references;
   }
 
@@ -19,18 +25,15 @@ public class Waypoints {
     Waypoints.references = references;
   }
 
-
   public static void refresh() {
-    ReferenceStorage references = getReferences();
-    if (references == null) {
-      return;
-    }
+    references().waypointService().refreshWaypoints();
+  }
 
-    WaypointService waypointService = references.waypointService();
-    if (waypointService == null) {
-      return;
-    }
-
-    waypointService.refreshWaypoints();
+  /**
+   * @deprecated Use {@link #references()} instead
+   */
+  @Deprecated
+  public static @Nullable ReferenceStorage getReferences() {
+    return Waypoints.references;
   }
 }

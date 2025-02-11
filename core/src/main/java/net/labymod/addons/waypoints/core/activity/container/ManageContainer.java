@@ -1,10 +1,10 @@
-package net.labymod.addons.waypoints.activity.container;
+package net.labymod.addons.waypoints.core.activity.container;
 
 import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
-import net.labymod.addons.waypoints.activity.WaypointsActivity;
-import net.labymod.addons.waypoints.activity.widgets.WaypointListItemWidget;
+import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.core.activity.widgets.WaypointListItemWidget;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
@@ -36,7 +36,7 @@ public class ManageContainer {
     this.manageTitle = manageTitle;
     this.modifier = modifier;
     this.inputWidget = inputWidget;
-    this.waypointService = Waypoints.getReferences().waypointService();
+    this.waypointService = Waypoints.references().waypointService();
     this.activity = activity;
   }
 
