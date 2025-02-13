@@ -1,3 +1,19 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core.listener;
 
 import net.labymod.addons.waypoints.WaypointService;
@@ -10,12 +26,13 @@ import net.labymod.api.client.entity.player.ClientPlayer;
 import net.labymod.api.event.Phase;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.render.GameRenderEvent;
-import net.labymod.api.util.math.vector.FloatVector3;
+import net.labymod.api.util.math.position.Position;
+import net.labymod.api.util.math.vector.DoubleVector3;
 
 public class WaypointUpdateListener {
 
   private static final float DEFAULT_SIZE = 1F;
-  private static final float TARGET_DISTANCE = 110.0F;
+  private static final double TARGET_DISTANCE = 110.0F;
   private final WaypointsAddon addon;
   private final WaypointService waypointService;
 
@@ -36,9 +53,8 @@ public class WaypointUpdateListener {
       return;
     }
 
-    FloatVector3 playerPosition = player.position();
-
-    for (Waypoint waypoint : this.waypointService.getVisibleWaypoints()) {
+    Position playerPosition = player.position();
+    for (Waypoint waypoint : this.waypointService.getVisible()) {
       WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
 
       this.updateWaypoint(playerPosition, waypoint, waypointObjectMeta);
@@ -52,47 +68,50 @@ public class WaypointUpdateListener {
   }
 
   private void updateWaypoint(
-      FloatVector3 playerPosition,
+      Position playerPosition,
       Waypoint waypoint,
       WaypointObjectMeta waypointObjectMeta
   ) {
 
-    FloatVector3 distanceVec = new FloatVector3(
-        playerPosition.getX() - waypoint.meta().getLocation().getX(),
-        playerPosition.getY() - waypoint.meta().getLocation().getY(),
-        playerPosition.getZ() - waypoint.meta().getLocation().getZ()
+    DoubleVector3 waypointLocation = waypoint.meta().location();
+    DoubleVector3 distanceVec = new DoubleVector3(
+        (float) (playerPosition.getX() - waypointLocation.getX()),
+        (float) (playerPosition.getY() - waypointLocation.getY()),
+        (float) (playerPosition.getZ() - waypointLocation.getZ())
     );
 
-    float distanceToPlayer = (float) distanceVec.length();
-
-    if (distanceToPlayer == waypointObjectMeta.getDistanceToPlayer()
-        && this.waypointService.isWaypointsRenderCache()) {
+    double distanceToPlayer = Math.sqrt(
+        distanceVec.lengthSquared()); //todo use DoubleVector3#length
+    if (false) {
       return;
     }
 
-    waypointObjectMeta.setDistanceToPlayer(distanceToPlayer);
+    waypointObjectMeta.setDistance(distanceToPlayer);
     waypointObjectMeta.setOutOfRange(false);
 
     if (this.addon.configuration().alwaysShowWaypoints().get()) {
       if (distanceToPlayer <= TARGET_DISTANCE) {
-        waypointObjectMeta.setScale(4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE);
-        waypointObjectMeta.position().set(waypoint.meta().getLocation());
+        waypointObjectMeta.setScale(
+            (float) (4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE)
+        );
+
+        waypointObjectMeta.pos().set(waypointLocation);
       } else {
         waypointObjectMeta.setScale(5F);
-        float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
+        double normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
 
-        FloatVector3 newPosition = new FloatVector3(
+        DoubleVector3 newPosition = new DoubleVector3(
             playerPosition.getX() - (distanceVec.getX() * normalizationFactor),
             playerPosition.getY() - (distanceVec.getY() * normalizationFactor),
             playerPosition.getZ() - (distanceVec.getZ() * normalizationFactor)
         );
 
-        waypointObjectMeta.position().set(newPosition);
+        waypointObjectMeta.pos().set(newPosition);
       }
     } else {
       waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
       waypointObjectMeta.setScale(DEFAULT_SIZE);
-      waypointObjectMeta.position().set(waypoint.meta().getLocation());
+      waypointObjectMeta.pos().set(waypointLocation);
     }
   }
 }

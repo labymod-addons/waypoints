@@ -1,10 +1,31 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
+import net.labymod.addons.waypoints.event.WaypointAddEvent;
+import net.labymod.addons.waypoints.event.WaypointRemoveEvent;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointType;
+import net.labymod.api.Laby;
 import net.labymod.api.addon.AddonConfig;
 import net.labymod.api.client.gui.screen.activity.Activity;
 import net.labymod.api.client.gui.screen.key.Key;
@@ -14,7 +35,10 @@ import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.Switc
 import net.labymod.api.configuration.loader.annotation.Exclude;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.configuration.settings.annotation.SettingSection;
+import net.labymod.api.event.DefaultCancellable;
 import net.labymod.api.util.MethodOrder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 public class WaypointsConfiguration extends AddonConfig {
 
@@ -42,7 +66,10 @@ public class WaypointsConfiguration extends AddonConfig {
   private final ConfigProperty<Boolean> showHudIndicators = new ConfigProperty<>(true);
 
   @Exclude
-  private final Collection<WaypointMeta> waypoints = new ArrayList<>();
+  private final List<WaypointMeta> waypoints = new ArrayList<>();
+
+  private final transient List<WaypointMeta> unmodifiableWaypoints = Collections.unmodifiableList(
+      this.waypoints);
 
   @Override
   public ConfigProperty<Boolean> enabled() {
@@ -80,8 +107,43 @@ public class WaypointsConfiguration extends AddonConfig {
     return new WaypointsActivity(true);
   }
 
-  public Collection<WaypointMeta> getWaypoints() {
+  public @Unmodifiable List<WaypointMeta> getWaypoints() {
     return this.waypoints;
+  }
+
+  public boolean addWaypoint(WaypointMeta meta) {
+    if (this.hasWaypoint(meta)) {
+      throw new IllegalArgumentException("A waypoint with this identifier is already registered.");
+    }
+
+    DefaultCancellable event = Laby.fireEvent(new WaypointAddEvent(meta));
+    if (event.isCancelled()) {
+      return false;
+    }
+
+    if (meta.type() == WaypointType.PERMANENT) {
+      this.waypoints.add(meta);
+    }
+
+    return true;
+  }
+
+  public boolean removeWaypoint(@NotNull WaypointMeta meta) {
+    if (!this.hasWaypoint(meta)) {
+      throw new IllegalArgumentException("No waypoint with this identifier is registered.");
+    }
+
+    DefaultCancellable event = Laby.fireEvent(new WaypointRemoveEvent(meta));
+    if (event.isCancelled()) {
+      return false;
+    }
+
+    this.waypoints.remove(meta);
+    return true;
+  }
+
+  public boolean hasWaypoint(WaypointMeta meta) {
+    return this.waypoints.contains(meta);
   }
 
   @Override

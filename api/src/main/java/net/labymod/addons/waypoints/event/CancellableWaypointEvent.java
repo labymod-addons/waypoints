@@ -14,27 +14,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.event;
 
-import net.labymod.api.client.component.Component;
-import net.labymod.api.client.world.object.WorldObject;
-import net.labymod.api.util.Color;
+import java.util.Objects;
+import net.labymod.api.event.DefaultCancellable;
+import net.labymod.api.event.Event;
+import org.jetbrains.annotations.NotNull;
 
-public interface Waypoint extends WorldObject {
+class CancellableWaypointEvent<T> extends DefaultCancellable implements Event {
 
-  WaypointMeta meta();
+  private final T waypoint;
 
-  WaypointObjectMeta waypointObjectMeta();
-
-  default Component title() {
-    return this.meta().title();
+  CancellableWaypointEvent(@NotNull T waypoint) {
+    Objects.requireNonNull(waypoint, "Waypoint cannot be null");
+    this.waypoint = waypoint;
   }
 
-  default Color color() {
-    return this.meta().color();
-  }
-
-  default WaypointType type() {
-    return this.meta().type();
+  public @NotNull T waypoint() {
+    return this.waypoint;
   }
 }

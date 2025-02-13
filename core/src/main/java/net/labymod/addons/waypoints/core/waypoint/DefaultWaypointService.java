@@ -1,172 +1,198 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core.waypoint;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsConfiguration;
 import net.labymod.addons.waypoints.event.RefreshWaypointsEvent;
+import net.labymod.addons.waypoints.event.WaypointInitializeEvent;
+import net.labymod.addons.waypoints.event.WaypointRemoveEvent;
+import net.labymod.addons.waypoints.event.WaypointVisibleEvent;
+import net.labymod.addons.waypoints.event.WaypointsDimensionChangeEvent;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointContext;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
-import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
+import net.labymod.api.client.network.server.ServerAddress;
 import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
+import net.labymod.api.event.DefaultCancellable;
+import net.labymod.api.generated.ReferenceStorage;
 import net.labymod.api.models.Implements;
 import net.labymod.api.server.LocalWorld;
+import net.labymod.api.util.ThreadSafe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Singleton
 @Implements(WaypointService.class)
 public class DefaultWaypointService implements WaypointService {
 
   private final WorldObjectRegistry worldObjectRegistry;
-  private Collection<Waypoint> waypoints;
+  private final List<Waypoint> waypoints = new ArrayList<>();
+  private final List<Waypoint> unmodifiableWaypoints = Collections.unmodifiableList(
+      this.waypoints
+  );
+  private final Set<Waypoint> visibleWaypoints = new HashSet<>();
+  private final Set<Waypoint> unmodifiableVisibleWaypoints = Collections.unmodifiableSet(
+      this.visibleWaypoints
+  );
   private WaypointsAddon addon;
-  private Collection<Waypoint> visibleWaypoints;
   private String actualWorld;
-  private String actualServer;
-  private String actualDimension;
+  private ServerAddress serverAddress;
+  private String dimension;
   private boolean waypointsRenderCache = false;
 
   public DefaultWaypointService() {
     this.worldObjectRegistry = Laby.references().worldObjectRegistry();
-
-    this.waypoints = new ArrayList<>();
-    this.visibleWaypoints = new ArrayList<>();
   }
 
   public void load(WaypointsAddon addon) {
     this.addon = addon;
 
-    Collection<Waypoint> newWaypoints = new ArrayList<>();
-
+    this.waypoints.clear();
     for (WaypointMeta meta : this.addon.configuration().getWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
       Waypoint waypoint = new DefaultWaypoint(this.addon, meta, waypointObjectMeta);
+      if (Laby.fireEvent(new WaypointInitializeEvent(waypoint)).isCancelled()) {
+        continue;
+      }
 
-      newWaypoints.add(waypoint);
+      this.waypoints.add(waypoint);
     }
 
-    this.waypoints = newWaypoints;
-    this.refreshWaypoints();
+    this.refresh();
   }
 
-  public void refreshWaypoints() {
-    Collection<Waypoint> newWaypoints = new ArrayList<>();
+  public void refresh() {
+    ThreadSafe.ensureRenderThread();
 
-    LocalWorld localWorld = Laby.references().integratedServer().getLocalWorld();
-    ServerData serverData = Laby.references().serverController().getCurrentServerData();
+    this.visibleWaypoints.clear();
+    ReferenceStorage references = Laby.references();
+    LocalWorld localWorld = references.integratedServer().getLocalWorld();
+    ServerData serverData = references.serverController().getCurrentServerData();
+    this.actualWorld = localWorld != null ? localWorld.folderName() : null;
+    this.serverAddress = serverData != null ? serverData.address() : null;
 
-    if (localWorld != null) {
-      this.actualWorld = localWorld.folderName();
-    } else {
-      this.actualWorld = null;
-    }
-
-    if (serverData != null) {
-      this.actualServer = serverData.address().toString();
-    } else {
-      this.actualServer = SINGLELAYER_SERVER;
-    }
-
+    WaypointContext targetContext = this.serverAddress != null
+        ? WaypointContext.MULTI_PLAYER
+        : WaypointContext.SINGLE_PLAYER;
     for (Waypoint waypoint : this.waypoints) {
       WaypointMeta meta = waypoint.meta();
-
       this.removeWaypointFromRegistry(meta);
+      if (!meta.isVisible() || meta.contextType() != targetContext) {
+        continue;
+      }
 
-      boolean singlePlayer = SINGLELAYER_SERVER.equals(waypoint.meta().getServer());
-      if (
-          meta.isVisible()
-              &&
-              (meta.getServer() == null
-                  || (singlePlayer && Objects.equals(meta.getWorld(), this.actualWorld))
-                  || (!singlePlayer && meta.getServer().equals(this.actualServer))
-              )
-              && (meta.getDimension() == null || meta.getDimension().equals(this.actualDimension))
-      ) {
-        newWaypoints.add(waypoint);
-        this.worldObjectRegistry.register(waypoint);
+      boolean target;
+      String context = meta.getContext();
+      if (targetContext == WaypointContext.SINGLE_PLAYER) {
+        target = Objects.equals(context, this.actualWorld);
+      } else {
+        target = context.equals(this.serverAddress.toString());
+      }
+
+      if (target && (meta.getDimension() == null || meta.getDimension().equals(this.dimension))) {
+        if (!Laby.fireEvent(new WaypointVisibleEvent(waypoint)).isCancelled()) {
+          this.visibleWaypoints.add(waypoint);
+          this.worldObjectRegistry.register(waypoint);
+        }
       }
     }
 
-    this.visibleWaypoints = newWaypoints;
     this.setWaypointsRenderCache(false);
     Laby.fireEvent(new RefreshWaypointsEvent());
   }
 
   @Override
-  public void addWaypoint(WaypointMeta meta) {
+  public void add(@NotNull WaypointMeta meta) {
+    if (!this.addon.configuration().addWaypoint(meta)) {
+      return;
+    }
+
     WaypointObjectMeta waypointObjectMeta = new WaypointObjectMeta(meta);
     Waypoint waypoint = new DefaultWaypoint(this.addon, meta, waypointObjectMeta);
-    this.waypoints.add(waypoint);
-
-    this.worldObjectRegistry.register(waypoint);
-
-    if (waypoint.type() == WaypointType.PERMANENT) {
-      this.addon.configuration().getWaypoints().add(meta);
-      this.addon.saveConfiguration();
+    if (!Laby.fireEvent(new WaypointInitializeEvent(waypoint)).isCancelled()) {
+      this.waypoints.add(waypoint);
+      this.worldObjectRegistry.register(waypoint);
     }
+
+    this.addon.saveConfiguration();
   }
 
   @Override
-  public boolean removeWaypoint(WaypointMeta meta) {
-    this.removeWaypointFromRegistry(meta);
-    this.waypoints.removeIf((Waypoint waypoint) -> waypoint.meta() == meta);
-
-    if (this.addon.configuration().getWaypoints().remove(meta)) {
-      this.addon.saveConfiguration();
-      return true;
-    }
-
-    return false;
+  public boolean remove(@NotNull WaypointMeta meta) {
+    return this.removeInternal(meta, true);
   }
 
   public void removeWaypointFromRegistry(WaypointMeta meta) {
-    Waypoint waypoint = this.getWaypoint(meta);
+    Waypoint waypoint = this.get(meta);
     if (waypoint != null) {
       this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
     }
   }
 
   @Override
-  public void removeWaypoints(Predicate<Waypoint> predicate) {
+  public boolean remove(@NotNull Predicate<Waypoint> predicate) {
     boolean modified = this.waypoints.removeIf(waypoint -> {
       if (!predicate.test(waypoint)) {
         return false;
       }
 
-      this.worldObjectRegistry.unregister(v -> v.getValue() == waypoint);
-      this.addon.configuration().getWaypoints().remove(waypoint.meta());
-
-      return true;
+      return this.removeInternal(waypoint.meta(), false);
     });
 
     if (modified) {
       this.addon.saveConfiguration();
     }
+
+    return true;
   }
 
   @Override
-  public Waypoint getWaypoint(WaypointMeta meta) {
+  public @Nullable Waypoint get(@NotNull String identifier) {
     for (Waypoint waypoint : this.waypoints) {
-      if (waypoint.meta().equals(meta)) {
+      if (waypoint.meta().getIdentifier().equals(identifier)) {
         return waypoint;
       }
     }
+
     return null;
   }
 
   @Override
-  public Collection<Waypoint> getAllWaypoints() {
-    return this.waypoints;
+  public @NotNull List<Waypoint> getAll() {
+    return this.unmodifiableWaypoints;
   }
 
   @Override
-  public Collection<Waypoint> getVisibleWaypoints() {
-    return this.visibleWaypoints;
+  public @NotNull Set<Waypoint> getVisible() {
+    return this.unmodifiableVisibleWaypoints;
   }
 
   @Override
@@ -180,22 +206,95 @@ public class DefaultWaypointService implements WaypointService {
   }
 
   @Override
-  public String actualWorld() {
+  public String getSinglePlayerWorld() {
     return this.actualWorld;
   }
 
   @Override
-  public String actualServer() {
-    return this.actualServer;
+  public @NotNull ServerAddress getServerAddress() {
+    return this.serverAddress;
   }
 
   @Override
-  public String actualDimension() {
-    return this.actualDimension;
+  public @Nullable String getDimension() {
+    return this.dimension;
   }
 
   @Override
-  public void setActualDimension(String dimension) {
-    this.actualDimension = dimension;
+  public void setDimension(@NotNull String dimension) {
+    if (Objects.equals(this.dimension, dimension)
+        || (this.dimension == null && dimension.equals("labymod:unknown"))) {
+      return;
+    }
+
+    WaypointsDimensionChangeEvent event = Laby.fireEvent(
+        new WaypointsDimensionChangeEvent(dimension)
+    );
+
+    if (event.isCancelled()) {
+      return;
+    }
+
+    String eventDimension = event.getDimension();
+    this.dimension = eventDimension.equals("labymod:unknown") ? null : eventDimension;
+  }
+
+  @Override
+  public boolean isIdentifierAvailable(@NotNull String identifier) {
+    for (Waypoint waypoint : this.waypoints) {
+      if (waypoint.meta().getIdentifier().equals(identifier)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
+  public String generateUniqueIdentifier(@Nullable String prefix) {
+    String identifier = this.generateIdentifierInternal(prefix);
+    while (!this.isIdentifierAvailable(identifier)) {
+      identifier = this.generateIdentifierInternal(prefix);
+    }
+
+    return identifier;
+  }
+
+  private String generateIdentifierInternal(@Nullable String prefix) {
+    return prefix == null ? UUID.randomUUID().toString() : prefix + ":" + UUID.randomUUID();
+  }
+
+  private boolean removeInternal(WaypointMeta meta, boolean save) {
+    WaypointsConfiguration configuration = this.addon.configuration();
+    if (configuration.hasWaypoint(meta)) {
+      if (!configuration.removeWaypoint(meta)) {
+        return false;
+      }
+
+      if (save) {
+        this.addon.saveConfiguration();
+      }
+    } else {
+      for (Waypoint waypoint : this.waypoints) {
+        if (waypoint.meta().equals(meta)) {
+          meta = waypoint.meta();
+          break;
+        }
+      }
+
+      if (meta == null) {
+        throw new IllegalArgumentException("No waypoint with this identifier is registered.");
+      }
+
+      DefaultCancellable event = Laby.fireEvent(new WaypointRemoveEvent(meta));
+      if (event.isCancelled()) {
+        return false;
+      }
+    }
+
+    this.removeWaypointFromRegistry(meta);
+    @NotNull WaypointMeta finalMeta = meta;
+    this.waypoints.removeIf(waypoint -> waypoint.meta() == finalMeta);
+    return true;
   }
 }

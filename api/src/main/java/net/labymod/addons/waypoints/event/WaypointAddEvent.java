@@ -14,27 +14,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.event;
 
-import net.labymod.api.client.component.Component;
-import net.labymod.api.client.world.object.WorldObject;
-import net.labymod.api.util.Color;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import org.jetbrains.annotations.NotNull;
 
-public interface Waypoint extends WorldObject {
+public class WaypointAddEvent extends CancellableWaypointEvent<WaypointMeta> {
 
-  WaypointMeta meta();
-
-  WaypointObjectMeta waypointObjectMeta();
-
-  default Component title() {
-    return this.meta().title();
-  }
-
-  default Color color() {
-    return this.meta().color();
-  }
-
-  default WaypointType type() {
-    return this.meta().type();
+  public WaypointAddEvent(@NotNull WaypointMeta meta) {
+    super(meta);
   }
 }

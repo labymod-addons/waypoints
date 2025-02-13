@@ -1,73 +1,192 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.waypoint;
 
+import java.util.Objects;
+import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.util.Color;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WaypointMeta {
 
-  @Nullable
-  private final String world;
-  private final String server;
-  private final String dimension;
+  private final String id;
+  private final WaypointContext contextType;
+  private final String context;
+  private final WaypointType type;
+  private String dimension;
   private Component title;
   private Color color;
-  private WaypointType type;
-  private FloatVector3 location;
+  private DoubleVector3 location;
   private boolean visible;
 
+  /**
+   * Use the {@link WaypointBuilder} to create a new instance of this class instead.
+   */
+  @Internal
   public WaypointMeta(
-      Component title,
-      Color color,
-      WaypointType type,
-      FloatVector3 location,
-      boolean visible,
-      @Nullable String world,
-      String server,
-      String dimension
+      @NotNull String id,
+      @NotNull Component title,
+      @NotNull Color color,
+      @NotNull WaypointType type,
+      @NotNull DoubleVector3 location,
+      @NotNull WaypointContext contextType,
+      @NotNull String context,
+      @Nullable String dimension,
+      boolean visible
   ) {
+    this.id = id;
     this.title = title;
     this.color = color;
     this.type = type;
     this.location = location;
     this.visible = visible;
-    this.world = world;
-    this.server = server;
+    this.contextType = contextType;
+    this.context = context;
     this.dimension = dimension;
   }
 
+  /**
+   * Use the {@link WaypointBuilder} to create a new instance of this class instead.
+   *
+   * @deprecated still uses {@link FloatVector3}
+   */
+  @Internal
+  @Deprecated
+  public WaypointMeta(
+      @NotNull Component title,
+      @NotNull Color color,
+      @NotNull WaypointType type,
+      @NotNull FloatVector3 location,
+      boolean visible,
+      @Nullable String world,
+      @NotNull String server,
+      @NotNull String dimension
+  ) {
+    this(
+        Waypoints.references().waypointService().generateUniqueIdentifier(),
+        title,
+        color,
+        type,
+        new DoubleVector3(
+            location.getX(),
+            location.getY(),
+            location.getZ()
+        ),
+        world == null ? WaypointContext.MULTI_PLAYER : WaypointContext.SINGLE_PLAYER,
+        world == null ? server : world,
+        dimension,
+        visible
+    );
+  }
+
+  public @NotNull String getIdentifier() {
+    return this.id;
+  }
+
+  public @NotNull Component title() {
+    return this.title;
+  }
+
+  /**
+   * @deprecated Use {@link #title()} instead
+   */
+  @Deprecated
   public Component getTitle() {
     return this.title;
   }
 
-  public void setTitle(Component title) {
+  public void setTitle(@NotNull Component title) {
+    Objects.requireNonNull(title, "Title cannot be null");
     this.title = title;
   }
 
+  public @NotNull Color color() {
+    return this.color;
+  }
+
+  /**
+   * @deprecated Use {@link #color()} instead
+   */
+  @Deprecated
   public Color getColor() {
     return this.color;
   }
 
-  public void setColor(Color color) {
+  public void setColor(@NotNull Color color) {
+    Objects.requireNonNull(color, "Color cannot be null");
     this.color = color;
   }
 
+  public @NotNull WaypointType type() {
+    return this.type;
+  }
+
+  /**
+   * @deprecated Use {@link #type()} instead
+   */
+  @Deprecated
   public WaypointType getType() {
     return this.type;
   }
 
-  public void setType(WaypointType type) {
-    this.type = type;
+  /**
+   * @deprecated not supported anymore
+   */
+  @Deprecated
+  public void setType(@NotNull WaypointType type) {
+    // not supported anymore
   }
 
-  public FloatVector3 getLocation() {
+  public @NotNull DoubleVector3 location() {
     return this.location;
   }
 
-  public void setLocation(FloatVector3 location) {
+  /**
+   * @deprecated Use {@link #location()} instead
+   */
+  @Deprecated
+  public FloatVector3 getLocation() {
+    return new FloatVector3(
+        (float) this.location.getX(),
+        (float) this.location.getY(),
+        (float) this.location.getZ()
+    );
+  }
+
+  public void setLocation(@NotNull DoubleVector3 location) {
     this.location = location;
+  }
+
+  /**
+   * @deprecated Use {@link #setLocation(DoubleVector3)} instead
+   */
+  @Deprecated
+  public void setLocation(FloatVector3 location) {
+    this.location = new DoubleVector3(
+        location.getX(),
+        location.getY(),
+        location.getZ()
+    );
   }
 
   public boolean isVisible() {
@@ -81,16 +200,62 @@ public class WaypointMeta {
     }
   }
 
-  @Nullable
-  public String getWorld() {
-    return this.world;
+  /**
+   * @return the context type this waypoint was created in
+   */
+  public @NotNull WaypointContext contextType() {
+    return this.contextType;
   }
 
-  public String getServer() {
-    return server;
+  /**
+   * @return the context this waypoint was created in
+   */
+  public @NotNull String getContext() {
+    return this.context;
   }
 
-  public String getDimension() {
-    return dimension;
+  /**
+   * @deprecated Use {@link #contextType()} and {@link #getContext()} instead
+   */
+  @Deprecated
+  public @Nullable String getWorld() {
+    return this.contextType == WaypointContext.MULTI_PLAYER ? null : this.context;
+  }
+
+  /**
+   * @deprecated Use {@link #contextType()} and {@link #getContext()} instead
+   */
+  @Deprecated
+  public @NotNull String getServer() {
+    return this.contextType == WaypointContext.MULTI_PLAYER
+        ? this.context
+        : WaypointService.SINGLELAYER_SERVER;
+  }
+
+  public @Nullable String getDimension() {
+    return this.dimension;
+  }
+
+  public void setDimension(@NotNull String dimension) {
+    this.dimension = dimension;
+    Waypoints.refresh();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+
+    if (!(object instanceof WaypointMeta that)) {
+      return false;
+    }
+
+    return Objects.equals(this.id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.id);
   }
 }

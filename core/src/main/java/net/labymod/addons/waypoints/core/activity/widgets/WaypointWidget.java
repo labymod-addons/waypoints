@@ -1,7 +1,24 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core.activity.widgets;
 
 import net.labymod.addons.waypoints.WaypointTextures;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
@@ -17,11 +34,19 @@ public class WaypointWidget extends SimpleWidget {
   private final WaypointMeta meta;
   private final IconWidget icon = new IconWidget(WaypointTextures.MARKER_ICON);
   private final ComponentWidget title;
+  private final WaypointObjectMeta worldObjectMeta;
+
+  public WaypointWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
+    this.meta = meta;
+    this.worldObjectMeta = worldObjectMeta;
+
+    //todo distance
+    this.title = ComponentWidget.component(this.meta.title());
+    this.title.addId("title");
+  }
 
   public WaypointWidget(WaypointMeta meta) {
-    this.meta = meta;
-    this.title = ComponentWidget.component(this.meta.getTitle());
-    this.title.addId("title");
+    this(meta, null);
   }
 
   @Override
@@ -43,5 +68,10 @@ public class WaypointWidget extends SimpleWidget {
 
       this.addChild(typeWidget);
     }
+  }
+
+  @Override
+  public void tick() {
+    super.tick();
   }
 }

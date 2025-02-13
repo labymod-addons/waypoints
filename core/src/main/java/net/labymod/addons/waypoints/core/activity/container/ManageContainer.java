@@ -1,3 +1,19 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core.activity.container;
 
 import java.util.function.Consumer;
@@ -17,7 +33,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.input.TextFieldWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
-import net.labymod.api.util.math.vector.FloatVector3;
+import net.labymod.api.util.math.vector.DoubleVector3;
 
 public class ManageContainer {
 
@@ -63,7 +79,7 @@ public class ManageContainer {
 
     TextFieldWidget nameInput = new TextFieldWidget();
     nameInput.addId("input-text");
-    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(meta.getTitle()));
+    nameInput.setText(PlainTextComponentSerializer.plainText().serialize(meta.title()));
     nameInput.maximalLength(50);
     nameInput.updateListener(newValue -> doneButton.setEnabled(!newValue.trim().isEmpty()));
     nameLabelList.addChild(nameInput);
@@ -88,7 +104,7 @@ public class ManageContainer {
 
     TextFieldWidget xInput = new TextFieldWidget();
     xInput.addId("input-text");
-    xInput.setText(String.valueOf((int) meta.getLocation().getX()));
+    xInput.setText(String.valueOf((int) meta.location().getX()));
     xLabelList.addChild(xInput);
 
     this.inputWidget.addContent(xLabelList);
@@ -100,7 +116,7 @@ public class ManageContainer {
 
     TextFieldWidget yInput = new TextFieldWidget();
     yInput.addId("input-text");
-    yInput.setText(String.valueOf((int) meta.getLocation().getY()));
+    yInput.setText(String.valueOf((int) meta.location().getY()));
     yLabelList.addChild(yInput);
 
     this.inputWidget.addContent(yLabelList);
@@ -112,7 +128,7 @@ public class ManageContainer {
 
     TextFieldWidget zInput = new TextFieldWidget();
     zInput.addId("input-text");
-    zInput.setText(String.valueOf((int) meta.getLocation().getZ()));
+    zInput.setText(String.valueOf((int) meta.location().getZ()));
     zLabelList.addChild(zInput);
 
     this.inputWidget.addContent(zLabelList);
@@ -123,13 +139,13 @@ public class ManageContainer {
     doneButton.setEnabled(!nameInput.getText().trim().isEmpty());
     doneButton.setPressable(() -> {
       // Remove the old waypoint in case this is an edit (or the exact same waypoint already exists)
-      boolean permanent = this.waypointService.removeWaypoint(meta);
+      boolean permanent = this.waypointService.remove(meta);
 
       try {
-        meta.setLocation(new FloatVector3(
-            Integer.parseInt(xInput.getText()),
+        meta.setLocation(new DoubleVector3(
+            Integer.parseInt(xInput.getText()) - 0.5D,
             Integer.parseInt(yInput.getText()),
-            Integer.parseInt(zInput.getText())
+            Integer.parseInt(zInput.getText()) - 0.5D
         ));
       } catch (NumberFormatException ignored) {
         if (!permanent) {
@@ -152,16 +168,16 @@ public class ManageContainer {
         this.modifier.accept(meta);
       }
 
-      this.waypointService.addWaypoint(meta);
+      this.waypointService.add(meta);
 
-      Waypoint waypoint = this.waypointService.getWaypoint(meta);
+      Waypoint waypoint = this.waypointService.get(meta);
 
       if (waypoint != null) {
         waypoint.waypointObjectMeta().clearTitleCache();
       }
 
       this.activity.setAction(null);
-      this.waypointService.refreshWaypoints();
+      this.waypointService.refresh();
     });
 
     buttonList.addEntry(doneButton);

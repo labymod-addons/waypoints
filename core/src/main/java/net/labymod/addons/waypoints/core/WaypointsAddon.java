@@ -1,6 +1,23 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.labymod.addons.waypoints.core;
 
 import javax.inject.Singleton;
+import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.listener.ConfigurationVersionUpdateListener;
 import net.labymod.addons.waypoints.core.listener.ServerWaypointListener;
@@ -29,7 +46,11 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
   protected void enable() {
     this.registerSettingCategory();
 
-    ((DefaultWaypointService) Waypoints.references().waypointService()).load(this);
+    WaypointService waypointService = Waypoints.references().waypointService();
+    ((DefaultWaypointService) waypointService).load(this);
+
+    // Apply the current dimension, in case the user is already ingame
+    waypointService.setCurrentDimension();
 
     this.registerListener(new WaypointHotkeyListener(this));
     this.registerListener(new ServerWaypointListener());
