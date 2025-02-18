@@ -16,13 +16,18 @@
 
 package net.labymod.addons.waypoints.waypoint;
 
-import net.labymod.addons.waypoints.utils.Colors;
+import net.labymod.addons.waypoints.WaypointConfigurationStorage;
+import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.utils.Formatting;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 public class WaypointObjectMeta {
+
+  private static final WaypointConfigurationStorage CONFIGURATION_STORAGE = Waypoints.references()
+      .waypointService().configurationStorage();
 
   private final WaypointMeta meta;
   private final DoubleVector3 position;
@@ -73,8 +78,7 @@ public class WaypointObjectMeta {
 
   @Deprecated
   public void setDistance(float distanceToPlayer) {
-    this.clearTitleCache();
-    this.distanceToPlayer = distanceToPlayer;
+    this.setDistance((double) distanceToPlayer);
   }
 
   /**
@@ -98,31 +102,51 @@ public class WaypointObjectMeta {
   }
 
   public Component formatTitle() {
-    // TODO more Formatting Options
     if (this.cachedTitle != null) {
       return this.cachedTitle;
     }
 
-    long distanceToPlayer = Math.round(this.distanceToPlayer);
+    boolean before = CONFIGURATION_STORAGE.isDistanceBeforeName();
+    Component title = Component.text("", TextColor.color(this.meta.color().get()));
+    if (before && !CONFIGURATION_STORAGE.isHideDistance()) {
+      title.append(this.createDistanceComponent(true, false));
+    }
 
-    Component title = this.meta.title().copy();
-    title.color(TextColor.color(this.meta.getColor().get()));
+    title.append(this.meta.title());
 
-    Component bracket1 = Component.text(" [");
-    bracket1.color(TextColor.color(Colors.BRACKET_COLOR));
-
-    Component formattedDistance = Component.text(distanceToPlayer + "m");
-    formattedDistance.color(TextColor.color(Colors.VALUE_COLOR));
-
-    Component bracket2 = Component.text("]");
-    bracket2.color(TextColor.color(Colors.BRACKET_COLOR));
-
-    title.append(bracket1);
-    title.append(formattedDistance);
-    title.append(bracket2);
+    if (!before && !CONFIGURATION_STORAGE.isHideDistance()) {
+      title.append(this.createDistanceComponent(true, true));
+    }
 
     this.cachedTitle = title;
-
     return title;
+  }
+
+  public Component createDistanceComponent(boolean withSpace, boolean after) {
+    long distanceToPlayer = Math.round(this.distanceToPlayer);
+
+    Component distanceComponent = Component.text(
+        distanceToPlayer + "m",
+        CONFIGURATION_STORAGE.distanceValueColor()
+    );
+
+    Component component = CONFIGURATION_STORAGE.distanceFormatting().build(
+        distanceComponent,
+        after
+    ).color(CONFIGURATION_STORAGE.distanceBracketColor());
+
+    if (withSpace) {
+      if (after) {
+        component.append(0, Formatting.space());
+      } else {
+        component.append(Formatting.space());
+      }
+    }
+
+    return component;
+  }
+
+  public Component createDistanceComponent() {
+    return this.createDistanceComponent(false, true);
   }
 }

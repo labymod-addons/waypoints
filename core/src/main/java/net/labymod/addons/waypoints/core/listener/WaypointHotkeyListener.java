@@ -44,10 +44,8 @@ public class WaypointHotkeyListener {
 
     WaypointsConfiguration config = this.addon.configuration();
 
-    if (config.permanentHotkey().get() == event.key()) {
+    if (config.hotkey().get() == event.key()) {
       this.createWaypoint(WaypointType.PERMANENT);
-    } else if (config.serverHotkey().get() == event.key()) {
-      this.createWaypoint(WaypointType.SERVER_SESSION);
     }
   }
 
@@ -55,7 +53,6 @@ public class WaypointHotkeyListener {
     WaypointsActivity activity = new WaypointsActivity(false);
 
     activity.setAction(Action.ADD);
-    activity.setModifier(meta -> meta.setType(type));
     activity.setManageTitle(Component.translatable("labyswaypoints.gui.create." + switch (type) {
       case PERMANENT -> "permanent";
       case SERVER_SESSION -> "temporary";

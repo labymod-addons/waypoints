@@ -16,19 +16,18 @@
 
 package net.labymod.addons.waypoints;
 
-import net.labymod.addons.waypoints.waypoint.WaypointIcon;
-import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.addons.waypoints.utils.Formatting;
+import net.labymod.api.client.component.format.TextColor;
 
-/**
- * Use {@link WaypointIcon} instead.
- */
-@Deprecated
-public class WaypointTextures {
+public interface WaypointConfigurationStorage {
 
-  /**
-   * Use {@link WaypointIcon#DEFAULT} instead.
-   */
-  @Deprecated
-  public static final Icon MARKER_ICON = WaypointIcon.DEFAULT.icon();
+  Formatting distanceFormatting();
 
+  TextColor distanceBracketColor();
+
+  TextColor distanceValueColor();
+
+  boolean isDistanceBeforeName();
+
+  boolean isHideDistance();
 }

@@ -23,6 +23,7 @@ import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.event.WaypointAddEvent;
 import net.labymod.addons.waypoints.event.WaypointRemoveEvent;
+import net.labymod.addons.waypoints.utils.Formatting;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
@@ -32,10 +33,13 @@ import net.labymod.api.client.gui.screen.key.Key;
 import net.labymod.api.client.gui.screen.widget.widgets.activity.settings.ActivitySettingWidget.ActivitySetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.KeybindWidget.KeyBindSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
+import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget.ColorPickerSetting;
+import net.labymod.api.client.gui.screen.widget.widgets.input.dropdown.DropdownWidget.DropdownSetting;
 import net.labymod.api.configuration.loader.annotation.Exclude;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.configuration.settings.annotation.SettingSection;
 import net.labymod.api.event.DefaultCancellable;
+import net.labymod.api.util.Color;
 import net.labymod.api.util.MethodOrder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -46,11 +50,9 @@ public class WaypointsConfiguration extends AddonConfig {
   private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true)
       .addChangeListener(value -> Waypoints.refresh());
 
+  @SettingSection("Waypoints")
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> permanentHotkey = new ConfigProperty<>(Key.M);
-
-  @KeyBindSetting(acceptMouseButtons = true)
-  private final ConfigProperty<Key> serverHotkey = new ConfigProperty<>(Key.NONE);
 
   @SettingSection("Settings")
   @SwitchSetting
@@ -65,6 +67,23 @@ public class WaypointsConfiguration extends AddonConfig {
   @SwitchSetting
   private final ConfigProperty<Boolean> showHudIndicators = new ConfigProperty<>(true);
 
+  @SettingSection("distance")
+  @DropdownSetting
+  private final ConfigProperty<Formatting> distanceFormatting = ConfigProperty.createEnum(
+      Formatting.BRACKETS);
+
+  @ColorPickerSetting
+  private final ConfigProperty<Color> distanceBracketColor = new ConfigProperty<>(Color.GRAY);
+
+  @ColorPickerSetting
+  private final ConfigProperty<Color> distanceValueColor = new ConfigProperty<>(Color.WHITE);
+
+  @SwitchSetting
+  private final ConfigProperty<Boolean> distanceBeforeName = new ConfigProperty<>(false);
+
+  @SwitchSetting
+  private final ConfigProperty<Boolean> hideDistance = new ConfigProperty<>(false);
+
   @Exclude
   private final List<WaypointMeta> waypoints = new ArrayList<>();
 
@@ -76,12 +95,8 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.enabled;
   }
 
-  public ConfigProperty<Key> permanentHotkey() {
+  public ConfigProperty<Key> hotkey() {
     return this.permanentHotkey;
-  }
-
-  public ConfigProperty<Key> serverHotkey() {
-    return this.serverHotkey;
   }
 
   public ConfigProperty<Boolean> background() {
@@ -100,9 +115,28 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.showHudIndicators;
   }
 
-  @SettingSection("Waypoints")
+  public ConfigProperty<Color> distanceValueColor() {
+    return this.distanceValueColor;
+  }
+
+  public ConfigProperty<Color> distanceBracketColor() {
+    return this.distanceBracketColor;
+  }
+
+  public ConfigProperty<Formatting> distanceFormatting() {
+    return this.distanceFormatting;
+  }
+
+  public ConfigProperty<Boolean> distanceBeforeName() {
+    return this.distanceBeforeName;
+  }
+
+  public ConfigProperty<Boolean> hideDistance() {
+    return this.hideDistance;
+  }
+
   @ActivitySetting
-  @MethodOrder(after = "showHudIndicators")
+  @MethodOrder(after = "permanentHotkey")
   public Activity openWaypoints() {
     return new WaypointsActivity(true);
   }

@@ -20,22 +20,17 @@ import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
-import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.CheckBoxWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.CheckBoxWidget.State;
 
 @AutoWidget
-public class WaypointListItemWidget extends SimpleWidget {
+public class WaypointListItemWidget extends WaypointWidget {
 
-  private final WaypointMeta meta;
   private final CheckBoxWidget checkbox;
-  private final WaypointWidget waypointWidget;
 
   public WaypointListItemWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
-    this.meta = meta;
+    super(meta, worldObjectMeta);
     this.checkbox = new CheckBoxWidget();
-    this.waypointWidget = new WaypointWidget(meta);
-    this.waypointWidget.addId("preview");
   }
 
   public WaypointListItemWidget(WaypointMeta meta) {
@@ -44,15 +39,13 @@ public class WaypointListItemWidget extends SimpleWidget {
 
   @Override
   public void initialize(Parent parent) {
-    super.initialize(parent);
-
     this.opacity().set(this.meta.isVisible() ? 1F : 0.5F);
 
     this.checkbox.setState(this.meta.isVisible() ? State.CHECKED : State.UNCHECKED);
     this.checkbox.addId("checkbox");
-    this.addChild(this.checkbox);
+    this.addContent(this.checkbox);
 
-    this.addChild(this.waypointWidget);
+    super.initialize(parent);
   }
 
   public CheckBoxWidget getCheckbox() {

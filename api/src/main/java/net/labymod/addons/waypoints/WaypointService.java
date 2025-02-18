@@ -41,6 +41,8 @@ public interface WaypointService {
   @Deprecated
   String SINGLELAYER_SERVER = "SINGLEPLAYER";
 
+  WaypointConfigurationStorage configurationStorage();
+
   /**
    * Refreshes {@link #getVisible()} based on {@link #getDimension()} and the current server address
    * or single player world. Fires {@link WaypointVisibleEvent} for each waypoint that passed the

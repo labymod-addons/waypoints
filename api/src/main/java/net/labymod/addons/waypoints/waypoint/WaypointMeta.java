@@ -37,6 +37,7 @@ public class WaypointMeta {
   private Component title;
   private Color color;
   private DoubleVector3 location;
+  private WaypointIcon icon;
   private boolean visible;
 
   /**
@@ -51,6 +52,7 @@ public class WaypointMeta {
       @NotNull DoubleVector3 location,
       @NotNull WaypointContext contextType,
       @NotNull String context,
+      @NotNull WaypointIcon icon,
       @Nullable String dimension,
       boolean visible
   ) {
@@ -62,6 +64,7 @@ public class WaypointMeta {
     this.visible = visible;
     this.contextType = contextType;
     this.context = context;
+    this.icon = icon;
     this.dimension = dimension;
   }
 
@@ -94,6 +97,7 @@ public class WaypointMeta {
         ),
         world == null ? WaypointContext.MULTI_PLAYER : WaypointContext.SINGLE_PLAYER,
         world == null ? server : world,
+        WaypointIcon.DEFAULT,
         dimension,
         visible
     );
@@ -155,6 +159,18 @@ public class WaypointMeta {
   @Deprecated
   public void setType(@NotNull WaypointType type) {
     // not supported anymore
+  }
+
+  public @NotNull WaypointIcon icon() {
+    if (this.icon == null) {
+      this.icon = WaypointIcon.DEFAULT;
+    }
+
+    return this.icon;
+  }
+
+  public void setIcon(@NotNull WaypointIcon icon) {
+    this.icon = icon;
   }
 
   public @NotNull DoubleVector3 location() {

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.inject.Singleton;
+import net.labymod.addons.waypoints.WaypointConfigurationStorage;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsConfiguration;
@@ -67,9 +68,16 @@ public class DefaultWaypointService implements WaypointService {
   private ServerAddress serverAddress;
   private String dimension;
   private boolean waypointsRenderCache = false;
+  private final WaypointConfigurationStorage configurationStorage;
 
-  public DefaultWaypointService() {
+  public DefaultWaypointService(WaypointsAddon addon) {
     this.worldObjectRegistry = Laby.references().worldObjectRegistry();
+    this.configurationStorage = new DefaultWaypointConfigurationStorage(addon, this);
+  }
+
+  @Override
+  public WaypointConfigurationStorage configurationStorage() {
+    return this.configurationStorage;
   }
 
   public void load(WaypointsAddon addon) {

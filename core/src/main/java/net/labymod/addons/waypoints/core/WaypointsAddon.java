@@ -20,20 +20,24 @@ import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.listener.ConfigurationVersionUpdateListener;
+import net.labymod.addons.waypoints.core.listener.JsonConfigLoaderInitializeListener;
 import net.labymod.addons.waypoints.core.listener.ServerWaypointListener;
 import net.labymod.addons.waypoints.core.listener.WaypointHotkeyListener;
 import net.labymod.addons.waypoints.core.listener.WaypointUpdateListener;
 import net.labymod.addons.waypoints.core.waypoint.DefaultWaypointService;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.models.addon.annotation.AddonMain;
+import net.labymod.api.reference.annotation.Referenceable;
 
-@Singleton
 @AddonMain
+@Singleton
+@Referenceable
 public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
 
   @Override
   protected void preConfigurationLoad() {
     this.registerListener(new ConfigurationVersionUpdateListener());
+    this.registerListener(new JsonConfigLoaderInitializeListener());
   }
 
   @Override

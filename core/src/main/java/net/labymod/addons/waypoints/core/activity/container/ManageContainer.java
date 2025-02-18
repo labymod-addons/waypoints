@@ -16,7 +16,6 @@
 
 package net.labymod.addons.waypoints.core.activity.container;
 
-import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
@@ -39,18 +38,16 @@ public class ManageContainer {
 
   private final WaypointListItemWidget waypointListItemWidget;
   private final Component manageTitle;
-  private final Consumer<WaypointMeta> modifier;
   private final FlexibleContentWidget inputWidget;
   private final WaypointService waypointService;
   private final WaypointsActivity activity;
 
 
   public ManageContainer(WaypointListItemWidget waypointListItemWidget, Component manageTitle,
-      Consumer<WaypointMeta> modifier, FlexibleContentWidget inputWidget,
+      FlexibleContentWidget inputWidget,
       WaypointsActivity activity) {
     this.waypointListItemWidget = waypointListItemWidget;
     this.manageTitle = manageTitle;
-    this.modifier = modifier;
     this.inputWidget = inputWidget;
     this.waypointService = Waypoints.references().waypointService();
     this.activity = activity;
@@ -162,10 +159,6 @@ public class ManageContainer {
       meta.setColor(colorPicker.value());
       if (permanent) {
         meta.setType(WaypointType.PERMANENT);
-      }
-
-      if (this.modifier != null) {
-        this.modifier.accept(meta);
       }
 
       this.waypointService.add(meta);

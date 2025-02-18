@@ -16,10 +16,10 @@
 
 package net.labymod.addons.waypoints.core.waypoint;
 
-import net.labymod.addons.waypoints.WaypointTextures;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
@@ -36,9 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
-
-  public static final float ICON_WIDTH = 6.1F;
-  public static final float ICON_HEIGHT = 11F;
 
   private static final float BACKGROUND_DEPTH = 0.01F;
   private static final float WAYPOINT_SCALE = 0.04F;
@@ -57,8 +54,11 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   private float rectX;
   private float rectY;
 
-  public DefaultWaypoint(WaypointsAddon addon, WaypointMeta meta,
-      WaypointObjectMeta waypointObjectMeta) {
+  public DefaultWaypoint(
+      WaypointsAddon addon,
+      WaypointMeta meta,
+      WaypointObjectMeta waypointObjectMeta
+  ) {
     super(waypointObjectMeta.pos());
 
     this.addon = addon;
@@ -114,7 +114,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     stack.translate(0, 0, BACKGROUND_DEPTH);
     gfx.depthFunc(GlConst.GL_NEVER);
 
-    this.renderBackground(stack, 2F);
+    this.renderBackground(stack, 1F);
 
     gfx.depthFunc(GlConst.GL_LEQUAL);
     stack.pop();
@@ -128,7 +128,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   public void renderBackground(Stack stack, float padding) {
     Component text = this.waypointObjectMeta().formatTitle();
 
-    this.marginBetweenTextAndIcon = this.iconWidth == 0F ? 0F : 2F;
+    this.marginBetweenTextAndIcon = this.iconWidth == 0F ? 0F : 4F;
 
     this.rectX =
         (COMPONENT_RENDERER.width(text) + this.iconWidth + this.marginBetweenTextAndIcon) / 2;
@@ -140,10 +140,10 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     RECTANGLE_RENDERER
         .pos(
-            this.rectX + padding,
-            this.rectY + padding,
             -this.rectX - padding,
-            -this.rectY - padding
+            -this.rectY - padding,
+            this.rectX + padding,
+            this.rectY + padding - 1F
         )
         .color(Colors.BACKGROUND_COLOR)
         .render(stack);
@@ -155,14 +155,16 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
-    this.iconWidth = ICON_WIDTH;
+    WaypointIcon icon = this.meta().icon();
+    float renderHeight = COMPONENT_RENDERER.height() - 1;
+    this.iconWidth = icon.getScaledWidth(renderHeight);
 
-    WaypointTextures.MARKER_ICON.render(
+    icon.icon().render(
         stack,
-        -this.rectX,
-        -this.rectY - 0.5F,
+        -this.rectX /*- this.iconWidth - this.marginBetweenTextAndIcon - 1*/,
+        -this.rectY,
         this.iconWidth,
-        ICON_HEIGHT,
+        renderHeight,
         false,
         this.meta().getColor().get()
     );
@@ -171,15 +173,14 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   public void renderText(Stack stack) {
     Component text = this.waypointObjectMeta().formatTitle();
 
+    // render twice to fix that clouds are rendered in front of the text
     COMPONENT_RENDERER.builder()
         .text(text)
         .shadow(false)
         .discrete(true)
-        .centered(true)
-        .pos(this.iconWidth / 2 + this.marginBetweenTextAndIcon + 1F, -this.rectY)
+        .pos(-this.rectX + this.iconWidth + this.marginBetweenTextAndIcon, -this.rectY)
         .useFloatingPointPosition(true)
         .allowColors(true)
-        .shouldBatch(false)
         .render(stack);
   }
 }

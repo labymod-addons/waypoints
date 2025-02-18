@@ -83,6 +83,14 @@ public interface WaypointBuilder {
   @NotNull WaypointBuilder color(Color color);
 
   /**
+   * Sets the icon of the waypoint. Default is {@link WaypointIcon#DEFAULT}.
+   *
+   * @param icon the icon
+   * @return the builder instance
+   */
+  @NotNull WaypointBuilder icon(WaypointIcon icon);
+
+  /**
    * Sets the {@link WaypointType}. Check {@link WaypointType} for more information on what each
    * type is for.
    *

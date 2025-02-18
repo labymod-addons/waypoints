@@ -80,8 +80,7 @@ public class WaypointUpdateListener {
         (float) (playerPosition.getZ() - waypointLocation.getZ())
     );
 
-    double distanceToPlayer = Math.sqrt(
-        distanceVec.lengthSquared()); //todo use DoubleVector3#length
+    double distanceToPlayer = distanceVec.length();
     if (false) {
       return;
     }

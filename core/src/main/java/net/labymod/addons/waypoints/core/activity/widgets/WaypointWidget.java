@@ -16,7 +16,7 @@
 
 package net.labymod.addons.waypoints.core.activity.widgets;
 
-import net.labymod.addons.waypoints.WaypointTextures;
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
@@ -24,25 +24,33 @@ import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
-import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
+import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 
 @AutoWidget
-public class WaypointWidget extends SimpleWidget {
+public class WaypointWidget extends FlexibleContentWidget {
 
-  private final WaypointMeta meta;
-  private final IconWidget icon = new IconWidget(WaypointTextures.MARKER_ICON);
-  private final ComponentWidget title;
-  private final WaypointObjectMeta worldObjectMeta;
+  protected final WaypointMeta meta;
+  protected final WaypointObjectMeta worldObjectMeta;
+  private final ComponentWidget titleWidget;
+  private final ComponentWidget distanceWidget;
+  private double lastDistance = Double.MIN_VALUE;
 
   public WaypointWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
     this.meta = meta;
     this.worldObjectMeta = worldObjectMeta;
+    this.addId("waypoint-widget");
 
-    //todo distance
-    this.title = ComponentWidget.component(this.meta.title());
-    this.title.addId("title");
+    this.titleWidget = ComponentWidget.component(this.meta.title());
+    this.titleWidget.addId("title");
+
+    if (worldObjectMeta == null) {
+      this.distanceWidget = null;
+    } else {
+      this.lastDistance = worldObjectMeta.getDistance();
+      this.distanceWidget = ComponentWidget.component(worldObjectMeta.createDistanceComponent());
+    }
   }
 
   public WaypointWidget(WaypointMeta meta) {
@@ -53,25 +61,46 @@ public class WaypointWidget extends SimpleWidget {
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    this.title.textColor().set(this.meta.getColor().get());
-    this.addChild(this.title);
+    WaypointIcon icon = this.meta.icon();
+    float iconHeight = Math.max(16, icon.getHeight());
+    IconWidget iconWidget = new IconWidget(this.meta.icon().icon());
+    iconWidget.setVariable("--width", icon.getScaledWidth(iconHeight));
+    iconWidget.setVariable("--height", iconHeight);
 
-    this.icon.color().set(this.meta.getColor().get());
-    this.icon.addId("icon");
-    this.addChild(this.icon);
+    iconWidget.color().set(this.meta.color().get());
+    iconWidget.addId("icon");
+    this.addContent(iconWidget);
 
-    if (this.meta.getType() == WaypointType.SERVER_SESSION) {
+    this.titleWidget.textColor().set(this.meta.color().get());
+    this.addFlexibleContent(this.titleWidget);
+
+    if (this.meta.type() == WaypointType.SERVER_SESSION) {
       IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
 
       typeWidget.addId("type");
       typeWidget.setHoverComponent(Component.translatable("labyswaypoints.gui.overview.temporary"));
 
-      this.addChild(typeWidget);
+      this.addContent(typeWidget);
+    }
+
+    if (this.distanceWidget != null) {
+      this.addContent(this.distanceWidget);
     }
   }
 
   @Override
   public void tick() {
     super.tick();
+    if (this.distanceWidget == null || this.worldObjectMeta == null) {
+      return;
+    }
+
+    double distance = this.worldObjectMeta.getDistance();
+    if (this.lastDistance == distance) {
+      return;
+    }
+
+    this.lastDistance = distance;
+    this.distanceWidget.setComponent(this.worldObjectMeta.createDistanceComponent());
   }
 }

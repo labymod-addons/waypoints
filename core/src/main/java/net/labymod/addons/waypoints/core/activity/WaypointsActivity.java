@@ -17,7 +17,6 @@
 package net.labymod.addons.waypoints.core.activity;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.container.ManageContainer;
@@ -26,7 +25,6 @@ import net.labymod.addons.waypoints.core.activity.widgets.HeaderWidget;
 import net.labymod.addons.waypoints.core.activity.widgets.WaypointListItemWidget;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
-import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
@@ -66,7 +64,6 @@ public class WaypointsActivity extends Activity {
   private FlexibleContentWidget inputWidget;
   private Action action;
   private Component manageTitle;
-  private Consumer<WaypointMeta> modifier;
 
   public WaypointsActivity(boolean overview) {
     this.overview = overview;
@@ -170,13 +167,13 @@ public class WaypointsActivity extends Activity {
 
         this.inputWidget = new FlexibleContentWidget();
         ManageContainer manageContainerAdd = new ManageContainer(newWaypoint, this.manageTitle,
-            this.modifier, this.inputWidget, this);
+            this.inputWidget, this);
         overlayWidget = manageContainerAdd.initializeManageContainer();
         break;
       case EDIT:
         this.inputWidget = new FlexibleContentWidget();
         ManageContainer manageContainerWidgetEdit = new ManageContainer(this.selectedWaypoint,
-            this.manageTitle, this.modifier, this.inputWidget, this);
+            this.manageTitle, this.inputWidget, this);
         overlayWidget = manageContainerWidgetEdit.initializeManageContainer();
         break;
       case REMOVE:
@@ -252,10 +249,6 @@ public class WaypointsActivity extends Activity {
 
   public void setManageTitle(Component manageTitle) {
     this.manageTitle = manageTitle;
-  }
-
-  public void setModifier(Consumer<WaypointMeta> modifier) {
-    this.modifier = modifier;
   }
 
   public enum Action {

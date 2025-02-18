@@ -20,6 +20,7 @@ import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
 import net.labymod.addons.waypoints.waypoint.WaypointContext;
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.client.component.Component;
@@ -36,6 +37,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   private String identifier;
   private Component title;
   private Color color = Color.WHITE;
+  private WaypointIcon icon = WaypointIcon.DEFAULT;
   private WaypointType type;
   private DoubleVector3 location;
   private boolean visible = true;
@@ -58,6 +60,12 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   @Override
   public @NotNull WaypointBuilder color(Color color) {
     this.color = color;
+    return this;
+  }
+
+  @Override
+  public @NotNull WaypointBuilder icon(WaypointIcon icon) {
+    this.icon = icon;
     return this;
   }
 
@@ -112,6 +120,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
     Preconditions.notNull(this.color, "Missing color");
     Preconditions.notNull(this.type, "Missing type");
     Preconditions.notNull(this.location, "Missing location");
+    Preconditions.notNull(this.icon, "Missing icon");
     Preconditions.notNull(this.dimension, "Missing dimension");
     if (this.context == null || this.contextType == null) {
       throw new NullPointerException("Missing server or world");
@@ -125,6 +134,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
         this.location,
         this.contextType,
         this.context,
+        this.icon,
         this.dimension,
         this.visible
     );

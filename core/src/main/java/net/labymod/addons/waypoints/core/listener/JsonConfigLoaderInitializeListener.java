@@ -14,21 +14,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.waypoints;
+package net.labymod.addons.waypoints.core.listener;
 
+import com.google.gson.GsonBuilder;
+import net.labymod.addons.waypoints.core.gson.WaypointIconTypeAdapter;
 import net.labymod.addons.waypoints.waypoint.WaypointIcon;
-import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.event.Subscribe;
+import net.labymod.api.event.labymod.config.JsonConfigLoaderInitializeEvent;
 
-/**
- * Use {@link WaypointIcon} instead.
- */
-@Deprecated
-public class WaypointTextures {
+public class JsonConfigLoaderInitializeListener {
 
-  /**
-   * Use {@link WaypointIcon#DEFAULT} instead.
-   */
-  @Deprecated
-  public static final Icon MARKER_ICON = WaypointIcon.DEFAULT.icon();
-
+  @Subscribe
+  public void onJsonConfigLoaderInitialize(JsonConfigLoaderInitializeEvent event) {
+    GsonBuilder builder = event.getGsonBuilder();
+    builder.registerTypeAdapter(WaypointIcon.class, new WaypointIconTypeAdapter());
+  }
 }
