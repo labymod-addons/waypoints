@@ -35,6 +35,7 @@ public class WaypointObjectMeta {
   private double distanceToPlayer;
   private boolean outOfRange;
   private Component cachedTitle;
+  private float alpha = 1.0F;
 
   public WaypointObjectMeta(WaypointMeta meta) {
     this.scale = 0;
@@ -69,6 +70,14 @@ public class WaypointObjectMeta {
 
   public double getDistance() {
     return this.distanceToPlayer;
+  }
+
+  public float getAlpha() {
+    return this.alpha;
+  }
+
+  public void setAlpha(float alpha) {
+    this.alpha = alpha;
   }
 
   public void setDistance(double distanceToPlayer) {

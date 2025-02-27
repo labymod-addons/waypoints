@@ -48,6 +48,7 @@ public class WaypointUpdateListener {
   private boolean scaleDynamically;
   private boolean hideWhenOutOfRange;
   private double outOfRangeDistance;
+  private boolean fadeOut;
 
   public WaypointUpdateListener(WaypointsAddon addon) {
     this.waypointService = Waypoints.references().waypointService();
@@ -66,6 +67,11 @@ public class WaypointUpdateListener {
     this.apply(
         configuration.outOfRangeDistance(),
         value -> this.outOfRangeDistance = value
+    );
+
+    this.apply(
+        configuration.fadeOut(),
+        value -> this.fadeOut = value
     );
   }
 
@@ -121,13 +127,28 @@ public class WaypointUpdateListener {
 
     if (!this.scaleDynamically) {
       waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
+      if (!waypointObjectMeta.isOutOfRange() && distanceToPlayer > TARGET_DISTANCE - 32) {
+        float alpha = (float) (1 - (distanceToPlayer - (TARGET_DISTANCE - 32)) / 32);
+        waypointObjectMeta.setAlpha(alpha);
+      } else {
+        waypointObjectMeta.setAlpha(1.0F);
+      }
+
       waypointObjectMeta.setScale(DEFAULT_SIZE);
       return;
     }
 
-    if (this.hideWhenOutOfRange && distanceToPlayer > this.outOfRangeDistance) {
-      waypointObjectMeta.setOutOfRange(true);
-      return;
+    waypointObjectMeta.setAlpha(1.0F);
+    if (this.hideWhenOutOfRange) {
+      if (distanceToPlayer > this.outOfRangeDistance) {
+        waypointObjectMeta.setOutOfRange(true);
+        return;
+      }
+
+      if (this.fadeOut && distanceToPlayer > this.outOfRangeDistance - 32) {
+        float alpha = (float) (1 - (distanceToPlayer - (this.outOfRangeDistance - 32)) / 32);
+        waypointObjectMeta.setAlpha(alpha);
+      }
     }
 
     final float normalizedDistance = (float) (distanceToPlayer / TARGET_DISTANCE);

@@ -27,6 +27,7 @@ import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.GFXBridge;
 import net.labymod.api.client.gfx.GlConst;
 import net.labymod.api.client.gui.screen.widget.Widget;
+import net.labymod.api.client.gui.screen.widget.util.WidgetMeta;
 import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
@@ -45,6 +46,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   private static final ComponentRenderer COMPONENT_RENDERER = Laby.labyAPI().renderPipeline()
       .componentRenderer();
 
+  private final WidgetMeta widgetMeta = new WidgetMeta();
   private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
   private final WaypointsAddon addon;
@@ -103,6 +105,11 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   ) {
     stack.push();
 
+    float alpha = this.waypointObjectMeta.getAlpha();
+    if (alpha != 1.0F) {
+      this.widgetMeta.multiplyAlpha(alpha);
+    }
+
     GFXBridge gfx = Laby.gfx();
 
     stack.scale(WAYPOINT_SCALE * this.waypointObjectMeta.getScale());
@@ -121,6 +128,10 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     this.renderIcon(stack);
     this.renderText(stack);
+
+    if (alpha != 1.0F) {
+      this.widgetMeta.revertAlphaState();
+    }
 
     stack.pop();
   }

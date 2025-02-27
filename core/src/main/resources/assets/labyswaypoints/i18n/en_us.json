@@ -42,6 +42,10 @@
             "name": "Out of Range Distance",
             "description": "The distance in blocks at which the Waypoints should be hidden."
         },
+      "fadeOut": {
+        "name": "Fade Out Before Hiding",
+        "description": "Whether the Waypoint should fade out before it is out of range."
+      },
       "showHudIndicators": {
         "name": "Show Waypoint HUD indicators",
         "description": "Indicators for Waypoints behind the player will be displayed in the HUD."

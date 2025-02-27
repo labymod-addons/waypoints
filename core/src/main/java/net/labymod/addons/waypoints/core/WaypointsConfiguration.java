@@ -81,6 +81,10 @@ public class WaypointsConfiguration extends AddonConfig {
   @SettingRequires("hideWhenOutOfRange")
   private final ConfigProperty<Integer> outOfRangeDistance = new ConfigProperty<>(2048);
 
+  @SwitchSetting
+  @SettingRequires("hideWhenOutOfRange")
+  private final ConfigProperty<Boolean> fadeOut = new ConfigProperty<>(true);
+
   @SettingSection("distance")
   @DropdownSetting
   private final ConfigProperty<Formatting> distanceFormatting = ConfigProperty.createEnum(
@@ -159,6 +163,10 @@ public class WaypointsConfiguration extends AddonConfig {
 
   public ConfigProperty<Integer> outOfRangeDistance() {
     return this.outOfRangeDistance;
+  }
+
+  public ConfigProperty<Boolean> fadeOut() {
+    return this.fadeOut;
   }
 
   @ActivitySetting
