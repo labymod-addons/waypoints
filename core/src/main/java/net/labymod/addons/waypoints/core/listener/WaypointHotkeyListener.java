@@ -16,13 +16,13 @@
 
 package net.labymod.addons.waypoints.core.listener;
 
+import net.labymod.addons.waypoints.WaypointService;
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsConfiguration;
-import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
-import net.labymod.addons.waypoints.core.activity.WaypointsActivity.Action;
-import net.labymod.addons.waypoints.waypoint.WaypointType;
+import net.labymod.addons.waypoints.core.activity.popup.ManageWaypointSimplePopup;
+import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.api.Laby;
-import net.labymod.api.client.component.Component;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.input.KeyEvent;
 import net.labymod.api.event.client.input.KeyEvent.State;
@@ -43,23 +43,38 @@ public class WaypointHotkeyListener {
     }
 
     WaypointsConfiguration config = this.addon.configuration();
-
-    if (config.hotkey().get() == event.key()) {
-      this.createWaypoint(WaypointType.PERMANENT);
+    if (config.createKey().get() == event.key()) {
+      new ManageWaypointSimplePopup().displayAsActivity();
+      return;
     }
+
+    if (config.editClosestKey().get() != event.key()) {
+      return;
+    }
+
+    WaypointService waypointService = Waypoints.references().waypointService();
+    Waypoint closest = null;
+    for (Waypoint waypoint : waypointService.getVisible()) {
+      double distance = waypoint.waypointObjectMeta().getDistance();
+      if (distance <= 15) {
+        if (closest == null) {
+          closest = waypoint;
+          continue;
+        }
+
+        if (distance < closest.waypointObjectMeta().getDistance()) {
+          closest = waypoint;
+        }
+      }
+    }
+
+    if (closest == null) {
+      //todo i18n
+      this.addon.labyAPI().minecraft().chatExecutor().displayClientMessage("No Waypoint to edit "
+          + "within 15 blocks found.");
+      return;
+    }
+
+    new ManageWaypointSimplePopup(closest).displayAsActivity();
   }
-
-  private void createWaypoint(WaypointType type) {
-    WaypointsActivity activity = new WaypointsActivity(false);
-
-    activity.setAction(Action.ADD);
-    activity.setManageTitle(Component.translatable("labyswaypoints.gui.create." + switch (type) {
-      case PERMANENT -> "permanent";
-      case SERVER_SESSION -> "temporary";
-      default -> throw new IllegalStateException("Unexpected value: " + type);
-    }));
-
-    Laby.labyAPI().minecraft().minecraftWindow().displayScreen(activity);
-  }
-
 }

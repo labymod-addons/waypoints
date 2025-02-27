@@ -16,7 +16,6 @@
 
 package net.labymod.addons.waypoints.waypoint;
 
-import java.util.Objects;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.client.component.Component;
@@ -27,6 +26,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class WaypointMeta {
 
   private final String id;
@@ -34,7 +35,7 @@ public class WaypointMeta {
   private final String context;
   private final WaypointType type;
   private String dimension;
-  private Component title;
+  private Component title; // todo why is this a component? replace with string
   private Color color;
   private DoubleVector3 location;
   private WaypointIcon icon;
@@ -273,5 +274,20 @@ public class WaypointMeta {
   @Override
   public int hashCode() {
     return Objects.hashCode(this.id);
+  }
+
+  public WaypointMeta copy() {
+    return new WaypointMeta(
+        this.id,
+        this.title.copy(),
+        this.color,
+        this.type,
+        this.location.copy(),
+        this.contextType,
+        this.context,
+        this.icon,
+        this.dimension,
+        this.visible
+    );
   }
 }

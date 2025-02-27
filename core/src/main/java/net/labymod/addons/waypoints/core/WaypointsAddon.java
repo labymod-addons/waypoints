@@ -16,7 +16,6 @@
 
 package net.labymod.addons.waypoints.core;
 
-import javax.inject.Singleton;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.listener.ConfigurationVersionUpdateListener;
@@ -24,10 +23,22 @@ import net.labymod.addons.waypoints.core.listener.JsonConfigLoaderInitializeList
 import net.labymod.addons.waypoints.core.listener.ServerWaypointListener;
 import net.labymod.addons.waypoints.core.listener.WaypointHotkeyListener;
 import net.labymod.addons.waypoints.core.listener.WaypointUpdateListener;
+import net.labymod.addons.waypoints.core.serverapi.handler.WaypointDimensionPacketHandler;
+import net.labymod.addons.waypoints.core.serverapi.handler.WaypointPacketHandler;
+import net.labymod.addons.waypoints.core.serverapi.handler.WaypointRemovePacketHandler;
 import net.labymod.addons.waypoints.core.waypoint.DefaultWaypointService;
+import net.labymod.api.Laby;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.models.addon.annotation.AddonMain;
 import net.labymod.api.reference.annotation.Referenceable;
+import net.labymod.api.serverapi.LabyModProtocolService;
+import net.labymod.serverapi.core.AddonProtocol;
+import net.labymod.serverapi.integration.waypoints.WaypointsIntegration;
+import net.labymod.serverapi.integration.waypoints.packets.WaypointDimensionPacket;
+import net.labymod.serverapi.integration.waypoints.packets.WaypointPacket;
+import net.labymod.serverapi.integration.waypoints.packets.WaypointRemovePacket;
+
+import javax.inject.Singleton;
 
 @AddonMain
 @Singleton
@@ -56,9 +67,22 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     // Apply the current dimension, in case the user is already ingame
     waypointService.setCurrentDimension();
 
+    WaypointDimensionPacketHandler dimensionPacketHandler = new WaypointDimensionPacketHandler();
+
     this.registerListener(new WaypointHotkeyListener(this));
-    this.registerListener(new ServerWaypointListener());
+    this.registerListener(new ServerWaypointListener(dimensionPacketHandler));
     this.registerListener(new WaypointUpdateListener(this));
+
+    LabyModProtocolService protocolService = Laby.references().labyModProtocolService();
+    WaypointsIntegration integration = protocolService.getOrRegisterIntegration(
+        WaypointsIntegration.class,
+        WaypointsIntegration::new
+    );
+
+    AddonProtocol protocol = integration.waypointsProtocol();
+    protocol.registerHandler(WaypointPacket.class, new WaypointPacketHandler());
+    protocol.registerHandler(WaypointRemovePacket.class, new WaypointRemovePacketHandler());
+    protocol.registerHandler(WaypointDimensionPacket.class, dimensionPacketHandler);
   }
 
   @Override

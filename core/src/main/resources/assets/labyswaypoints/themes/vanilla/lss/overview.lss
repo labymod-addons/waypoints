@@ -1,3 +1,11 @@
+.waypoints-overview-list {
+  height: fit-content;
+
+  .waypoints-list-header {
+    height: fit-content;
+  }
+}
+
 .waypoints-container {
   width: 100%;
   height: 100%;
@@ -53,6 +61,11 @@ Header {
   }
 }
 
+.waypoint-icon-with-vars {
+  height: var(--height);
+  width: var(--width);
+}
+
 .waypoint-widget {
   width: 100%;
   height: 24;
@@ -67,11 +80,6 @@ Header {
     alignment-y: center;
   }
 
-  .icon {
-    height: var(--height);
-    width: var(--width);
-  }
-
   .type {
     height: 80%;
     width: height;
@@ -82,6 +90,11 @@ Header {
     height: width;
     clickable: true;
     margin-right: 2;
+  }
+
+  .title {
+    height: fit-content;
+    min-height: 1;
   }
 
   &:selected {

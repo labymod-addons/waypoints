@@ -144,7 +144,6 @@ public interface WaypointBuilder {
    *
    * @return the built waypoint
    * @throws NullPointerException  if the title, color, type, location, server or dimension not set
-   * @throws IllegalStateException if the identifier is already in use
    */
   @NotNull WaypointMeta build();
 

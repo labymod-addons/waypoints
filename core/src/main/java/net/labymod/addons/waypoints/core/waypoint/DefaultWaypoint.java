@@ -131,7 +131,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     this.marginBetweenTextAndIcon = this.iconWidth == 0F ? 0F : 4F;
 
     this.rectX =
-        (COMPONENT_RENDERER.width(text) + this.iconWidth + this.marginBetweenTextAndIcon) / 2;
+        (COMPONENT_RENDERER.width(text) + this.iconWidth + this.marginBetweenTextAndIcon - 1) / 2;
     this.rectY = COMPONENT_RENDERER.height() / 2;
 
     if (!this.addon.configuration().background().get()) {
@@ -174,6 +174,13 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     Component text = this.waypointObjectMeta().formatTitle();
 
     // render twice to fix that clouds are rendered in front of the text
+    COMPONENT_RENDERER.builder()
+        .text(text)
+        .shadow(false)
+        .pos(-this.rectX + this.iconWidth + this.marginBetweenTextAndIcon, -this.rectY)
+        .useFloatingPointPosition(true)
+        .allowColors(true)
+        .render(stack);
     COMPONENT_RENDERER.builder()
         .text(text)
         .shadow(false)

@@ -17,10 +17,6 @@
 package net.labymod.addons.waypoints.waypoint;
 
 import it.unimi.dsi.fastutil.Pair;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 import net.labymod.api.Textures.SpriteCommon;
 import net.labymod.api.client.gfx.pipeline.texture.data.Sprite;
 import net.labymod.api.client.gui.icon.Icon;
@@ -29,11 +25,20 @@ import net.labymod.api.client.resources.texture.ThemeTextureLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+
 public class WaypointIcon {
 
   public static final ThemeTextureLocation SPRITE = ThemeTextureLocation.of("labyswaypoints",
       "markers", 128, 128);
   private static final Map<String, WaypointIcon> SELECTABLE_ICONS = new HashMap<>();
+  private static final List<WaypointIcon> BUILT_IN_ICONS = new ArrayList<>();
   public static final WaypointIcon DEFAULT = createDefault("default", 0, 0, 9, 14);
   public static final WaypointIcon TEST = getOrCompute(
       "test",
@@ -43,7 +48,9 @@ public class WaypointIcon {
       "big",
       key -> create(key, SpriteCommon.ROBOT)
   );
-
+  private static final List<WaypointIcon> UNMODIFIABLE_ICONS = Collections.unmodifiableList(
+      BUILT_IN_ICONS
+  );
   private final String identifier;
   private final Icon icon;
   private final Object configData;
@@ -86,6 +93,10 @@ public class WaypointIcon {
     );
 
     SELECTABLE_ICONS.put(identifier, waypointIcon);
+    if (!BUILT_IN_ICONS.contains(waypointIcon)) {
+      BUILT_IN_ICONS.add(waypointIcon);
+    }
+
     return waypointIcon;
   }
 
@@ -113,6 +124,10 @@ public class WaypointIcon {
     Objects.requireNonNull(function, "function");
     return SELECTABLE_ICONS.computeIfAbsent(identifier, key -> {
       WaypointIcon icon = function.apply(key);
+      if (icon != null && !BUILT_IN_ICONS.contains(icon)) {
+        BUILT_IN_ICONS.add(icon);
+      }
+
       return icon != null ? icon : new WaypointIcon(key, DEFAULT.icon(), null);
     });
   }
@@ -143,6 +158,10 @@ public class WaypointIcon {
       @NotNull Icon icon
   ) {
     return new WaypointIcon(identifier, icon, null);
+  }
+
+  public static @NotNull List<WaypointIcon> getSelectableIcons() {
+    return UNMODIFIABLE_ICONS;
   }
 
   public @NotNull Icon icon() {

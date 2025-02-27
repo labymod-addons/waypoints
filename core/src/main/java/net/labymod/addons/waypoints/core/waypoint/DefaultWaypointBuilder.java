@@ -112,8 +112,6 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
     WaypointService waypointService = Waypoints.references().waypointService();
     if (this.identifier == null) {
       this.identifier = waypointService.generateUniqueIdentifier();
-    } else if (!waypointService.isIdentifierAvailable(this.identifier)) {
-      throw new IllegalStateException("Identifier is already in use");
     }
 
     Preconditions.notNull(this.title, "Missing title");

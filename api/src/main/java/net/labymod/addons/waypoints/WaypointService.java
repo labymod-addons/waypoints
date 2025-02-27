@@ -16,10 +16,6 @@
 
 package net.labymod.addons.waypoints;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
 import net.labymod.addons.waypoints.event.RefreshWaypointsEvent;
 import net.labymod.addons.waypoints.event.WaypointAddEvent;
 import net.labymod.addons.waypoints.event.WaypointInitializeEvent;
@@ -34,6 +30,11 @@ import net.labymod.api.reference.annotation.Referenceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Referenceable
 public interface WaypointService {
@@ -55,9 +56,10 @@ public interface WaypointService {
    * {@link WaypointAddEvent} & {@link WaypointInitializeEvent}.
    *
    * @param meta the waypoint to add
+   * @return the added waypoint or {@code null} if the waypoint was not added
    * @throws IllegalArgumentException if the identifier is already taken
    */
-  void add(@NotNull WaypointMeta meta);
+  @Nullable Waypoint add(@NotNull WaypointMeta meta);
 
   /**
    * Removes the provided waypoint from the world & the config. Also fires
@@ -67,6 +69,15 @@ public interface WaypointService {
    * @throws IllegalArgumentException if no waypoint with the provided meta is registered
    */
   boolean remove(@NotNull WaypointMeta meta);
+
+  /**
+   * Updates the provided waypoint in the world & the config. Also fires
+   * {@link WaypointInitializeEvent}.
+   *
+   * @param meta the waypoint to update
+   * @return the added waypoint or {@code null} if the waypoint was not updated
+   */
+  @Nullable Waypoint update(@NotNull WaypointMeta meta);
 
   /**
    * Removes all waypoints that match the provided predicate from the world & the config. Also fires

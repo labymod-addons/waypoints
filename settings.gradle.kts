@@ -13,6 +13,7 @@ pluginManagement {
             maven("https://maven.fabricmc.net/")
             gradlePluginPortal()
             mavenCentral()
+            mavenLocal()
         }
 
         dependencies {

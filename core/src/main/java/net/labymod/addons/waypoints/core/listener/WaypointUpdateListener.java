@@ -19,98 +19,128 @@ package net.labymod.addons.waypoints.core.listener;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
+import net.labymod.addons.waypoints.core.WaypointsConfiguration;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
+import net.labymod.api.client.Minecraft;
 import net.labymod.api.client.entity.player.ClientPlayer;
+import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.event.Phase;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.render.GameRenderEvent;
+import net.labymod.api.util.math.MathHelper;
 import net.labymod.api.util.math.position.Position;
 import net.labymod.api.util.math.vector.DoubleVector3;
+
+import java.util.function.Consumer;
 
 public class WaypointUpdateListener {
 
   private static final float DEFAULT_SIZE = 1F;
-  private static final double TARGET_DISTANCE = 110.0F;
-  private final WaypointsAddon addon;
+  private static final double TARGET_DISTANCE = 128;
   private final WaypointService waypointService;
 
+  private double prevX = 0;
+  private double prevY = 0;
+  private double prevZ = 0;
+
+  private boolean scaleDynamically;
+  private boolean hideWhenOutOfRange;
+  private double outOfRangeDistance;
+
   public WaypointUpdateListener(WaypointsAddon addon) {
-    this.addon = addon;
     this.waypointService = Waypoints.references().waypointService();
 
-    this.addon.configuration().alwaysShowWaypoints().addChangeListener(
-        value -> this.waypointService.setWaypointsRenderCache(false)
+    WaypointsConfiguration configuration = addon.configuration();
+    this.apply(
+        configuration.scaleDynamically(),
+        value -> this.scaleDynamically = value
+    );
+
+    this.apply(
+        configuration.hideWhenOutOfRange(),
+        value -> this.hideWhenOutOfRange = value
+    );
+
+    this.apply(
+        configuration.outOfRangeDistance(),
+        value -> this.outOfRangeDistance = value
     );
   }
 
   @Subscribe
   public void onGameRender(GameRenderEvent event) {
-    ClientPlayer player = Laby.labyAPI().minecraft().getClientPlayer();
-
-    if (!this.shouldRenderWaypoints(event) || player == null) {
+    Minecraft minecraft = Laby.labyAPI().minecraft();
+    ClientPlayer player = minecraft.getClientPlayer();
+    if (player == null || !minecraft.isIngame() || event.phase() != Phase.PRE) {
       return;
     }
 
     Position playerPosition = player.position();
-    for (Waypoint waypoint : this.waypointService.getVisible()) {
-      WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
+    double x = playerPosition.getX();
+    double y = playerPosition.getY() + player.getEyeHeight();
+    double z = playerPosition.getZ();
+    if (this.waypointService.isWaypointsRenderCache()
+        && x == this.prevX
+        && y == this.prevY
+        && z == this.prevZ) {
+      return;
+    }
 
-      this.updateWaypoint(playerPosition, waypoint, waypointObjectMeta);
+    this.prevX = x;
+    this.prevY = y;
+    this.prevZ = z;
+
+    for (Waypoint waypoint : this.waypointService.getVisible()) {
+      this.updateWaypoint(
+          x,
+          y,
+          z,
+          waypoint.meta().location(),
+          waypoint.waypointObjectMeta()
+      );
     }
 
     this.waypointService.setWaypointsRenderCache(true);
   }
 
-  private boolean shouldRenderWaypoints(GameRenderEvent event) {
-    return Laby.labyAPI().minecraft().isIngame() && event.phase() != Phase.POST;
-  }
-
   private void updateWaypoint(
-      Position playerPosition,
-      Waypoint waypoint,
+      double playerX,
+      double playerY,
+      double playerZ,
+      DoubleVector3 location,
       WaypointObjectMeta waypointObjectMeta
   ) {
+    double distanceXSquared = MathHelper.square(playerX - location.getX());
+    double distanceYSquared = MathHelper.square(playerY - location.getY());
+    double distanceZSquared = MathHelper.square(playerZ - location.getZ());
+    double distanceSquared = distanceXSquared + distanceYSquared + distanceZSquared;
+    double distanceToPlayer = Math.sqrt(distanceSquared);
+    waypointObjectMeta.setDistance(distanceToPlayer);
 
-    DoubleVector3 waypointLocation = waypoint.meta().location();
-    DoubleVector3 distanceVec = new DoubleVector3(
-        (float) (playerPosition.getX() - waypointLocation.getX()),
-        (float) (playerPosition.getY() - waypointLocation.getY()),
-        (float) (playerPosition.getZ() - waypointLocation.getZ())
-    );
-
-    double distanceToPlayer = distanceVec.length();
-    if (false) {
+    if (!this.scaleDynamically) {
+      waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
+      waypointObjectMeta.setScale(DEFAULT_SIZE);
       return;
     }
 
-    waypointObjectMeta.setDistance(distanceToPlayer);
-    waypointObjectMeta.setOutOfRange(false);
-
-    if (this.addon.configuration().alwaysShowWaypoints().get()) {
-      if (distanceToPlayer <= TARGET_DISTANCE) {
-        waypointObjectMeta.setScale(
-            (float) (4F * (distanceToPlayer / TARGET_DISTANCE) + DEFAULT_SIZE)
-        );
-
-        waypointObjectMeta.pos().set(waypointLocation);
-      } else {
-        waypointObjectMeta.setScale(5F);
-        double normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
-
-        DoubleVector3 newPosition = new DoubleVector3(
-            playerPosition.getX() - (distanceVec.getX() * normalizationFactor),
-            playerPosition.getY() - (distanceVec.getY() * normalizationFactor),
-            playerPosition.getZ() - (distanceVec.getZ() * normalizationFactor)
-        );
-
-        waypointObjectMeta.pos().set(newPosition);
-      }
-    } else {
-      waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
-      waypointObjectMeta.setScale(DEFAULT_SIZE);
-      waypointObjectMeta.pos().set(waypointLocation);
+    if (this.hideWhenOutOfRange && distanceToPlayer > this.outOfRangeDistance) {
+      waypointObjectMeta.setOutOfRange(true);
+      return;
     }
+
+    final float normalizedDistance = (float) (distanceToPlayer / TARGET_DISTANCE);
+    float factor = 4 + (distanceToPlayer >= TARGET_DISTANCE ? 1 : 1 * normalizedDistance);
+    waypointObjectMeta.setScale(factor * normalizedDistance + DEFAULT_SIZE);
+    waypointObjectMeta.setOutOfRange(false);
+  }
+
+  private <T> void apply(ConfigProperty<T> property, Consumer<T> consumer) {
+    consumer.accept(property.get());
+    property.addChangeListener(newValue -> {
+      consumer.accept(newValue);
+      this.waypointService.setWaypointsRenderCache(false);
+    });
   }
 }

@@ -1,3 +1,5 @@
+import net.labymod.labygradle.common.extension.model.labymod.ReleaseChannels
+
 plugins {
     id("net.labymod.labygradle")
     id("net.labymod.labygradle.addon")
@@ -25,6 +27,7 @@ labyMod {
         description = "Allows you to set waypoints in the world. Compatible with Laby's Minimap."
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
+        releaseChannel = ReleaseChannels.INTERNAL
     }
 }
 
@@ -36,6 +39,7 @@ subprojects {
     repositories {
         maven("https://libraries.minecraft.net/")
         maven("https://repo.spongepowered.org/repository/maven-public/")
+        mavenLocal()
     }
 
     license {

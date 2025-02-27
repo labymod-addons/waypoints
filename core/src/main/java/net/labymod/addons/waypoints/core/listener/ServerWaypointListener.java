@@ -18,7 +18,9 @@ package net.labymod.addons.waypoints.core.listener;
 
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.core.serverapi.handler.WaypointDimensionPacketHandler;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
+import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.network.server.ServerDisconnectEvent;
 import net.labymod.api.event.client.network.server.ServerJoinEvent;
@@ -26,47 +28,49 @@ import net.labymod.api.event.client.network.server.SubServerSwitchEvent;
 import net.labymod.api.event.client.world.DimensionChangeEvent;
 import net.labymod.api.event.client.world.WorldEnterEvent;
 import net.labymod.api.event.client.world.WorldLeaveEvent;
+import net.labymod.serverapi.integration.waypoints.packets.WaypointDimensionPacket;
 
 public class ServerWaypointListener {
 
   private final WaypointService waypointService;
+  private final WaypointDimensionPacketHandler packetHandler;
 
-  public ServerWaypointListener() {
+  public ServerWaypointListener(WaypointDimensionPacketHandler packetHandler) {
     this.waypointService = Waypoints.references().waypointService();
+    this.packetHandler = packetHandler;
   }
 
   @Subscribe
   public void reloadWaypoints(ServerJoinEvent event) {
-    this.waypointService.setCurrentDimension();
-    this.waypointService.refresh();
+    this.setDimension();
   }
 
   @Subscribe
   public void reloadWaypoints(WorldEnterEvent event) {
-    this.waypointService.setCurrentDimension();
-    this.waypointService.refresh();
+    this.setDimension();
   }
 
   @Subscribe
   public void reloadWaypoints(DimensionChangeEvent event) {
-    this.waypointService.setDimension(event.toDimension());
-    this.waypointService.refresh();
+    this.setDimension(event.toDimension());
   }
 
   @Subscribe
   public void reloadWaypoints(SubServerSwitchEvent event) {
-    this.waypointService.setCurrentDimension();
-    this.waypointService.refresh();
+    this.setDimension();
   }
 
   @Subscribe
   public void clearWaypointsCache(ServerDisconnectEvent event) {
     this.clearTemporaryWaypoints();
+    this.packetHandler.clear();
+    this.waypointService.refresh();
   }
 
   @Subscribe
   public void clearWaypointsCache(WorldLeaveEvent event) {
     this.clearTemporaryWaypoints();
+    this.waypointService.refresh();
   }
 
   private void clearTemporaryWaypoints() {
@@ -75,5 +79,29 @@ public class ServerWaypointListener {
     );
 
     this.waypointService.setWaypointsRenderCache(true);
+  }
+
+  private void setDimension() {
+    this.setDimension(null);
+  }
+
+  private void setDimension(ResourceLocation dimension) {
+    String serverDimension = this.packetHandler.getDimension();
+    WaypointDimensionPacket.Until serverDimensionUntil = this.packetHandler.getUntil();
+    if (serverDimensionUntil != null && serverDimension != null) {
+      if (serverDimensionUntil == WaypointDimensionPacket.Until.DISCONNECT) {
+        return;
+      }
+
+      this.packetHandler.clear();
+    }
+
+    if (dimension == null) {
+      this.waypointService.setCurrentDimension();
+    } else {
+      this.waypointService.setDimension(dimension);
+    }
+
+    this.waypointService.refresh();
   }
 }

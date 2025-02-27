@@ -31,76 +31,112 @@ import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 @AutoWidget
 public class WaypointWidget extends FlexibleContentWidget {
 
-  protected final WaypointMeta meta;
-  protected final WaypointObjectMeta worldObjectMeta;
-  private final ComponentWidget titleWidget;
-  private final ComponentWidget distanceWidget;
-  private double lastDistance = Double.MIN_VALUE;
+	protected final WaypointMeta meta;
+	protected final WaypointObjectMeta worldObjectMeta;
 
-  public WaypointWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
-    this.meta = meta;
-    this.worldObjectMeta = worldObjectMeta;
-    this.addId("waypoint-widget");
+	private IconWidget iconWidget;
+	private ComponentWidget titleWidget;
+	private ComponentWidget distanceWidget;
+	private double lastDistance = Double.MIN_VALUE;
 
-    this.titleWidget = ComponentWidget.component(this.meta.title());
-    this.titleWidget.addId("title");
+	public WaypointWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
+		this.meta = meta;
+		this.worldObjectMeta = worldObjectMeta;
+		this.addId("waypoint-widget");
+	}
 
-    if (worldObjectMeta == null) {
-      this.distanceWidget = null;
-    } else {
-      this.lastDistance = worldObjectMeta.getDistance();
-      this.distanceWidget = ComponentWidget.component(worldObjectMeta.createDistanceComponent());
-    }
-  }
+	public WaypointWidget(WaypointMeta meta) {
+		this(meta, null);
+	}
 
-  public WaypointWidget(WaypointMeta meta) {
-    this(meta, null);
-  }
+	@Override
+	public void initialize(Parent parent) {
+		super.initialize(parent);
 
-  @Override
-  public void initialize(Parent parent) {
-    super.initialize(parent);
+		WaypointIcon icon = this.meta.icon();
+		float iconHeight = Math.max(16, icon.getHeight());
+		this.iconWidget = new IconWidget(this.meta.icon().icon());
+		this.iconWidget.setVariable("--width", icon.getScaledWidth(iconHeight));
+		this.iconWidget.setVariable("--height", iconHeight);
 
-    WaypointIcon icon = this.meta.icon();
-    float iconHeight = Math.max(16, icon.getHeight());
-    IconWidget iconWidget = new IconWidget(this.meta.icon().icon());
-    iconWidget.setVariable("--width", icon.getScaledWidth(iconHeight));
-    iconWidget.setVariable("--height", iconHeight);
+		this.iconWidget.color().set(this.meta.color().get());
+		this.iconWidget.addId("icon", "waypoint-icon-with-vars");
+		this.addContent(this.iconWidget);
 
-    iconWidget.color().set(this.meta.color().get());
-    iconWidget.addId("icon");
-    this.addContent(iconWidget);
+		this.titleWidget = ComponentWidget.component(this.meta.title());
+		this.titleWidget.addId("title");
+		this.titleWidget.textColor().set(this.meta.color().get());
+		this.addFlexibleContent(this.titleWidget);
 
-    this.titleWidget.textColor().set(this.meta.color().get());
-    this.addFlexibleContent(this.titleWidget);
+		if (this.meta.type() == WaypointType.SERVER_SESSION) {
+			IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
 
-    if (this.meta.type() == WaypointType.SERVER_SESSION) {
-      IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
+			typeWidget.addId("type");
+			typeWidget.setHoverComponent(Component.translatable("labyswaypoints.gui.overview"
+					+ ".temporary"));
 
-      typeWidget.addId("type");
-      typeWidget.setHoverComponent(Component.translatable("labyswaypoints.gui.overview.temporary"));
+			this.addContent(typeWidget);
+		}
 
-      this.addContent(typeWidget);
-    }
+		if (this.worldObjectMeta == null) {
+			this.distanceWidget = null;
+		} else {
+			this.lastDistance = this.worldObjectMeta.getDistance();
+			this.distanceWidget = ComponentWidget.component(
+					this.worldObjectMeta.createDistanceComponent()
+			);
 
-    if (this.distanceWidget != null) {
-      this.addContent(this.distanceWidget);
-    }
-  }
+			this.addContent(this.distanceWidget);
+		}
+	}
 
-  @Override
-  public void tick() {
-    super.tick();
-    if (this.distanceWidget == null || this.worldObjectMeta == null) {
-      return;
-    }
+	@Override
+	public void tick() {
+		super.tick();
+		this.updateDistance();
+	}
 
-    double distance = this.worldObjectMeta.getDistance();
-    if (this.lastDistance == distance) {
-      return;
-    }
+	public void updateTitle() {
+		if (this.titleWidget == null) {
+			return;
+		}
 
-    this.lastDistance = distance;
-    this.distanceWidget.setComponent(this.worldObjectMeta.createDistanceComponent());
-  }
+		this.titleWidget.setComponent(this.meta.title());
+	}
+
+	public void updateColor() {
+		if (this.iconWidget != null) {
+			this.iconWidget.color().set(this.meta.color().get());
+		}
+
+		if (this.titleWidget != null) {
+			this.titleWidget.textColor().set(this.meta.color().get());
+		}
+	}
+
+	public void updateDistance() {
+		if (this.distanceWidget == null || this.worldObjectMeta == null) {
+			return;
+		}
+
+		double distance = this.worldObjectMeta.getDistance();
+		if (this.lastDistance == distance) {
+			return;
+		}
+
+		this.lastDistance = distance;
+		this.distanceWidget.setComponent(this.worldObjectMeta.createDistanceComponent());
+	}
+
+	public void updateIcon() {
+		if (this.iconWidget == null) {
+			return;
+		}
+
+		WaypointIcon icon = this.meta.icon();
+		this.iconWidget.icon().set(icon.icon());
+		float iconHeight = Math.max(16, icon.getHeight());
+		this.iconWidget.setVariable("--width", icon.getScaledWidth(iconHeight));
+		this.iconWidget.setVariable("--height", iconHeight);
+	}
 }

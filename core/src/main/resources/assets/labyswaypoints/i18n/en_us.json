@@ -1,5 +1,6 @@
 {
   "labyswaypoints": {
+      "defaultName": "New Waypoint",
     "settings": {
       "name": "Laby's Waypoints",
       "enabled": {
@@ -19,6 +20,10 @@
       "permanentHotkey": {
         "name": "Create Waypoint"
       },
+        "editClosestKey": {
+            "name": "Edit Closest Waypoint",
+            "description": "Edit the closest waypoint within 15 Blocks to your current position."
+        },
       "background": {
         "name": "Background"
       },
@@ -29,6 +34,14 @@
         "name": "Scale Dynamically",
         "description": "Whether the Waypoints should scale dynamically (to be visible on a long distance) or always be the same size."
       },
+        "hideWhenOutOfRange": {
+            "name": "Hide Out of Range",
+            "description": "Whether the Waypoints should be hidden when they are out of range."
+        },
+        "outOfRangeDistance": {
+            "name": "Out of Range Distance",
+            "description": "The distance in blocks at which the Waypoints should be hidden."
+        },
       "showHudIndicators": {
         "name": "Show Waypoint HUD indicators",
         "description": "Indicators for Waypoints behind the player will be displayed in the HUD."

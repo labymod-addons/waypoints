@@ -16,9 +16,6 @@
 
 package net.labymod.addons.waypoints.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.event.WaypointAddEvent;
@@ -32,17 +29,23 @@ import net.labymod.api.client.gui.screen.activity.Activity;
 import net.labymod.api.client.gui.screen.key.Key;
 import net.labymod.api.client.gui.screen.widget.widgets.activity.settings.ActivitySettingWidget.ActivitySetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.KeybindWidget.KeyBindSetting;
+import net.labymod.api.client.gui.screen.widget.widgets.input.SliderWidget.SliderSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget.ColorPickerSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.dropdown.DropdownWidget.DropdownSetting;
 import net.labymod.api.configuration.loader.annotation.Exclude;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
+import net.labymod.api.configuration.settings.annotation.SettingRequires;
 import net.labymod.api.configuration.settings.annotation.SettingSection;
 import net.labymod.api.event.DefaultCancellable;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.MethodOrder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class WaypointsConfiguration extends AddonConfig {
 
@@ -54,18 +57,29 @@ public class WaypointsConfiguration extends AddonConfig {
   @KeyBindSetting(acceptMouseButtons = true)
   private final ConfigProperty<Key> permanentHotkey = new ConfigProperty<>(Key.M);
 
+  @KeyBindSetting(acceptMouseButtons = true)
+  private final ConfigProperty<Key> editClosestKey = new ConfigProperty<>(Key.NONE);
+
   @SettingSection("Settings")
   @SwitchSetting
-  private final ConfigProperty<Boolean> background = new ConfigProperty<>(false);
+  private final ConfigProperty<Boolean> background = new ConfigProperty<>(true);
 
   @SwitchSetting
   private final ConfigProperty<Boolean> icon = new ConfigProperty<>(true);
 
   @SwitchSetting
-  private final ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(false);
+  private final ConfigProperty<Boolean> showHudIndicators = new ConfigProperty<>(true);
 
   @SwitchSetting
-  private final ConfigProperty<Boolean> showHudIndicators = new ConfigProperty<>(true);
+  private final ConfigProperty<Boolean> alwaysShowWaypoints = new ConfigProperty<>(true);
+
+  @SwitchSetting
+  @SettingRequires("alwaysShowWaypoints")
+  private final ConfigProperty<Boolean> hideWhenOutOfRange = new ConfigProperty<>(true);
+
+  @SliderSetting(min = 128, max = 8192, steps = 128)
+  @SettingRequires("hideWhenOutOfRange")
+  private final ConfigProperty<Integer> outOfRangeDistance = new ConfigProperty<>(2048);
 
   @SettingSection("distance")
   @DropdownSetting
@@ -95,8 +109,12 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.enabled;
   }
 
-  public ConfigProperty<Key> hotkey() {
+  public ConfigProperty<Key> createKey() {
     return this.permanentHotkey;
+  }
+
+  public ConfigProperty<Key> editClosestKey() {
+    return this.editClosestKey;
   }
 
   public ConfigProperty<Boolean> background() {
@@ -107,7 +125,7 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.icon;
   }
 
-  public ConfigProperty<Boolean> alwaysShowWaypoints() {
+  public ConfigProperty<Boolean> scaleDynamically() {
     return this.alwaysShowWaypoints;
   }
 
@@ -135,10 +153,18 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.hideDistance;
   }
 
+  public ConfigProperty<Boolean> hideWhenOutOfRange() {
+    return this.hideWhenOutOfRange;
+  }
+
+  public ConfigProperty<Integer> outOfRangeDistance() {
+    return this.outOfRangeDistance;
+  }
+
   @ActivitySetting
-  @MethodOrder(after = "permanentHotkey")
+  @MethodOrder(after = "editClosestKey")
   public Activity openWaypoints() {
-    return new WaypointsActivity(true);
+    return new WaypointsActivity();
   }
 
   public @Unmodifiable List<WaypointMeta> getWaypoints() {
@@ -173,6 +199,23 @@ public class WaypointsConfiguration extends AddonConfig {
     }
 
     this.waypoints.remove(meta);
+    return true;
+  }
+
+  public boolean update(@NotNull WaypointMeta meta) {
+    int index = -1;
+    for (int i = 0; i < this.waypoints.size(); i++) {
+      if (this.waypoints.get(i).equals(meta)) {
+        index = i;
+        break;
+      }
+    }
+
+    if (index == -1) {
+      return false;
+    }
+
+    this.waypoints.set(index, meta);
     return true;
   }
 
