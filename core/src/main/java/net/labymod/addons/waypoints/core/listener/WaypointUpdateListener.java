@@ -39,6 +39,7 @@ public class WaypointUpdateListener {
 
   private static final float DEFAULT_SIZE = 1F;
   private static final double TARGET_DISTANCE = 128;
+  private static final double FADE_OUT_DISTANCE = 32;
   private final WaypointService waypointService;
 
   private double prevX = 0;
@@ -127,8 +128,10 @@ public class WaypointUpdateListener {
 
     if (!this.scaleDynamically) {
       waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
-      if (!waypointObjectMeta.isOutOfRange() && distanceToPlayer > TARGET_DISTANCE - 32) {
-        float alpha = (float) (1 - (distanceToPlayer - (TARGET_DISTANCE - 32)) / 32);
+      if (!waypointObjectMeta.isOutOfRange()
+          && distanceToPlayer > TARGET_DISTANCE - FADE_OUT_DISTANCE) {
+        float alpha = (float) (1
+            - (distanceToPlayer - (TARGET_DISTANCE - FADE_OUT_DISTANCE)) / FADE_OUT_DISTANCE);
         waypointObjectMeta.setAlpha(alpha);
       } else {
         waypointObjectMeta.setAlpha(1.0F);
@@ -145,8 +148,10 @@ public class WaypointUpdateListener {
         return;
       }
 
-      if (this.fadeOut && distanceToPlayer > this.outOfRangeDistance - 32) {
-        float alpha = (float) (1 - (distanceToPlayer - (this.outOfRangeDistance - 32)) / 32);
+      if (this.fadeOut && distanceToPlayer > this.outOfRangeDistance - FADE_OUT_DISTANCE) {
+        float alpha = (float) (1
+            - (distanceToPlayer - (this.outOfRangeDistance - FADE_OUT_DISTANCE))
+            / FADE_OUT_DISTANCE);
         waypointObjectMeta.setAlpha(alpha);
       }
     }
