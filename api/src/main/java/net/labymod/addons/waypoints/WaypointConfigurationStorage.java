@@ -16,12 +16,12 @@
 
 package net.labymod.addons.waypoints;
 
-import net.labymod.addons.waypoints.utils.Formatting;
+import net.labymod.addons.waypoints.utils.DistanceFormatting;
 import net.labymod.api.client.component.format.TextColor;
 
 public interface WaypointConfigurationStorage {
 
-  Formatting distanceFormatting();
+  DistanceFormatting distanceFormatting();
 
   TextColor distanceBracketColor();
 
@@ -30,4 +30,8 @@ public interface WaypointConfigurationStorage {
   boolean isDistanceBeforeName();
 
   boolean isHideDistance();
+
+  boolean isConvertToKilometers();
+
+  int getKilometersThreshold();
 }

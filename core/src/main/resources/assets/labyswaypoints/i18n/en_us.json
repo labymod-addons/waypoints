@@ -67,6 +67,12 @@
       },
       "hideDistance": {
         "name": "Hide"
+      },
+      "convertToKilometers": {
+        "name": "Convert to Kilometers"
+      },
+      "kiloMeterThreshold": {
+        "name": "Kilometer Threshold"
       }
     },
     "gui": {

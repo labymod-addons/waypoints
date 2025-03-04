@@ -18,7 +18,7 @@ package net.labymod.addons.waypoints.utils;
 
 import net.labymod.api.client.component.Component;
 
-public enum Formatting {
+public enum DistanceFormatting {
 
   BRACKETS("[", "]"),
   CURLY("{", "}"),
@@ -35,7 +35,7 @@ public enum Formatting {
   private final Component prefix;
   private final Component suffix;
 
-  Formatting(String prefix, String suffix) {
+  DistanceFormatting(String prefix, String suffix) {
     this.prefix = Component.text(prefix);
     this.suffix = suffix == null ? null : Component.text(suffix);
   }

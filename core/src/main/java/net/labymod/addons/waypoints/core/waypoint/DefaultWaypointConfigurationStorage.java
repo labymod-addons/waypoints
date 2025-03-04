@@ -16,26 +16,29 @@
 
 package net.labymod.addons.waypoints.core.waypoint;
 
-import java.util.function.Consumer;
 import net.labymod.addons.waypoints.WaypointConfigurationStorage;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsConfiguration;
-import net.labymod.addons.waypoints.utils.Formatting;
+import net.labymod.addons.waypoints.utils.DistanceFormatting;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.util.Color;
+
+import java.util.function.Consumer;
 
 public class DefaultWaypointConfigurationStorage implements WaypointConfigurationStorage {
 
   private final WaypointsAddon addon;
   private final DefaultWaypointService waypointService;
 
-  private Formatting distanceFormatting;
+  private DistanceFormatting distanceFormatting;
   private TextColor distanceBracketColor;
   private TextColor distanceValueColor;
   private boolean distanceBeforeName;
   private boolean hideDistance;
+  private boolean convertToKilometers;
+  private int kilometersThreshold;
 
   protected DefaultWaypointConfigurationStorage(
       WaypointsAddon addon,
@@ -65,10 +68,18 @@ public class DefaultWaypointConfigurationStorage implements WaypointConfiguratio
         configuration.hideDistance(),
         value -> this.hideDistance = value
     );
+    this.apply(
+        configuration.convertToKilometers(),
+        value -> this.convertToKilometers = value
+    );
+    this.apply(
+        configuration.kilometersThreshold(),
+        value -> this.kilometersThreshold = value
+    );
   }
 
   @Override
-  public Formatting distanceFormatting() {
+  public DistanceFormatting distanceFormatting() {
     return this.distanceFormatting;
   }
 
@@ -90,6 +101,16 @@ public class DefaultWaypointConfigurationStorage implements WaypointConfiguratio
   @Override
   public boolean isHideDistance() {
     return this.hideDistance;
+  }
+
+  @Override
+  public boolean isConvertToKilometers() {
+    return this.convertToKilometers;
+  }
+
+  @Override
+  public int getKilometersThreshold() {
+    return this.kilometersThreshold;
   }
 
   private <T> void apply(ConfigProperty<T> property, Consumer<T> consumer) {

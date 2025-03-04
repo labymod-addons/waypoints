@@ -18,7 +18,7 @@ package net.labymod.addons.waypoints.waypoint;
 
 import net.labymod.addons.waypoints.WaypointConfigurationStorage;
 import net.labymod.addons.waypoints.Waypoints;
-import net.labymod.addons.waypoints.utils.Formatting;
+import net.labymod.addons.waypoints.utils.DistanceFormatting;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.util.math.vector.DoubleVector3;
@@ -72,14 +72,6 @@ public class WaypointObjectMeta {
     return this.distanceToPlayer;
   }
 
-  public float getAlpha() {
-    return this.alpha;
-  }
-
-  public void setAlpha(float alpha) {
-    this.alpha = alpha;
-  }
-
   public void setDistance(double distanceToPlayer) {
     this.clearTitleCache();
     this.distanceToPlayer = distanceToPlayer;
@@ -88,6 +80,14 @@ public class WaypointObjectMeta {
   @Deprecated
   public void setDistance(float distanceToPlayer) {
     this.setDistance((double) distanceToPlayer);
+  }
+
+  public float getAlpha() {
+    return this.alpha;
+  }
+
+  public void setAlpha(float alpha) {
+    this.alpha = alpha;
   }
 
   /**
@@ -133,9 +133,19 @@ public class WaypointObjectMeta {
 
   public Component createDistanceComponent(boolean withSpace, boolean after) {
     long distanceToPlayer = Math.round(this.distanceToPlayer);
+    String distanceString;
+    if (CONFIGURATION_STORAGE.isConvertToKilometers()
+        && distanceToPlayer >= CONFIGURATION_STORAGE.getKilometersThreshold()) {
+      double kilometers = distanceToPlayer / 1000D;
+      double roundedKilometers = Math.round(kilometers * 100D) / 100D;
+
+      distanceString = roundedKilometers + "km";
+    } else {
+      distanceString = distanceToPlayer + "m";
+    }
 
     Component distanceComponent = Component.text(
-        distanceToPlayer + "m",
+        distanceString,
         CONFIGURATION_STORAGE.distanceValueColor()
     );
 
@@ -146,9 +156,9 @@ public class WaypointObjectMeta {
 
     if (withSpace) {
       if (after) {
-        component.append(0, Formatting.space());
+        component.append(0, DistanceFormatting.space());
       } else {
-        component.append(Formatting.space());
+        component.append(DistanceFormatting.space());
       }
     }
 

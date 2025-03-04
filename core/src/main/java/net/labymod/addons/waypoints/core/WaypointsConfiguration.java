@@ -20,23 +20,28 @@ import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.event.WaypointAddEvent;
 import net.labymod.addons.waypoints.event.WaypointRemoveEvent;
-import net.labymod.addons.waypoints.utils.Formatting;
+import net.labymod.addons.waypoints.utils.DistanceFormatting;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.addon.AddonConfig;
+import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.screen.activity.Activity;
 import net.labymod.api.client.gui.screen.key.Key;
+import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.widgets.activity.settings.ActivitySettingWidget.ActivitySetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.KeybindWidget.KeyBindSetting;
+import net.labymod.api.client.gui.screen.widget.widgets.input.SliderWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SliderWidget.SliderSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget.ColorPickerSetting;
 import net.labymod.api.client.gui.screen.widget.widgets.input.dropdown.DropdownWidget.DropdownSetting;
 import net.labymod.api.configuration.loader.annotation.Exclude;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
+import net.labymod.api.configuration.settings.annotation.SettingListener;
 import net.labymod.api.configuration.settings.annotation.SettingRequires;
 import net.labymod.api.configuration.settings.annotation.SettingSection;
+import net.labymod.api.configuration.settings.type.SettingElement;
 import net.labymod.api.event.DefaultCancellable;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.MethodOrder;
@@ -87,8 +92,8 @@ public class WaypointsConfiguration extends AddonConfig {
 
   @SettingSection("distance")
   @DropdownSetting
-  private final ConfigProperty<Formatting> distanceFormatting = ConfigProperty.createEnum(
-      Formatting.BRACKETS);
+  private final ConfigProperty<DistanceFormatting> distanceFormatting = ConfigProperty.createEnum(
+      DistanceFormatting.BRACKETS);
 
   @ColorPickerSetting
   private final ConfigProperty<Color> distanceBracketColor = new ConfigProperty<>(Color.GRAY);
@@ -101,6 +106,13 @@ public class WaypointsConfiguration extends AddonConfig {
 
   @SwitchSetting
   private final ConfigProperty<Boolean> hideDistance = new ConfigProperty<>(false);
+
+  @SwitchSetting
+  private final ConfigProperty<Boolean> convertToKilometers = new ConfigProperty<>(false);
+
+  @SliderSetting(min = 100, max = 2000, steps = 100)
+  @SettingRequires("convertToKilometers")
+  private final ConfigProperty<Integer> kilometersThreshold = new ConfigProperty<>(1000);
 
   @Exclude
   private final List<WaypointMeta> waypoints = new ArrayList<>();
@@ -145,7 +157,7 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.distanceBracketColor;
   }
 
-  public ConfigProperty<Formatting> distanceFormatting() {
+  public ConfigProperty<DistanceFormatting> distanceFormatting() {
     return this.distanceFormatting;
   }
 
@@ -169,10 +181,28 @@ public class WaypointsConfiguration extends AddonConfig {
     return this.fadeOut;
   }
 
+  public ConfigProperty<Boolean> convertToKilometers() {
+    return this.convertToKilometers;
+  }
+
+  public ConfigProperty<Integer> kilometersThreshold() {
+    return this.kilometersThreshold;
+  }
+
   @ActivitySetting
   @MethodOrder(after = "editClosestKey")
   public Activity openWaypoints() {
     return new WaypointsActivity();
+  }
+
+  @SettingListener(target = "kilometersThreshold", type = SettingListener.EventType.INITIALIZE)
+  public void initializeKilometersThreshold(SettingElement setting) {
+    Widget widget = setting.getWidgets()[0];
+    if (!(widget instanceof SliderWidget sliderWidget)) {
+      return;
+    }
+
+    sliderWidget.withFormatter(value -> Component.text((int) value + "m"));
   }
 
   public @Unmodifiable List<WaypointMeta> getWaypoints() {
