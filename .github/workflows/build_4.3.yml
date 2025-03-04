@@ -2,7 +2,7 @@ name: LabyAddon Build
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "dev/next" ]
   workflow_dispatch:
 
 jobs:
