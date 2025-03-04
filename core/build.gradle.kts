@@ -4,7 +4,7 @@ dependencies {
     labyProcessor()
     api(project(":api"))
 
-    addonMavenDependency("net.labymod.serverapi.integration:waypoints:0.0.0")
+    addonMavenDependency("net.labymod.serverapi.integration:waypoints:1.0.2")
 }
 
 labyModAnnotationProcessor {
