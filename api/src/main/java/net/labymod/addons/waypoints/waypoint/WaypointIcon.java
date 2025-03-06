@@ -22,6 +22,9 @@ import net.labymod.api.client.gfx.pipeline.texture.data.Sprite;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.client.resources.texture.ThemeTextureLocation;
+import net.labymod.api.client.world.item.VanillaItem;
+import net.labymod.api.client.world.item.VanillaItems;
+import net.labymod.api.loader.MinecraftVersions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +38,8 @@ import java.util.function.Function;
 
 public class WaypointIcon {
 
+  // pickaxe, axe, shovel, hoe, sword, bow, shield, helmet, chestplate, leggings, boots, potion,
+  // food, bed, compass, clock, map
   public static final ThemeTextureLocation SPRITE = ThemeTextureLocation.of("labyswaypoints",
       "markers", 128, 128);
   private static final Map<String, WaypointIcon> SELECTABLE_ICONS = new HashMap<>();
@@ -48,13 +53,25 @@ public class WaypointIcon {
       "big",
       key -> create(key, SpriteCommon.ROBOT)
   );
+  public static final WaypointIcon DIAMOND_PICKAXE = create("diamond_pickaxe",
+      VanillaItems.DIAMOND_PICKAXE, "pickaxe");
+  public static final WaypointIcon GOLD_PICKAXE = create("gold_pickaxe",
+      VanillaItems.GOLDEN_PICKAXE,
+      "pickaxe");
+  public static final WaypointIcon IRON_PICKAXE = create("iron_pickaxe", VanillaItems.IRON_PICKAXE,
+      "pickaxe");
+
+
+
   private static final List<WaypointIcon> UNMODIFIABLE_ICONS = Collections.unmodifiableList(
       BUILT_IN_ICONS
   );
+
   private final String identifier;
   private final Icon icon;
   private final Object configData;
   private final boolean builtIn;
+  private String variantOf;
 
   private WaypointIcon(
       @NotNull String identifier,
@@ -85,9 +102,37 @@ public class WaypointIcon {
       int width,
       int height
   ) {
+    return createDefault(identifier, Icon.sprite(SPRITE, slotX, slotY, width, height));
+  }
+
+  private static WaypointIcon create(
+      @NotNull String identifier,
+      @NotNull VanillaItem item,
+      @Nullable String variant
+  ) {
+    Icon icon;
+    if (item.isAvailable()) {
+      ResourceLocation itemIdentifier = item.identifier();
+      String itemDir = MinecraftVersions.V1_12_2.orOlder() ? "items" : "item";
+
+      icon = Icon.texture(ResourceLocation.create(
+          itemIdentifier.getNamespace(),
+          "textures/" + itemDir + "/" + itemIdentifier.getPath() + ".png"
+      ));
+    } else {
+      icon = DEFAULT.icon();
+    }
+
+    return createDefault(identifier, icon).variant(variant);
+  }
+
+  private static WaypointIcon createDefault(
+      @NotNull String identifier,
+      @NotNull Icon icon
+  ) {
     WaypointIcon waypointIcon = new WaypointIcon(
         identifier,
-        Icon.sprite(SPRITE, slotX, slotY, width, height),
+        icon,
         null,
         true
     );
@@ -186,6 +231,23 @@ public class WaypointIcon {
 
   public float getScaledHeight(float width) {
     return this.getHeight() / (this.getWidth() / width);
+  }
+
+  public @NotNull WaypointIcon variantOf(@Nullable String string) {
+    if (this.builtIn) {
+      throw new IllegalStateException("Cannot change the variant of a built-in icon");
+    }
+
+    return this.variant(string);
+  }
+
+  private @NotNull WaypointIcon variant(@Nullable String string) {
+    this.variantOf = string;
+    return this;
+  }
+
+  public @Nullable String getVariantOf() {
+    return this.variantOf;
   }
 
   public float getWidth() {

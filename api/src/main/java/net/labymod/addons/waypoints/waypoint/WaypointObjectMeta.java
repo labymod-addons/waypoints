@@ -35,6 +35,7 @@ public class WaypointObjectMeta {
   private double distanceToPlayer;
   private boolean outOfRange;
   private Component cachedTitle;
+  private boolean interpolatePosition = false;
   private float alpha = 1.0F;
 
   public WaypointObjectMeta(WaypointMeta meta) {
@@ -80,6 +81,14 @@ public class WaypointObjectMeta {
   @Deprecated
   public void setDistance(float distanceToPlayer) {
     this.setDistance((double) distanceToPlayer);
+  }
+
+  public boolean isInterpolatePosition() {
+    return this.interpolatePosition;
+  }
+
+  public void setInterpolatePosition(boolean interpolatePosition) {
+    this.interpolatePosition = interpolatePosition;
   }
 
   public float getAlpha() {
@@ -137,7 +146,12 @@ public class WaypointObjectMeta {
     if (CONFIGURATION_STORAGE.isConvertToKilometers()
         && distanceToPlayer >= CONFIGURATION_STORAGE.getKilometersThreshold()) {
       double kilometers = distanceToPlayer / 1000D;
-      double roundedKilometers = Math.round(kilometers * 100D) / 100D;
+      double roundedKilometers;
+      if (distanceToPlayer > 2500) {
+        roundedKilometers = Math.round(kilometers * 10D) / 10D;
+      } else {
+        roundedKilometers = Math.round(kilometers * 100D) / 100D;
+      }
 
       distanceString = roundedKilometers + "km";
     } else {

@@ -20,6 +20,7 @@ import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsConfiguration;
+import net.labymod.addons.waypoints.core.waypoint.DefaultWaypoint;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
@@ -37,9 +38,9 @@ import java.util.function.Consumer;
 
 public class WaypointUpdateListener {
 
-  private static final float DEFAULT_SIZE = 1F;
-  private static final double TARGET_DISTANCE = 128;
-  private static final double FADE_OUT_DISTANCE = 32;
+  private static final float DEFAULT_SIZE = .7F;
+  private static final int TARGET_DISTANCE = 128;
+  private static final int FADE_OUT_DISTANCE = 8;
   private final WaypointService waypointService;
 
   private double prevX = 0;
@@ -88,56 +89,98 @@ public class WaypointUpdateListener {
     double x = playerPosition.getX();
     double y = playerPosition.getY() + player.getEyeHeight();
     double z = playerPosition.getZ();
-    if (this.waypointService.isWaypointsRenderCache()
-        && x == this.prevX
-        && y == this.prevY
-        && z == this.prevZ) {
-      return;
-    }
-
+    boolean update =
+        !this.waypointService.isWaypointsRenderCache() || x != this.prevX || y != this.prevY
+            || z != this.prevZ;
     this.prevX = x;
     this.prevY = y;
     this.prevZ = z;
 
+    int renderDistance = Laby.labyAPI().minecraft().options().getActualRenderDistance() * 16;
+    float partialTicks = event.getPartialTicks();
     for (Waypoint waypoint : this.waypointService.getVisible()) {
-      this.updateWaypoint(
-          x,
-          y,
-          z,
-          waypoint.meta().location(),
-          waypoint.waypointObjectMeta()
-      );
+      if (update) {
+        this.updateWaypoint(
+            x,
+            y,
+            z,
+            waypoint,
+            renderDistance
+        );
+      }
+
+      WaypointObjectMeta objectMeta = waypoint.waypointObjectMeta();
+      if (!objectMeta.isOutOfRange() && waypoint instanceof DefaultWaypoint defaultWaypoint) {
+        DoubleVector3 pos = objectMeta.pos();
+        DoubleVector3 previousPosition = waypoint.previousPosition();
+        boolean hasPrevPosition = defaultWaypoint.hasPrevPosition();
+        if (hasPrevPosition
+            && previousPosition.getX() == pos.getX()
+            && previousPosition.getY() == pos.getY()
+            && previousPosition.getZ() == pos.getZ()) {
+          continue;
+        }
+
+        defaultWaypoint.applyPreviousPosition();
+        if (defaultWaypoint.waypointObjectMeta().isInterpolatePosition() && hasPrevPosition) {
+          double previousX = previousPosition.getX();
+          double previousY = previousPosition.getY();
+          double previousZ = previousPosition.getZ();
+
+          waypoint.position().set(
+              MathHelper.lerp(pos.getX(), previousX, partialTicks),
+              MathHelper.lerp(pos.getY(), previousY, partialTicks),
+              MathHelper.lerp(pos.getZ(), previousZ, partialTicks)
+          );
+        } else {
+          waypoint.position().set(pos);
+        }
+      }
     }
 
-    this.waypointService.setWaypointsRenderCache(true);
+    if (update) {
+      this.waypointService.setWaypointsRenderCache(true);
+    }
   }
 
   private void updateWaypoint(
       double playerX,
       double playerY,
       double playerZ,
-      DoubleVector3 location,
-      WaypointObjectMeta waypointObjectMeta
+      Waypoint waypoint,
+      int renderDistance
   ) {
-    double distanceXSquared = MathHelper.square(playerX - location.getX());
-    double distanceYSquared = MathHelper.square(playerY - location.getY());
-    double distanceZSquared = MathHelper.square(playerZ - location.getZ());
-    double distanceSquared = distanceXSquared + distanceYSquared + distanceZSquared;
+    DoubleVector3 location = waypoint.meta().location();
+    double distanceX = playerX - location.getX();
+    double distanceY = playerY - location.getY();
+    double distanceZ = playerZ - location.getZ();
+
+    double distanceSquared = MathHelper.square(distanceX)
+        + MathHelper.square(distanceY)
+        + MathHelper.square(distanceZ);
+
     double distanceToPlayer = Math.sqrt(distanceSquared);
+    WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
     waypointObjectMeta.setDistance(distanceToPlayer);
 
     if (!this.scaleDynamically) {
-      waypointObjectMeta.setOutOfRange(distanceToPlayer > TARGET_DISTANCE);
+      waypointObjectMeta.setOutOfRange(distanceToPlayer > renderDistance);
       if (!waypointObjectMeta.isOutOfRange()
-          && distanceToPlayer > TARGET_DISTANCE - FADE_OUT_DISTANCE) {
+          && distanceToPlayer > renderDistance - FADE_OUT_DISTANCE) {
         float alpha = (float) (1
-            - (distanceToPlayer - (TARGET_DISTANCE - FADE_OUT_DISTANCE)) / FADE_OUT_DISTANCE);
+            - (distanceToPlayer - (renderDistance - FADE_OUT_DISTANCE)) / FADE_OUT_DISTANCE);
         waypointObjectMeta.setAlpha(alpha);
       } else {
         waypointObjectMeta.setAlpha(1.0F);
       }
 
       waypointObjectMeta.setScale(DEFAULT_SIZE);
+      waypointObjectMeta.pos().set(location);
+      waypointObjectMeta.setInterpolatePosition(false);
+      if (waypoint instanceof DefaultWaypoint defaultWaypoint) {
+        defaultWaypoint.setHasPrevPosition(false);
+      }
+
       return;
     }
 
@@ -145,6 +188,12 @@ public class WaypointUpdateListener {
     if (this.hideWhenOutOfRange) {
       if (distanceToPlayer > this.outOfRangeDistance) {
         waypointObjectMeta.setOutOfRange(true);
+        waypointObjectMeta.pos().set(location);
+        waypointObjectMeta.setInterpolatePosition(false);
+        if (waypoint instanceof DefaultWaypoint defaultWaypoint) {
+          defaultWaypoint.setHasPrevPosition(false);
+        }
+
         return;
       }
 
@@ -156,9 +205,39 @@ public class WaypointUpdateListener {
       }
     }
 
-    final float normalizedDistance = (float) (distanceToPlayer / TARGET_DISTANCE);
-    float factor = 4 + (distanceToPlayer >= TARGET_DISTANCE ? 1 : 1 * normalizedDistance);
-    waypointObjectMeta.setScale(factor * normalizedDistance + DEFAULT_SIZE);
+    int targetDistance = TARGET_DISTANCE;
+    float scale;
+    boolean overwrittenPosition;
+    if (distanceToPlayer < 10) {
+      scale = DEFAULT_SIZE;
+      overwrittenPosition = false;
+    } else if (distanceToPlayer < targetDistance) {
+      distanceToPlayer -= 10;
+      final float normalizedDistance = (float) (distanceToPlayer / targetDistance);
+      float factor = 5 + 2 * normalizedDistance;
+      scale = DEFAULT_SIZE + factor * normalizedDistance;
+      overwrittenPosition = false;
+    } else {
+      scale = 7;
+
+      // move the waypoint to the edge of the render distance
+      double factor = targetDistance / distanceToPlayer;
+
+      double x = playerX - (distanceX * factor);
+      double y = playerY - (distanceY * factor);
+      double z = playerZ - (distanceZ * factor);
+
+      overwrittenPosition = true;
+      waypointObjectMeta.pos().set(x, y, z);
+      waypointObjectMeta.setInterpolatePosition(true);
+    }
+
+    if (!overwrittenPosition) {
+      waypointObjectMeta.pos().set(location);
+      waypointObjectMeta.setInterpolatePosition(false);
+    }
+
+    waypointObjectMeta.setScale(scale);
     waypointObjectMeta.setOutOfRange(false);
   }
 

@@ -33,6 +33,7 @@ import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
 import net.labymod.api.client.world.MinecraftCamera;
 import net.labymod.api.client.world.object.AbstractWorldObject;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,18 +51,20 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
   private final WaypointsAddon addon;
+  private final DoubleVector3 prevPosition;
   private float marginBetweenTextAndIcon;
   private float iconWidth;
-
   private float rectX;
   private float rectY;
+  private boolean hasPrevPosition;
 
   public DefaultWaypoint(
       WaypointsAddon addon,
       WaypointMeta meta,
       WaypointObjectMeta waypointObjectMeta
   ) {
-    super(waypointObjectMeta.pos());
+    super(waypointObjectMeta.pos().copy());
+    this.prevPosition = new DoubleVector3();
 
     this.addon = addon;
     this.waypointObjectMeta = waypointObjectMeta;
@@ -71,6 +74,24 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   @Override
   public WaypointMeta meta() {
     return this.meta;
+  }
+
+  @Override
+  public @NotNull DoubleVector3 previousPosition() {
+    return this.prevPosition;
+  }
+
+  public boolean hasPrevPosition() {
+    return this.hasPrevPosition;
+  }
+
+  public void applyPreviousPosition() {
+    this.prevPosition.set(this.position());
+    this.hasPrevPosition = true;
+  }
+
+  public void setHasPrevPosition(boolean hasPrevPosition) {
+    this.hasPrevPosition = hasPrevPosition;
   }
 
   @Override
