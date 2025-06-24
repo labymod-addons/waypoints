@@ -4,6 +4,7 @@ import net.labymod.api.client.component.Component;
 import net.labymod.api.models.Implements;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.debug.Preconditions;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 @Implements(WaypointBuilder.class)
@@ -12,7 +13,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   private Component title;
   private Color color;
   private WaypointType type;
-  private FloatVector3 location;
+  private DoubleVector3 location;
   private boolean visible;
   private String world;
   private String server;
@@ -37,7 +38,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   }
 
   @Override
-  public WaypointBuilder location(FloatVector3 location) {
+  public WaypointBuilder location(DoubleVector3 location) {
     this.location = location;
     return this;
   }

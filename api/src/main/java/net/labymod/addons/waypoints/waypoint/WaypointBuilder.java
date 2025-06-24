@@ -4,7 +4,7 @@ import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.reference.annotation.Referenceable;
 import net.labymod.api.util.Color;
-import net.labymod.api.util.math.vector.FloatVector3;
+import net.labymod.api.util.math.vector.DoubleVector3;
 
 @Referenceable
 public interface WaypointBuilder {
@@ -19,7 +19,7 @@ public interface WaypointBuilder {
 
   WaypointBuilder type(WaypointType type);
 
-  WaypointBuilder location(FloatVector3 location);
+  WaypointBuilder location(DoubleVector3 location);
 
   WaypointBuilder visible(boolean visible);
 

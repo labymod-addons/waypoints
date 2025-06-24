@@ -3,12 +3,13 @@ package net.labymod.addons.waypoints.waypoint;
 import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.format.TextColor;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 public class WaypointObjectMeta {
 
   private final WaypointMeta meta;
-  private final FloatVector3 position;
+  private final DoubleVector3 position;
   private float scale;
   private float distanceToPlayer;
   private boolean outOfRange;
@@ -21,7 +22,7 @@ public class WaypointObjectMeta {
     this.position = meta.getLocation().copy();
   }
 
-  public FloatVector3 position() {
+  public DoubleVector3 position() {
     return this.position;
   }
 

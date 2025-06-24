@@ -32,6 +32,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.layout.ScrollWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.util.Color;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 @AutoActivity
@@ -145,7 +146,7 @@ public class WaypointsActivity extends Activity {
                 .title(Component.text("New Waypoint"))
                 .color(Color.WHITE)
                 .type(WaypointType.PERMANENT)
-                .location(player != null ? player.eyePosition() : new FloatVector3(0F, 80F, 0F))
+                .location(player != null ? new DoubleVector3(player.eyePosition()) : new DoubleVector3(0F, 80F, 0F))
                 .visible(true)
                 .world(this.waypointService.actualWorld())
                 .server(this.waypointService.actualServer())

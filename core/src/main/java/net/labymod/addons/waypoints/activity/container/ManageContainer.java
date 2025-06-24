@@ -17,7 +17,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.input.TextFieldWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
-import net.labymod.api.util.math.vector.FloatVector3;
+import net.labymod.api.util.math.vector.DoubleVector3;
 
 public class ManageContainer {
 
@@ -126,7 +126,7 @@ public class ManageContainer {
       boolean permanent = this.waypointService.removeWaypoint(meta);
 
       try {
-        meta.setLocation(new FloatVector3(
+        meta.setLocation(new DoubleVector3(
             Integer.parseInt(xInput.getText()),
             Integer.parseInt(yInput.getText()),
             Integer.parseInt(zInput.getText())
@@ -137,7 +137,7 @@ public class ManageContainer {
         }
       }
 
-      if (nameInput.getText().length() > 0) {
+      if (!nameInput.getText().isEmpty()) {
         meta.setTitle(Component.text(nameInput.getText()));
       } else {
         meta.setTitle(Component.text("New Waypoint"));

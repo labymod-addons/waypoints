@@ -10,6 +10,8 @@ import net.labymod.api.client.entity.player.ClientPlayer;
 import net.labymod.api.event.Phase;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.render.GameRenderEvent;
+import net.labymod.api.util.math.position.Position;
+import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 
 public class WaypointUpdateListener {
@@ -36,7 +38,7 @@ public class WaypointUpdateListener {
       return;
     }
 
-    FloatVector3 playerPosition = player.position();
+    Position playerPosition = player.position();
 
     for (Waypoint waypoint : this.waypointService.getVisibleWaypoints()) {
       WaypointObjectMeta waypointObjectMeta = waypoint.waypointObjectMeta();
@@ -52,12 +54,12 @@ public class WaypointUpdateListener {
   }
 
   private void updateWaypoint(
-      FloatVector3 playerPosition,
+      Position playerPosition,
       Waypoint waypoint,
       WaypointObjectMeta waypointObjectMeta
   ) {
 
-    FloatVector3 distanceVec = new FloatVector3(
+    DoubleVector3 distanceVec = new DoubleVector3(
         playerPosition.getX() - waypoint.meta().getLocation().getX(),
         playerPosition.getY() - waypoint.meta().getLocation().getY(),
         playerPosition.getZ() - waypoint.meta().getLocation().getZ()
@@ -81,7 +83,7 @@ public class WaypointUpdateListener {
         waypointObjectMeta.setScale(5F);
         float normalizationFactor = TARGET_DISTANCE / distanceToPlayer;
 
-        FloatVector3 newPosition = new FloatVector3(
+        DoubleVector3 newPosition = new DoubleVector3(
             playerPosition.getX() - (distanceVec.getX() * normalizationFactor),
             playerPosition.getY() - (distanceVec.getY() * normalizationFactor),
             playerPosition.getZ() - (distanceVec.getZ() * normalizationFactor)

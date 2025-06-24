@@ -2,15 +2,21 @@ package net.labymod.addons.waypoints.waypoint;
 
 import net.labymod.addons.waypoints.WaypointTextures;
 import net.labymod.addons.waypoints.WaypointsAddon;
+import net.labymod.addons.waypoints.WaypointsRenderPrograms;
 import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
-import net.labymod.api.client.gfx.GFXBridge;
-import net.labymod.api.client.gfx.GlConst;
+import net.labymod.api.client.gfx.pipeline.program.RenderPrograms;
+import net.labymod.api.client.gfx.pipeline.texture.data.Sprite;
+import net.labymod.api.client.gfx.shader.ShaderTextures;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.widget.Widget;
+import net.labymod.api.client.render.batch.RectangleRenderContext;
+import net.labymod.api.client.render.batch.ResourceRenderContext;
 import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
+import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.client.world.MinecraftCamera;
 import net.labymod.api.client.world.object.AbstractWorldObject;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +30,8 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   private static final float BACKGROUND_DEPTH = 0.01F;
   private static final float WAYPOINT_SCALE = 0.04F;
 
-  private static final RectangleRenderer RECTANGLE_RENDERER = Laby.labyAPI().renderPipeline()
-      .rectangleRenderer();
-  private static final ComponentRenderer COMPONENT_RENDERER = Laby.labyAPI().renderPipeline()
+  private static final RectangleRenderer RECTANGLE_RENDERER = Laby.references().rectangleRenderer();
+  private static final ComponentRenderer COMPONENT_RENDERER = Laby.references()
       .componentRenderer();
 
   private final WaypointObjectMeta waypointObjectMeta;
@@ -76,15 +81,13 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   public void renderInWorld(
       @NotNull MinecraftCamera cam,
       @NotNull Stack stack,
-      float x,
-      float y,
-      float z,
+      double x,
+      double y,
+      double z,
       float delta,
       boolean darker
   ) {
     stack.push();
-
-    GFXBridge gfx = Laby.gfx();
 
     stack.scale(WAYPOINT_SCALE * this.waypointObjectMeta.getScale());
 
@@ -93,11 +96,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     stack.push();
     stack.translate(0, 0, BACKGROUND_DEPTH);
-    gfx.depthFunc(GlConst.GL_NEVER);
-
     this.renderBackground(stack, 2F);
-
-    gfx.depthFunc(GlConst.GL_LEQUAL);
     stack.pop();
 
     this.renderIcon(stack);
@@ -119,15 +118,15 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
-    RECTANGLE_RENDERER
-        .pos(
+    RectangleRenderContext context = Laby.references().rectangleRenderContext();
+    context.begin(stack)
+        .render(
             this.rectX + padding,
             this.rectY + padding,
             -this.rectX - padding,
-            -this.rectY - padding
-        )
-        .color(Colors.BACKGROUND_COLOR)
-        .render(stack);
+            -this.rectY - padding,
+            Colors.BACKGROUND_COLOR
+        ).uploadToBuffer(WaypointsRenderPrograms.BACKGROUND);
   }
 
   public void renderIcon(Stack stack) {
@@ -138,15 +137,31 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     this.iconWidth = ICON_WIDTH;
 
-    WaypointTextures.MARKER_ICON.render(
-        stack,
-        -this.rectX,
-        -this.rectY - 0.5F,
-        this.iconWidth,
-        ICON_HEIGHT,
-        false,
-        this.meta().getColor().get()
-    );
+    Icon markerIcon = WaypointTextures.MARKER_ICON;
+    Sprite sprite = markerIcon.sprite();
+
+    ShaderTextures.setShaderTexture(0, ResourceLocation.create("labyswaypoints", "textures/marker.png"));
+    ResourceRenderContext context = Laby.references().resourceRenderContext();
+
+    int resWidth = markerIcon.getResolutionWidth();
+    int resHeight = markerIcon.getResolutionHeight();
+
+    float width = sprite.getWidth();
+    width = width == 0.0f ? resWidth : width;
+
+    float height = sprite.getHeight();
+    height = height == 0.0f ? resHeight : height;
+
+    context.begin(stack)
+        .blit(
+            -this.rectX,
+            -this.rectY - 0.5F,
+            this.iconWidth,
+            ICON_HEIGHT,
+            sprite.getX(), sprite.getY(), width, height,
+            resWidth, resHeight,
+            -1
+        ).uploadToBuffer(WaypointsRenderPrograms.SEE_THROUGH_TEXTURED);
   }
 
   public void renderText(Stack stack) {
