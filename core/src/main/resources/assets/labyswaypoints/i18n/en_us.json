@@ -1,5 +1,6 @@
 {
   "labyswaypoints": {
+    "defaultName": "New Waypoint",
     "settings": {
       "name": "Laby's Waypoints",
       "enabled": {
@@ -11,15 +12,17 @@
         },
         "Settings": {
           "name": "Settings"
+        },
+        "distance": {
+          "name": "Distance"
         }
       },
       "permanentHotkey": {
-        "name": "Create permanent Waypoint",
-        "description": "Creates a permanent Waypoint that will never get deleted automatically."
+        "name": "Create Waypoint"
       },
-      "serverHotkey": {
-        "name": "Create temporary Waypoint",
-        "description": "Creates a Waypoint that gets deleted once you disconnect from the server."
+      "editClosestKey": {
+        "name": "Edit Closest Waypoint",
+        "description": "Edit the closest waypoint within 15 Blocks to your current position."
       },
       "background": {
         "name": "Background"
@@ -27,16 +30,52 @@
       "icon": {
         "name": "Icon"
       },
+      "beaconBeam": {
+        "name": "Beacon Beam"
+      },
       "alwaysShowWaypoints": {
-        "name": "Waypoints Always Visible",
-        "description": "Waypoints will be visible, even if they are far away."
+        "name": "Scale Dynamically",
+        "description": "Whether the Waypoints should scale dynamically (to be visible on a long distance) or always be the same size."
+      },
+      "hideWhenOutOfRange": {
+        "name": "Hide Out of Range",
+        "description": "Whether the Waypoints should be hidden when they are out of range."
+      },
+      "outOfRangeDistance": {
+        "name": "Out of Range Distance",
+        "description": "The distance in blocks at which the Waypoints should be hidden."
+      },
+      "fadeOut": {
+        "name": "Fade Out Before Hiding",
+        "description": "Whether the Waypoint should fade out before it is out of range."
       },
       "showHudIndicators": {
         "name": "Show Waypoint HUD indicators",
         "description": "Indicators for Waypoints behind the player will be displayed in the HUD."
       },
       "openWaypoints": {
-        "name": "Waypoints"
+        "name": "Edit Waypoints"
+      },
+      "distanceFormatting": {
+        "name": "Formatting"
+      },
+      "distanceBracketColor": {
+        "name": "Bracket Color"
+      },
+      "distanceValueColor": {
+        "name": "Value Color"
+      },
+      "distanceBeforeName": {
+        "name": "Before Name"
+      },
+      "hideDistance": {
+        "name": "Hide"
+      },
+      "convertToKilometers": {
+        "name": "Convert to Kilometers"
+      },
+      "kiloMeterThreshold": {
+        "name": "Kilometer Threshold"
       }
     },
     "gui": {

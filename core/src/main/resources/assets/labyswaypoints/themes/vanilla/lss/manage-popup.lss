@@ -1,0 +1,49 @@
+.popup-container {
+  width: 230 !important;
+  space-between-entries: 6 !important;
+
+  .popup-title {
+    text-color: white;
+    margin-bottom: 4;
+  }
+
+  .popup-button-container {
+    margin-top: 4;
+  }
+
+  Waypoint {
+    background-color: rgba(209, 209, 209, 0.15);
+    border: 1 gray !important;
+  }
+
+  .labeled-widget {
+    height: fit-content;
+    margin: 0;
+    width: fit-content;
+    space-between-entries: 2;
+
+    Component {
+      max-width: 100%;
+    }
+
+    TextField, NumberTextField {
+      width: 100%;
+      clear-button: false;
+    }
+
+    Dropdown {
+      arrow-width: 25;
+    }
+
+    &:has(ColorPicker) {
+      overwrite-width: false;
+    }
+  }
+
+  .horizontal-wrapper {
+    width: 100%;
+    orientation: horizontal;
+    height: fit-content;
+    space-between-entries: 6;
+  }
+}

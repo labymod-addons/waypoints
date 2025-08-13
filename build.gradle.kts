@@ -1,8 +1,9 @@
-import net.labymod.labygradle.common.extension.model.labymod.ReleaseChannel
+import net.labymod.labygradle.common.extension.model.labymod.ReleaseChannels
 
 plugins {
     id("net.labymod.labygradle")
     id("net.labymod.labygradle.addon")
+    id("org.cadixdev.licenser") version ("0.6.1")
 }
 
 val versions = providers.gradleProperty("net.labymod.minecraft-versions").get().split(";")
@@ -26,16 +27,23 @@ labyMod {
         description = "Allows you to set waypoints in the world. Compatible with Laby's Minimap."
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
-        releaseChannel = ReleaseChannel.create("internal_refactor_renderpipeline")
+        releaseChannel = ReleaseChannels.INTERNAL
     }
 }
 
 subprojects {
     plugins.apply("net.labymod.labygradle")
     plugins.apply("net.labymod.labygradle.addon")
+    plugins.apply("org.cadixdev.licenser")
 
     repositories {
         maven("https://libraries.minecraft.net/")
         maven("https://repo.spongepowered.org/repository/maven-public/")
+        mavenLocal()
+    }
+
+    license {
+        header(rootProject.file("gradle/LICENSE-HEADER.txt"))
+        newLine.set(true)
     }
 }

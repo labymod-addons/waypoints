@@ -14,27 +14,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.waypoints.waypoint;
+package net.labymod.addons.waypoints.core.listener;
 
-import net.labymod.api.client.component.Component;
-import net.labymod.api.client.world.object.WorldObject;
-import net.labymod.api.util.Color;
+import com.google.gson.GsonBuilder;
+import net.labymod.addons.waypoints.core.gson.IconTypeAdapter;
+import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.event.Subscribe;
+import net.labymod.api.event.labymod.config.JsonConfigLoaderInitializeEvent;
 
-public interface Waypoint extends WorldObject {
+public class JsonConfigLoaderInitializeListener {
 
-  WaypointMeta meta();
-
-  WaypointObjectMeta waypointObjectMeta();
-
-  default Component title() {
-    return this.meta().title();
-  }
-
-  default Color color() {
-    return this.meta().color();
-  }
-
-  default WaypointType type() {
-    return this.meta().type();
+  @Subscribe
+  public void onJsonConfigLoaderInitialize(JsonConfigLoaderInitializeEvent event) {
+    GsonBuilder builder = event.getGsonBuilder();
+    builder.registerTypeAdapter(Icon.class, new IconTypeAdapter());
   }
 }

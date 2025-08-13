@@ -16,8 +16,30 @@
 
 package net.labymod.addons.waypoints.event;
 
+import java.util.Objects;
+import net.labymod.api.event.DefaultCancellable;
 import net.labymod.api.event.Event;
+import org.jetbrains.annotations.NotNull;
 
-public class RefreshWaypointsEvent implements Event {
+/**
+ * This event is fired when the dimension is being changed (either by switching a world, an addon or
+ * the server api)
+ */
+public class WaypointsDimensionChangeEvent extends DefaultCancellable implements Event {
 
+  private String dimension;
+
+  public WaypointsDimensionChangeEvent(@NotNull String dimension) {
+    Objects.requireNonNull(dimension, "dimension");
+    this.dimension = dimension;
+  }
+
+  public @NotNull String getDimension() {
+    return this.dimension;
+  }
+
+  public void setDimension(@NotNull String dimension) {
+    Objects.requireNonNull(dimension, "dimension");
+    this.dimension = dimension;
+  }
 }

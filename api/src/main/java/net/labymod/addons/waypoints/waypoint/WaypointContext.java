@@ -16,25 +16,15 @@
 
 package net.labymod.addons.waypoints.waypoint;
 
-import net.labymod.api.client.component.Component;
-import net.labymod.api.client.world.object.WorldObject;
-import net.labymod.api.util.Color;
+public enum WaypointContext {
 
-public interface Waypoint extends WorldObject {
+  /**
+   * Waypoint was created & is visible in a single player world.
+   */
+  SINGLE_PLAYER,
 
-  WaypointMeta meta();
-
-  WaypointObjectMeta waypointObjectMeta();
-
-  default Component title() {
-    return this.meta().title();
-  }
-
-  default Color color() {
-    return this.meta().color();
-  }
-
-  default WaypointType type() {
-    return this.meta().type();
-  }
+  /**
+   * Waypoint was created & is visible on a multiplayer server.
+   */
+  MULTI_PLAYER,
 }

@@ -1,3 +1,12 @@
+.waypoints-overview-list {
+  height: fit-content;
+  selectable: true;
+
+  .waypoints-list-header {
+    height: fit-content;
+  }
+}
+
 .waypoints-container {
   width: 100%;
   height: 100%;
@@ -32,90 +41,77 @@
 }
 
 Header {
-    width: 100%;
-    height: 24;
-    padding: 1;
-    border: 0 0 0 1 #2c2c2c;
+  width: 100%;
+  height: 24;
+  padding: 1;
+  border: 0 0 0 1 #2c2c2c;
 
-    .checkbox {
-        left: 4;
-        top: 2;
-        width: 16;
-        height: width;
-        clickable: true;
-        margin-top: 2;
+  .checkbox {
+    left: 4;
+    top: 2;
+    width: 16;
+    height: width;
+    clickable: true;
+    margin-top: 2;
+  }
+
+  .title {
+    left: 25;
+    top: 50%;
+    alignment-y: center;
+  }
+}
+
+.waypoint-icon {
+  height: 16;
+  width: 16;
+}
+
+.waypoint-widget {
+  width: 100%;
+  height: 24;
+  left: 25;
+  orientation: horizontal;
+  space-between-entries: 4;
+  border: 1 rgba(0, 0, 0, 0);
+  padding-right: 4;
+  padding-left: 4;
+
+  * {
+    alignment-y: center;
+  }
+
+  .type {
+    height: 80%;
+    width: height;
+  }
+
+  .checkbox {
+    width: 16;
+    height: width;
+    clickable: true;
+    margin-right: 2;
+  }
+
+  .title {
+    height: fit-content;
+    min-height: 1;
+  }
+
+  &:selected {
+    border: 1 gray;
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+
+  &.disabled {
+    .avatar {
+      opacity: 0.5;
     }
 
     .title {
-        left: 25;
-        top: 50%;
-        alignment-y: center;
+      opacity: 0.5;
     }
-}
-
-Waypoint {
-    width: 100%;
-    height: 2;
-    padding: 1;
-
-    .icon {
-        left: 25;
-        height: 16;
-        width: 9;
-        top: 50%;
-        alignment-y: center;
-    }
-
-    .title {
-        left: 38;
-        top: 50%;
-        alignment-y: center;
-    }
-
-    .type {
-        right: 5;
-        top: 50%;
-        alignment-y: center;
-
-        height: 80%;
-        width: height;
-    }
-}
-
-WaypointListItem {
-    width: 100%;
-    height: 24;
-    padding: 1;
-
-    .checkbox {
-        left: 4;
-        top: 2;
-        width: 16;
-        height: width;
-        clickable: true;
-        margin-top: 2;
-    }
-
-    .preview {
-        alignment-y: center;
-        height: 100%;
-    }
-
-    &:selected {
-        padding: 0;
-        border: 1 gray;
-        background-color: black;
-    }
-
-    &.disabled {
-        .avatar {
-            opacity: 0.5;
-        }
-
-        .title {
-            opacity: 0.5;
-        }
-    }
+  }
 }
 
 .overview-button-menu {
