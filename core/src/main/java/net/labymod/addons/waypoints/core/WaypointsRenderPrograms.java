@@ -19,6 +19,7 @@ package net.labymod.addons.waypoints.core;
 import static net.labymod.api.laby3d.pipeline.RenderStates.DEFAULT_SHADER_SNIPPET;
 import static net.labymod.api.laby3d.pipeline.RenderStates.SHADER_RESOLVER;
 
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.laby3d.vertex.VertexDescriptions;
 import net.labymod.laby3d.api.pipeline.ComparisonStrategy;
 import net.labymod.laby3d.api.pipeline.DrawingMode;
@@ -58,11 +59,11 @@ public final class WaypointsRenderPrograms {
       .build();
 
   private static AssetId buildStateId(String name) {
-    return AssetId.of("labyswaypoints", "renderstate/" + name);
+    return AssetId.of(Waypoints.NAMESPACE, "renderstate/" + name);
   }
 
   private static AssetId buildProgramId(String name) {
-    return AssetId.of("labyswaypoints", "shaderprogram/" + name);
+    return AssetId.of(Waypoints.NAMESPACE, "shaderprogram/" + name);
   }
 
 }

@@ -19,6 +19,7 @@ package net.labymod.addons.waypoints.waypoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -35,10 +36,7 @@ public class WaypointIcon {
   }
 
   public static Icon register(@NotNull String path) {
-    ResourceLocation resourceLocation = ResourceLocation.create(
-        "labyswaypoints",
-        "/textures/icons/" + path + ".png"
-    );
+    ResourceLocation resourceLocation = Waypoints.ofPath("textures/icons/" + path + ".png");
 
     Icon icon = Icon.texture(resourceLocation);
     ICONS.add(icon);

@@ -16,6 +16,7 @@
 
 package net.labymod.addons.waypoints.core.waypoint;
 
+import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsRenderPrograms;
 import net.labymod.addons.waypoints.utils.Colors;
@@ -46,9 +47,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   private static final float ICON_SIZE = 8;
   private static final float GAP = 3;
 
-  private static final ResourceLocation BEACON_BEAM = Laby.references()
-      .resourceLocationFactory()
-      .create("labyswaypoints", "textures/beacon_beam.png");
+  private static final ResourceLocation BEACON_BEAM = Waypoints.ofPath("textures/beacon_beam.png");
 
   private static final RectangleRenderContext RECTANGLE_RENDER_CONTEXT = Laby.references()
       .rectangleRenderContext();
