@@ -63,8 +63,8 @@ Header {
 }
 
 .waypoint-icon {
-  height: 16;
-  width: 16;
+  height: 16 !important;
+  width: 16 !important;
 }
 
 .waypoint-widget {

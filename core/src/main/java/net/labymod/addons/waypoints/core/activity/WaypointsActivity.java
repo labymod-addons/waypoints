@@ -308,6 +308,7 @@ public class WaypointsActivity extends Activity {
         ManageWaypointSimplePopup editWaypointPopup = new ManageWaypointSimplePopup(
             this.selectedWaypoint.getWaypointMeta()
         ).onSave(waypoint -> {
+          this.updateWaypointContextList();
           this.reload();
         });
 

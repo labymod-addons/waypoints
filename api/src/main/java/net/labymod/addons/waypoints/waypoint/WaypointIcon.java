@@ -30,9 +30,51 @@ public class WaypointIcon {
   public static final @NotNull Icon DEFAULT;
 
   static {
-    DEFAULT = register("waypoint");
-
-
+    DEFAULT = register("marker");
+    register("home");
+    register("pickaxe");
+    register("lettuce");
+    register("wheat");
+    register("tree");
+    register("bucket");
+    register("skull");
+    register("bank");
+    register("cave");
+    register("castle");
+    register("chest");
+    register("bee");
+    register("sheep");
+    register("pig");
+    register("chicken");
+    register("enderchest");
+    register("coal");
+    register("lapis");
+    register("redstone");
+    register("gold");
+    register("iron");
+    register("golem");
+    register("dark_mushroom");
+    register("bright_mushroom");
+    register("sugarcane");
+    register("fishing");
+    register("dungeon");
+    register("netherite");
+    register("furnace");
+    register("steak");
+    register("hoe");
+    register("rose");
+    register("grass");
+    register("torch");
+    register("campfire");
+    register("beam");
+    register("leather");
+    register("crap");
+    register("anvil");
+    register("emerald");
+    register("pearl");
+    register("eye");
+    register("portal");
+    register("stone");
   }
 
   public static Icon register(@NotNull String path) {

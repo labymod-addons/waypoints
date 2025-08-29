@@ -54,7 +54,6 @@ public class WaypointWidget extends FlexibleContentWidget {
 
     this.iconWidget = new IconWidget(this.meta.icon());
 
-    this.iconWidget.color().set(this.meta.color().get());
     this.iconWidget.addId("icon", "waypoint-icon");
     this.addContent(this.iconWidget);
 
