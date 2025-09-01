@@ -229,7 +229,7 @@ public class DefaultWaypointService implements WaypointService {
   @Override
   public @Nullable Waypoint get(@NotNull String identifier) {
     for (Waypoint waypoint : this.waypoints) {
-      if (waypoint.meta().getIdentifier().equals(identifier)) {
+      if (Objects.equals(waypoint.meta().getIdentifier(), identifier)) {
         return waypoint;
       }
     }
@@ -294,7 +294,7 @@ public class DefaultWaypointService implements WaypointService {
   @Override
   public boolean isIdentifierAvailable(@NotNull String identifier) {
     for (Waypoint waypoint : this.waypoints) {
-      if (waypoint.meta().getIdentifier().equals(identifier)) {
+      if (Objects.equals(waypoint.meta().getIdentifier(), identifier)) {
         return false;
       }
     }

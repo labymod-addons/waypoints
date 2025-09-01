@@ -43,6 +43,11 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
   private static final float BACKGROUND_DEPTH = 0.01F;
   private static final float WAYPOINT_SCALE = 0.04F;
+  private static final float BEACON_BEAM_SIZE = 0.2F;
+  private static final float BEACON_BEAM_START_Y = -1024.0F;
+  private static final float BEACON_BEAM_END_Y = 1024.0F * 2.0F;
+  private static final float BEACON_BEAM_SPRITE_WIDTH = 256.0F;
+  private static final float BEACON_BEAM_SPRITE_HEIGHT = 256.0F * BEACON_BEAM_END_Y * 5.0F;
 
   private static final float ICON_SIZE = 8;
   private static final float GAP = 3;
@@ -169,13 +174,12 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
-    float size = 0.2F;
     float rotation = System.currentTimeMillis() % 3600 / 20F;
-    float upwards = System.currentTimeMillis() % 2000 / 1000F * size;
+    float upwards = System.currentTimeMillis() % 2000 / 1000F * BEACON_BEAM_SIZE;
     int color = this.meta.color().get();
 
     stack.rotate(rotation, 0, 1, 0);
-    stack.translate(-size / 2, -upwards, -size / 2);
+    stack.translate(-BEACON_BEAM_SIZE / 2, -upwards, -BEACON_BEAM_SIZE / 2);
 
     BatchResourceRenderer renderer = Laby.labyAPI()
         .renderPipeline()
@@ -183,15 +187,13 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
         .beginBatch(stack, BEACON_BEAM);
     for (int i = 0; i < 4; i++) {
       stack.rotate(90, 0, 1, 0);
-      stack.translate(-size, 0, 0);
+      stack.translate(-BEACON_BEAM_SIZE, 0, 0);
 
-      for (int h = -256; h < 2048; h++) {
-        renderer.pos(0, -h * size)
-            .size(size, size)
-            .color(color)
-            .sprite(0, 0, 256, 256)
-            .build();
-      }
+      renderer.pos(0, BEACON_BEAM_START_Y)
+          .size(BEACON_BEAM_SIZE, BEACON_BEAM_END_Y)
+          .color(color)
+          .sprite(0, 0, BEACON_BEAM_SPRITE_WIDTH, BEACON_BEAM_SPRITE_HEIGHT)
+          .build();
     }
     renderer.upload(WaypointsRenderPrograms.BEACON_BEAM);
   }
