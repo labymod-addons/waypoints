@@ -25,10 +25,11 @@ import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
-import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.gfx.shader.ShaderTextures;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.util.WidgetMeta;
 import net.labymod.api.client.render.batch.RectangleRenderContext;
+import net.labymod.api.client.render.batch.ResourceRenderContext;
 import net.labymod.api.client.render.draw.batch.BatchResourceRenderer;
 import net.labymod.api.client.render.font.ComponentRenderer;
 import net.labymod.api.client.render.matrix.Stack;
@@ -56,6 +57,8 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
   private static final RectangleRenderContext RECTANGLE_RENDER_CONTEXT = Laby.references()
       .rectangleRenderContext();
+  private static final ResourceRenderContext RESOURCE_RENDER_CONTEXT = Laby.references()
+      .resourceRenderContext();
   private static final ComponentRenderer COMPONENT_RENDERER = Laby.references().componentRenderer();
 
   private final WidgetMeta widgetMeta = new WidgetMeta();
@@ -225,16 +228,21 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
-    Icon icon = this.meta().icon();
-    icon.render(
-        stack,
-        -this.rectX,
-        -this.rectY,
-        ICON_SIZE,
-        ICON_SIZE,
-        false,
-        -1
-    );
+    ResourceLocation resourceLocation = this.meta().icon().getResourceLocation();
+    if (resourceLocation != null) {
+      RESOURCE_RENDER_CONTEXT.begin(stack);
+      ShaderTextures.setShaderTexture(0, resourceLocation);
+      this.meta().icon().render(
+          RESOURCE_RENDER_CONTEXT,
+          -this.rectX,
+          -this.rectY,
+          ICON_SIZE,
+          ICON_SIZE,
+          false,
+          -1
+      );
+      RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.ICON);
+    }
   }
 
   public void renderText(Stack stack) {

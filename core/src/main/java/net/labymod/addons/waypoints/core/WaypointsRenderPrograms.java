@@ -49,6 +49,15 @@ public final class WaypointsRenderPrograms {
       .setDrawingMode(DrawingMode.QUADS)
       .build();
 
+  public static final RenderState ICON = RenderState.builder()
+      .setId(buildStateId("icon"))
+      .setVertexDescription(VertexDescriptions.POSITION_UV_COLOR)
+      .setBlendFunction(DefaultBlendFunctions.TRANSLUCENT)
+      .setDepthTestStrategy(ComparisonStrategy.NEVER)
+      .setShaderProgramDescription(SHADER)
+      .setDrawingMode(DrawingMode.QUADS)
+      .build();
+
   public static final RenderState BEACON_BEAM = RenderState.builder()
       .setId(buildStateId("beacon_beam"))
       .setVertexDescription(VertexDescriptions.POSITION_UV_COLOR)
