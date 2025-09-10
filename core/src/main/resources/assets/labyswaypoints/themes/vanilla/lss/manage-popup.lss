@@ -31,8 +31,14 @@
       clear-button: false;
     }
 
-    Dropdown {
-      arrow-width: 25;
+    .icon-picker {
+      width: 20;
+      height: 20;
+
+      Icon {
+        width: 16;
+        height: 16;
+      }
     }
 
     &:has(ColorPicker) {
@@ -45,5 +51,27 @@
     orientation: horizontal;
     height: fit-content;
     space-between-entries: 6;
+  }
+}
+
+.icon-picker-grid {
+  width: fit-content;
+  height: fit-content;
+  columns: 7;
+  rows: 7;
+  background-color: black;
+  border: 1 white;
+  padding: 1;
+  iterate: horizontal;
+
+  Icon {
+    width: 16;
+    height: 16;
+    padding: 1;
+    clickable: true;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
   }
 }

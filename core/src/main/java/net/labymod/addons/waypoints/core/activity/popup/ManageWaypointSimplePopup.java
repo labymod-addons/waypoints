@@ -23,6 +23,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.core.activity.widgets.IconPickerWidget;
 import net.labymod.addons.waypoints.core.activity.widgets.WaypointWidget;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
@@ -34,14 +35,12 @@ import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.serializer.plain.PlainTextComponentSerializer;
 import net.labymod.api.client.entity.player.ClientPlayer;
-import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.NumberTextFieldWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.TextFieldWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget;
-import net.labymod.api.client.gui.screen.widget.widgets.input.dropdown.DropdownWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.popup.SimpleAdvancedPopup;
@@ -141,18 +140,17 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     nameWrapper.addContent(this.createLabeledWidget(
         Component.text("Icon"),
         () -> {
-          DropdownWidget<Icon> iconDropdown = new DropdownWidget<>();
-          iconDropdown.addAll(WaypointIcon.getDefaultIcons());
-          iconDropdown.setSelected(this.waypoint.icon());
-          iconDropdown.setEntryRenderer(new WaypointIconDropdownRenderer());
-          iconDropdown.setChangeListener(icon -> {
+          IconPickerWidget iconPicker = new IconPickerWidget();
+          iconPicker.addId("icon-picker");
+          iconPicker.addAll(WaypointIcon.getDefaultIcons());
+          iconPicker.setSelected(this.waypoint.icon());
+          iconPicker.setChangeListener(icon -> {
             this.waypoint.setIcon(icon);
             if (this.waypointWidget != null) {
               this.waypointWidget.updateIcon();
             }
           });
-
-          return iconDropdown;
+          return iconPicker;
         }
     ));
 
