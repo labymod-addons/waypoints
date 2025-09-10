@@ -29,6 +29,8 @@ public class IconPickerWidget extends ButtonWidget {
 
   private Consumer<Icon> changeListener;
 
+  private WidgetReference reference;
+
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
@@ -38,6 +40,12 @@ public class IconPickerWidget extends ButtonWidget {
 
   @Override
   public boolean onPress() {
+    if (this.reference != null && this.reference.isAlive()) {
+      this.reference.remove();
+      this.reference = null;
+      return true;
+    }
+
     GridWidget<IconWidget> grid = new GridWidget<>();
     grid.addId("icon-picker-grid");
     for (Icon icon : this.icons) {
@@ -53,15 +61,15 @@ public class IconPickerWidget extends ButtonWidget {
       });
       grid.addChild(iconWidget);
     }
-    WidgetReference reference = this.displayInOverlay(grid);
-    reference.boundsUpdater((ref, bounds) -> {
+    this.reference = this.displayInOverlay(grid);
+    this.reference.boundsUpdater((ref, bounds) -> {
       // Get drop up type
       Window window = this.labyAPI.minecraft().minecraftWindow();
       MutableRectangle attachTo = Bounds.absoluteBounds(this);
       boolean dropUp = attachTo.getY() > window.getScaledHeight() / 2.0F;
 
       // Get the width and height of the entire list
-      float padding = 7;
+      float padding = 2;
       float width = attachTo.getWidth() - padding;
       float height = ref.widget().getEffectiveHeight();
 
@@ -70,13 +78,23 @@ public class IconPickerWidget extends ButtonWidget {
 
       // Update position
       float x = attachTo.getX() + padding;
-      float y = attachTo.getY() + (dropUp ? -height - 5 : attachTo.getHeight() + 5);
+      float y = attachTo.getY() + (dropUp ? -height - padding : attachTo.getHeight() + padding);
       bounds.setPosition(x, y, DROPDOWN_POSITION);
 
       grid.updateBounds();
     });
 
     return super.onPress();
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+
+    if (this.reference != null && this.reference.isAlive()) {
+      this.reference.remove();
+      this.reference = null;
+    }
   }
 
   public Icon getSelectedIcon() {
