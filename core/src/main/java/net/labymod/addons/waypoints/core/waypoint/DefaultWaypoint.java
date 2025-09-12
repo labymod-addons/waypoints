@@ -23,6 +23,7 @@ import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
+import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta.Type;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.shader.ShaderTextures;
@@ -202,7 +203,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   }
 
   public void renderBackground(Stack stack, float padding) {
-    Component text = this.waypointObjectMeta().formatTitle();
+    Component text = this.waypointObjectMeta().formatTitle(this.getType());
 
     float iconWidth = this.addon.configuration().icon().get() ? ICON_SIZE + GAP : 0;
     this.rectX = (COMPONENT_RENDERER.width(text) + iconWidth - 1) / 2;
@@ -245,8 +246,12 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     }
   }
 
+  private WaypointObjectMeta.Type getType() {
+    return this.addon.configuration().beaconBeam().get() ? Type.WITHOUT_COLOR : Type.WITH_COLOR;
+  }
+
   public void renderText(Stack stack) {
-    Component text = this.waypointObjectMeta().formatTitle();
+    Component text = this.waypointObjectMeta().formatTitle(this.getType());
 
     // render twice to fix that clouds are rendered in front of the text
     float iconWidth = this.addon.configuration().icon().get() ? ICON_SIZE + GAP : 0;

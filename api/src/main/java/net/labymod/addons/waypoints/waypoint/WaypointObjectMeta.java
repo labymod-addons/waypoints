@@ -20,9 +20,11 @@ import net.labymod.addons.waypoints.WaypointConfigurationStorage;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.utils.DistanceFormatting;
 import net.labymod.api.client.component.Component;
+import net.labymod.api.client.component.format.NamedTextColor;
 import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
+import java.util.EnumMap;
 
 public class WaypointObjectMeta {
 
@@ -31,10 +33,10 @@ public class WaypointObjectMeta {
 
   private final WaypointMeta meta;
   private final DoubleVector3 position;
+  private final EnumMap<Type, Component> cache = new EnumMap<>(Type.class);;
   private float scale;
   private double distanceToPlayer;
   private boolean outOfRange;
-  private Component cachedTitle;
   private boolean interpolatePosition = false;
   private float alpha = 1.0F;
 
@@ -116,16 +118,17 @@ public class WaypointObjectMeta {
   }
 
   public void clearTitleCache() {
-    this.cachedTitle = null;
+    this.cache.clear();
   }
 
-  public Component formatTitle() {
-    if (this.cachedTitle != null) {
-      return this.cachedTitle;
+  public Component formatTitle(Type type) {
+    Component cachedTitle = this.cache.get(type);
+    if (cachedTitle != null) {
+      return cachedTitle;
     }
 
     boolean before = CONFIGURATION_STORAGE.isDistanceBeforeName();
-    Component title = Component.text("", TextColor.color(this.meta.color().get()));
+    Component title = Component.text("", type == Type.WITHOUT_COLOR ? NamedTextColor.WHITE : TextColor.color(this.meta.color().get()));
     if (before && !CONFIGURATION_STORAGE.isHideDistance()) {
       title.append(this.createDistanceComponent(true, false));
     }
@@ -136,7 +139,7 @@ public class WaypointObjectMeta {
       title.append(this.createDistanceComponent(true, true));
     }
 
-    this.cachedTitle = title;
+    this.cache.put(type, title);
     return title;
   }
 
@@ -182,4 +185,10 @@ public class WaypointObjectMeta {
   public Component createDistanceComponent() {
     return this.createDistanceComponent(false, true);
   }
+
+  public enum Type {
+    WITH_COLOR,
+    WITHOUT_COLOR
+  }
+
 }
