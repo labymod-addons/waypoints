@@ -50,6 +50,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalList
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.HrWidget;
 import net.labymod.api.client.network.server.ServerAddress;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @AutoActivity
 @Link("manage.lss")
@@ -99,7 +100,7 @@ public class WaypointsActivity extends Activity {
     this.activeContext = this.evaluateActiveContext();
   }
 
-  private WaypointContextCollection evaluateActiveContext() {
+  private @Nullable WaypointContextCollection evaluateActiveContext() {
     ServerAddress serverAddress = this.waypointService.getServerAddress();
     String singlePlayerWorld = this.waypointService.getSinglePlayerWorld();
     if (serverAddress == null && singlePlayerWorld == null) {
@@ -124,16 +125,13 @@ public class WaypointsActivity extends Activity {
 
   private @NotNull WaypointContextCollection getOrCreateByContext(Waypoint waypoint) {
     WaypointMeta meta = waypoint.meta();
-    WaypointContext context = meta.contextType();
-    String contextValue = meta.getContext();
     for (WaypointContextCollection waypointContext : this.waypointContexts) {
-      if (waypointContext.context() == context
-          && waypointContext.getContextValue().equals(contextValue)) {
+      if (meta.matchesContext(waypointContext.context(), waypointContext.getContextValue())) {
         return waypointContext;
       }
     }
 
-    WaypointContextCollection collection = new WaypointContextCollection(context, contextValue);
+    WaypointContextCollection collection = new WaypointContextCollection(meta.contextType(), meta.getContext());
     this.waypointContexts.add(collection);
     return collection;
   }
@@ -208,7 +206,9 @@ public class WaypointsActivity extends Activity {
 
       if (this.selectedCollection == null && this.waypointContexts.size() > 1) {
         widgets.addChild(new HrWidget());
-        widgets.addChild(ComponentWidget.text("Other Waypoints"));
+        ComponentWidget component = ComponentWidget.text("Other Waypoints");
+        component.addId("other-waypoints-header");
+        widgets.addChild(component);
       }
     }
 

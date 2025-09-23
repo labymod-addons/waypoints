@@ -17,7 +17,6 @@
 package net.labymod.addons.waypoints.waypoint;
 
 import java.util.Objects;
-import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
@@ -31,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
 public class WaypointMeta {
 
   private final String id;
-  private final WaypointContext contextType;
-  private final String context;
+  private final @Nullable WaypointContext contextType; //Nullable for backwards compatibility
+  private final @Nullable String context; //Nullable for backwards compatibility
   private final WaypointType type;
   private String dimension;
   private Component title; // todo why is this a component? replace with string
@@ -51,8 +50,8 @@ public class WaypointMeta {
       @NotNull Color color,
       @NotNull WaypointType type,
       @NotNull DoubleVector3 location,
-      @NotNull WaypointContext contextType,
-      @NotNull String context,
+      @Nullable WaypointContext contextType,
+      @Nullable String context,
       @NotNull Icon icon,
       @Nullable String dimension,
       boolean visible
@@ -219,15 +218,33 @@ public class WaypointMeta {
   /**
    * @return the context type this waypoint was created in
    */
-  public @NotNull WaypointContext contextType() {
+  public @Nullable WaypointContext contextType() {
     return this.contextType;
   }
 
   /**
    * @return the context this waypoint was created in
    */
-  public @NotNull String getContext() {
+  public @Nullable String getContext() {
     return this.context;
+  }
+
+  /**
+   * Determines if the provided {@code type} and {@code value} match the current waypoint's context type and context value.
+   * If both {@code contextType} and {@code context} in the waypoint are null, this method returns {@code true}.
+   *
+   * @param type  the context type to match, must not be null
+   * @param value the context value to match, must not be null
+   * @return {@code true} if the provided type and value match the waypoint's context type and value, or if both context values are null;
+   *         otherwise, {@code false}
+   * @throws NullPointerException if {@code type} or {@code value} is null
+   */
+  public boolean matchesContext(@Nullable WaypointContext type, @Nullable String value) {
+    /*if (this.contextType == null && this.context == null) {
+      return true; //Old waypoint, deprecated
+    }*/
+
+    return Objects.equals(value, this.context) && type == this.contextType;
   }
 
   /**
@@ -236,16 +253,6 @@ public class WaypointMeta {
   @Deprecated
   public @Nullable String getWorld() {
     return this.contextType == WaypointContext.MULTI_PLAYER ? null : this.context;
-  }
-
-  /**
-   * @deprecated Use {@link #contextType()} and {@link #getContext()} instead
-   */
-  @Deprecated
-  public @NotNull String getServer() {
-    return this.contextType == WaypointContext.MULTI_PLAYER
-        ? this.context
-        : WaypointService.SINGLELAYER_SERVER;
   }
 
   public @Nullable String getDimension() {
