@@ -230,20 +230,14 @@ public class WaypointMeta {
   }
 
   /**
-   * Determines if the provided {@code type} and {@code value} match the current waypoint's context type and context value.
-   * If both {@code contextType} and {@code context} in the waypoint are null, this method returns {@code true}.
+   * Checks if the given context type and context value match the associated context values
+   * of this instance.
    *
-   * @param type  the context type to match, must not be null
-   * @param value the context value to match, must not be null
-   * @return {@code true} if the provided type and value match the waypoint's context type and value, or if both context values are null;
-   *         otherwise, {@code false}
-   * @throws NullPointerException if {@code type} or {@code value} is null
+   * @param type the context type to be matched, may be null
+   * @param value the context value to be matched, may be null
+   * @return true if the context type and value match this instance's context type and value; false otherwise
    */
   public boolean matchesContext(@Nullable WaypointContext type, @Nullable String value) {
-    /*if (this.contextType == null && this.context == null) {
-      return true; //Old waypoint, deprecated
-    }*/
-
     return Objects.equals(value, this.context) && type == this.contextType;
   }
 
