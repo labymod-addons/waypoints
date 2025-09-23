@@ -74,15 +74,17 @@
       "convertToKilometers": {
         "name": "Convert to Kilometers"
       },
-      "kiloMeterThreshold": {
-        "name": "Kilometer Threshold"
+      "kilometersThreshold": {
+        "name": "Kilometer Threshold",
+        "description": "The distance in kilometers at which the Waypoint-distance-display should be converted to kilometers."
       }
     },
     "gui": {
       "showWaypoints": "Show Waypoints",
       "manage": {
         "remove": {
-          "title": "Do you really want to remove this waypoint?"
+          "title": "Do you really want to remove this waypoint?",
+          "button": "Remove"
         },
         "name": "Name",
         "color": "Color",

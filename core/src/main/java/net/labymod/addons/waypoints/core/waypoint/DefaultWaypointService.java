@@ -111,16 +111,16 @@ public class DefaultWaypointService implements WaypointService {
     for (Waypoint waypoint : this.waypoints) {
       WaypointMeta meta = waypoint.meta();
       this.removeWaypointFromRegistry(meta);
-      if (!meta.isVisible() || meta.contextType() != targetContext) {
+      if (!meta.isVisible() || meta.contextType() != null && meta.contextType() != targetContext) { //When contextType is null it's a deprecated waypoint that is always visible
         continue;
       }
 
       boolean target;
       String context = meta.getContext();
       if (targetContext == WaypointContext.SINGLE_PLAYER) {
-        target = Objects.equals(context, this.actualWorld);
+        target = context == null || Objects.equals(context, this.actualWorld); //When context is null it's a deprecated waypoint that is always visible
       } else {
-        target = context.equals(this.serverAddress.toString());
+        target = context == null || Objects.equals(context, this.serverAddress.toString()); //When context is null it's a deprecated waypoint that is always visible
       }
 
       if (target && (meta.getDimension() == null || meta.getDimension().equals(this.dimension))) {

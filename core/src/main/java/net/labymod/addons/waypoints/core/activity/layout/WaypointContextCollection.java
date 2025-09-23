@@ -17,8 +17,10 @@
 package net.labymod.addons.waypoints.core.activity.layout;
 
 import net.labymod.addons.waypoints.waypoint.WaypointContext;
+import net.labymod.api.Textures.SpriteCommon;
 import net.labymod.api.client.gui.icon.Icon;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WaypointContextCollection extends WaypointCollection {
 
@@ -26,29 +28,35 @@ public class WaypointContextCollection extends WaypointCollection {
   private final String contextValue;
 
   public WaypointContextCollection(
-      @NotNull WaypointContext context,
-      @NotNull String contextValue
+      @Nullable WaypointContext context, //Nullable for backwards compatibility
+      @Nullable String contextValue //Nullable for backwards compatibility
   ) {
     super(
         getIconByContext(context, contextValue),
-        getNameByContext(context, contextValue)
+        getNameByContext(contextValue)
     );
 
     this.context = context;
     this.contextValue = contextValue;
   }
 
-  private static Icon getIconByContext(WaypointContext context, String contextValue) {
+  private static @NotNull Icon getIconByContext(@Nullable WaypointContext context, @Nullable String contextValue) {
     if (context == WaypointContext.MULTI_PLAYER) {
+      if (contextValue == null) {
+        throw new IllegalArgumentException("The context value cannot be null when the context is multi player!");
+      }
       return Icon.server(contextValue);
     }
 
     // todo World Icon?
+    if (contextValue == null) {
+      return SpriteCommon.CIRCLE_WARNING;
+    }
     return Icon.defaultServer();
   }
 
-  private static String getNameByContext(WaypointContext context, String contextValue) {
-    return contextValue;
+  private static @NotNull String getNameByContext(@Nullable String contextValue) {
+    return contextValue == null ? "unknown (deprecated, visible on every world)" : contextValue;
   }
 
   public @NotNull WaypointContext context() {

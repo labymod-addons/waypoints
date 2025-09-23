@@ -5,6 +5,10 @@
   .waypoints-list-header {
     height: fit-content;
   }
+
+  .other-waypoints-header {
+    margin: 4 0 2 0;
+  }
 }
 
 .waypoints-container {
