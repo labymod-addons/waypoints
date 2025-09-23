@@ -82,7 +82,8 @@
       "showWaypoints": "Show Waypoints",
       "manage": {
         "remove": {
-          "title": "Do you really want to remove this waypoint?"
+          "title": "Do you really want to remove this waypoint?",
+          "button": "Remove"
         },
         "name": "Name",
         "color": "Color",

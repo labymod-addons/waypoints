@@ -82,6 +82,11 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     this.buttons = new ArrayList<>();
     this.buttons.add(SimplePopupButton.cancel());
     this.buttons.add(this.doneButton);
+    if (action == Action.EDIT) {
+      this.buttons.add(SimplePopupButton.create("cancel", Component.translatable("labyswaypoints.gui.manage.remove.button"), button -> {
+        Waypoints.references().waypointService().remove(waypoint);
+      }));
+    }
 
     if (worldObjectMeta == null) {
       this.waypointWidget = null;
@@ -118,9 +123,9 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
         .title(Component.text(name))
         .type(WaypointType.PERMANENT)
         .location(new DoubleVector3(
-            ((int) position.getX() + 1) - 0.5D,
+             Math.floor(position.getX()) + 0.5,
             (int) (position.getY() + player.getEyeHeight()),
-            ((int) position.getZ()) - 0.5D
+            Math.floor(position.getZ()) + 0.5
         ))
         .applyCurrentContext()
         .currentDimension();
