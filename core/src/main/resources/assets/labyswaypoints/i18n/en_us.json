@@ -74,8 +74,9 @@
       "convertToKilometers": {
         "name": "Convert to Kilometers"
       },
-      "kiloMeterThreshold": {
-        "name": "Kilometer Threshold"
+      "kilometersThreshold": {
+        "name": "Kilometer Threshold",
+        "description": "The distance in kilometers at which the Waypoint-distance-display should be converted to kilometers."
       }
     },
     "gui": {
