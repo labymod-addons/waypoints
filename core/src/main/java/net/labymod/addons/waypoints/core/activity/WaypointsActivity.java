@@ -326,6 +326,7 @@ public class WaypointsActivity extends Activity {
         this.selectedWaypoint = null;
         this.updateWaypointContextList();
         this.reload();
+        this.waypointService.refresh();
         break;
       case ADD:
       default:
