@@ -180,7 +180,6 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
-    DoubleVector3 pos = cam.position();
     float dynamicBeaconBeamSize = (float) (BEACON_BEAM_SIZE * (1 + (x + z) / 180));
 
 
