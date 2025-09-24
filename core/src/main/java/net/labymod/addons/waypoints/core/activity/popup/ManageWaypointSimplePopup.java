@@ -45,6 +45,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWi
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.popup.SimpleAdvancedPopup;
 import net.labymod.api.util.I18n;
+import net.labymod.api.util.logging.Logging;
 import net.labymod.api.util.math.position.Position;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,7 @@ import org.jetbrains.annotations.Nullable;
 @Link("overview.lss")
 @Link("manage-popup.lss")
 public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
+  private final static Logging LOGGER = Logging.create(ManageWaypointSimplePopup.class);
 
   private final Action action;
   private final SimplePopupButton doneButton;
@@ -84,7 +86,15 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     this.buttons.add(this.doneButton);
     if (action == Action.EDIT) {
       this.buttons.add(SimplePopupButton.create("cancel", Component.translatable("labyswaypoints.gui.manage.remove.button"), button -> {
-        Waypoints.references().waypointService().remove(waypoint);
+        WaypointService service = Waypoints.references().waypointService();
+        Waypoint original = service.get(this.waypoint.getIdentifier());
+        if (original != null) {
+          service.remove(original.meta());
+        } else {
+          service.remove(this.waypoint);
+          LOGGER.warn("The waypoint with the identifier '%s' could not be found. Using fallback, but this could cause the waypoint to reappear unexpectedly later.", this.waypoint.getIdentifier());
+        }
+        service.refresh();
       }));
     }
 
