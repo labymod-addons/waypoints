@@ -17,6 +17,7 @@
 package net.labymod.addons.waypoints.core.waypoint;
 
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
 import net.labymod.api.util.bounds.ModifyReason;
@@ -41,6 +42,7 @@ public class WaypointIndicatorWidget extends IconWidget {
         ModifyReason.of(Waypoint.class, "waypoint")
     );
 
-    this.color().set(this.waypoint.meta().color().get());
+    WaypointMeta meta = this.waypoint.meta();
+    this.color().set(meta.iconColor());
   }
 }

@@ -129,6 +129,24 @@ public class WaypointMeta {
   }
 
   /**
+   * Determines the color of the icon associated with the waypoint.
+   * <p>
+   * If the icon is the default icon, the method returns the color
+   * associated with the waypoint. If the icon is not the default,
+   * it returns a predefined white color code.
+   *
+   * @return the color of the icon as an integer; either the color
+   *         associated with the waypoint or a white color code (0xFFFFFFFF).
+   */
+  public int iconColor() {
+    if (this.icon == WaypointIcon.DEFAULT) {
+      return this.color.get();
+    } else {
+      return 0xFFFFFFFF;
+    }
+  }
+
+  /**
    * @deprecated Use {@link #color()} instead
    */
   @Deprecated

@@ -21,12 +21,14 @@ import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsRenderPrograms;
 import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta.Type;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.shader.ShaderTextures;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.util.WidgetMeta;
 import net.labymod.api.client.render.batch.RectangleRenderContext;
@@ -45,7 +47,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
   private static final float BACKGROUND_DEPTH = 0.01F;
   private static final float WAYPOINT_SCALE = 0.04F;
-  private static final float BEACON_BEAM_SIZE = 0.2F;
+  private static final float BEACON_BEAM_SIZE = 0.3F;
   private static final float BEACON_BEAM_START_Y = -1024.0F;
   private static final float BEACON_BEAM_END_Y = 1024.0F * 2.0F;
   private static final float BEACON_BEAM_SPRITE_WIDTH = 256.0F;
@@ -178,12 +180,15 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       return;
     }
 
+    float dynamicBeaconBeamSize = (float) (BEACON_BEAM_SIZE * (1 + (x + z) / 180));
+
+
     float rotation = System.currentTimeMillis() % 3600 / 20F;
-    float upwards = System.currentTimeMillis() % 2000 / 1000F * BEACON_BEAM_SIZE;
+    float upwards = System.currentTimeMillis() % 2000 / 1000F * dynamicBeaconBeamSize;
     int color = this.meta.color().get();
 
     stack.rotate(rotation, 0, 1, 0);
-    stack.translate(-BEACON_BEAM_SIZE / 2, -upwards, -BEACON_BEAM_SIZE / 2);
+    stack.translate(-dynamicBeaconBeamSize / 2, -upwards, -dynamicBeaconBeamSize / 2);
 
     BatchResourceRenderer renderer = Laby.labyAPI()
         .renderPipeline()
@@ -191,10 +196,10 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
         .beginBatch(stack, BEACON_BEAM);
     for (int i = 0; i < 4; i++) {
       stack.rotate(90, 0, 1, 0);
-      stack.translate(-BEACON_BEAM_SIZE, 0, 0);
+      stack.translate(-dynamicBeaconBeamSize, 0, 0);
 
       renderer.pos(0, BEACON_BEAM_START_Y)
-          .size(BEACON_BEAM_SIZE, BEACON_BEAM_END_Y)
+          .size(dynamicBeaconBeamSize, BEACON_BEAM_END_Y)
           .color(color)
           .sprite(0, 0, BEACON_BEAM_SPRITE_WIDTH, BEACON_BEAM_SPRITE_HEIGHT)
           .build();
@@ -233,14 +238,15 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     if (resourceLocation != null) {
       RESOURCE_RENDER_CONTEXT.begin(stack);
       ShaderTextures.setShaderTexture(0, resourceLocation);
-      this.meta().icon().render(
+      Icon icon = this.meta.icon();
+      icon.render(
           RESOURCE_RENDER_CONTEXT,
           -this.rectX,
           -this.rectY,
           ICON_SIZE,
           ICON_SIZE,
           false,
-          -1
+          this.meta.iconColor()
       );
       RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.ICON);
     }

@@ -16,11 +16,13 @@
 
 package net.labymod.addons.waypoints.core.activity.widgets;
 
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
@@ -52,7 +54,9 @@ public class WaypointWidget extends FlexibleContentWidget {
   public void initialize(Parent parent) {
     super.initialize(parent);
 
-    this.iconWidget = new IconWidget(this.meta.icon());
+    Icon icon = this.meta.icon();
+    this.iconWidget = new IconWidget(icon);
+    this.iconWidget.color().set(meta.iconColor());
 
     this.iconWidget.addId("icon", "waypoint-icon");
     this.addContent(this.iconWidget);
@@ -100,7 +104,7 @@ public class WaypointWidget extends FlexibleContentWidget {
 
   public void updateColor() {
     if (this.iconWidget != null) {
-      this.iconWidget.color().set(this.meta.color().get());
+        this.iconWidget.color().set(this.meta.iconColor());
     }
 
     if (this.titleWidget != null) {
@@ -128,5 +132,6 @@ public class WaypointWidget extends FlexibleContentWidget {
     }
 
     this.iconWidget.icon().set(this.meta.icon());
+    this.updateColor();
   }
 }

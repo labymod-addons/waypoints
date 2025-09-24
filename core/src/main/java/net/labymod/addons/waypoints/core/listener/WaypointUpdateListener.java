@@ -207,34 +207,15 @@ public class WaypointUpdateListener {
 
     int targetDistance = TARGET_DISTANCE;
     float scale;
-    boolean overwrittenPosition;
     if (distanceToPlayer < 10) {
       scale = DEFAULT_SIZE;
-      overwrittenPosition = false;
     } else if (distanceToPlayer < targetDistance) {
       distanceToPlayer -= 10;
       final float normalizedDistance = (float) (distanceToPlayer / targetDistance);
       float factor = 5 + 2 * normalizedDistance;
       scale = DEFAULT_SIZE + factor * normalizedDistance;
-      overwrittenPosition = false;
     } else {
       scale = 7;
-
-      // move the waypoint to the edge of the render distance
-      double factor = targetDistance / distanceToPlayer;
-
-      double x = playerX - (distanceX * factor);
-      double y = playerY - (distanceY * factor);
-      double z = playerZ - (distanceZ * factor);
-
-      overwrittenPosition = true;
-      waypointObjectMeta.pos().set(x, y, z);
-      waypointObjectMeta.setInterpolatePosition(true);
-    }
-
-    if (!overwrittenPosition) {
-      waypointObjectMeta.pos().set(location);
-      waypointObjectMeta.setInterpolatePosition(false);
     }
 
     waypointObjectMeta.setScale(scale);
