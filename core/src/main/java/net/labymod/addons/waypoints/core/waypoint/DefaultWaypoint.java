@@ -21,12 +21,14 @@ import net.labymod.addons.waypoints.core.WaypointsAddon;
 import net.labymod.addons.waypoints.core.WaypointsRenderPrograms;
 import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
+import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta.Type;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.shader.ShaderTextures;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.util.WidgetMeta;
 import net.labymod.api.client.render.batch.RectangleRenderContext;
@@ -233,14 +235,15 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     if (resourceLocation != null) {
       RESOURCE_RENDER_CONTEXT.begin(stack);
       ShaderTextures.setShaderTexture(0, resourceLocation);
-      this.meta().icon().render(
+      Icon icon = this.meta.icon();
+      icon.render(
           RESOURCE_RENDER_CONTEXT,
           -this.rectX,
           -this.rectY,
           ICON_SIZE,
           ICON_SIZE,
           false,
-          -1
+          icon == WaypointIcon.DEFAULT ? this.meta.color().get() : 0xFFFFFFFF
       );
       RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.ICON);
     }
