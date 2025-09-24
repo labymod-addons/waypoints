@@ -47,7 +47,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
   private static final float BACKGROUND_DEPTH = 0.01F;
   private static final float WAYPOINT_SCALE = 0.04F;
-  private static final float BEACON_BEAM_SIZE = 0.25F;
+  private static final float BEACON_BEAM_SIZE = 0.3F;
   private static final float BEACON_BEAM_START_Y = -1024.0F;
   private static final float BEACON_BEAM_END_Y = 1024.0F * 2.0F;
   private static final float BEACON_BEAM_SPRITE_WIDTH = 256.0F;
@@ -181,7 +181,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     }
 
     DoubleVector3 pos = cam.position();
-    float dynamicBeaconBeamSize = (float) (BEACON_BEAM_SIZE * (1 + (x + z) / 200));
+    float dynamicBeaconBeamSize = (float) (BEACON_BEAM_SIZE * (1 + (x + z) / 180));
 
 
     float rotation = System.currentTimeMillis() % 3600 / 20F;
