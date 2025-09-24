@@ -92,7 +92,7 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
           service.remove(original.meta());
         } else {
           service.remove(this.waypoint);
-          LOGGER.warn("The waypoint with the identifier '%s' could not be found. Using fallback, but this could cause the waypoint to reappear unexpectedly later.", this.waypoint.getIdentifier());
+          LOGGER.warn("The waypoint with the identifier '" + this.waypoint.getIdentifier() + "' could not be found. Using fallback, but this could cause the waypoint to reappear unexpectedly later.");
         }
         service.refresh();
       }));
