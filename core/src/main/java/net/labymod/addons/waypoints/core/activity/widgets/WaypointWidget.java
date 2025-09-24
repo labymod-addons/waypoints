@@ -56,9 +56,7 @@ public class WaypointWidget extends FlexibleContentWidget {
 
     Icon icon = this.meta.icon();
     this.iconWidget = new IconWidget(icon);
-    if (icon == WaypointIcon.DEFAULT) {
-      this.iconWidget.color().set(this.meta.color().get());
-    }
+    this.iconWidget.color().set(meta.iconColor());
 
     this.iconWidget.addId("icon", "waypoint-icon");
     this.addContent(this.iconWidget);
@@ -106,10 +104,7 @@ public class WaypointWidget extends FlexibleContentWidget {
 
   public void updateColor() {
     if (this.iconWidget != null) {
-        this.iconWidget.color().set(
-            this.iconWidget.icon().get() == WaypointIcon.DEFAULT ?
-            this.meta.color().get() : -1
-        );
+        this.iconWidget.color().set(this.meta.iconColor());
     }
 
     if (this.titleWidget != null) {

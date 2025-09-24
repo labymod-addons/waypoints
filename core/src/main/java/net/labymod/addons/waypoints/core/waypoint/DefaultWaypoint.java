@@ -243,7 +243,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
           ICON_SIZE,
           ICON_SIZE,
           false,
-          icon == WaypointIcon.DEFAULT ? this.meta.color().get() : 0xFFFFFFFF
+          this.meta.iconColor()
       );
       RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.ICON);
     }
