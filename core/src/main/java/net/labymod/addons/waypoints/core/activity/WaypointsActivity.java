@@ -31,6 +31,7 @@ import net.labymod.addons.waypoints.waypoint.WaypointContext;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.api.Laby;
+import net.labymod.api.Textures.SpriteCommon;
 import net.labymod.api.client.gui.mouse.MutableMouse;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.activity.Activity;
@@ -161,7 +162,8 @@ public class WaypointsActivity extends Activity {
       header.addId("waypoints-list-header");
 
       if (this.selectedCollection != null) {
-        ButtonWidget backButton = ButtonWidget.text("Back");
+        ButtonWidget backButton = ButtonWidget.icon(SpriteCommon.BACK_BUTTON);
+        backButton.addId("back-button");
         backButton.setPressListener(() -> {
           this.selectedCollection = this.selectedCollection.getParent();
           this.reload();
