@@ -1,1 +1,31 @@
-{}
+{
+    "labyswaypoints": {
+        "settings": {
+            "enabled": {
+                "name": "Aktiveret"
+            },
+            "name": "Laby's Waypoints",
+            "header": {
+                "Waypoints": {
+                    "name": "Waypoints"
+                },
+                "Settings": {
+                    "name": "Indstillinger"
+                },
+                "distance": {
+                    "name": "Afstand"
+                }
+            },
+            "permanentHotkey": {
+                "name": "Opret Waypoint"
+            },
+            "background": {
+                "name": "Baggrund"
+            },
+            "icon": {
+                "name": "Ikon"
+            }
+        },
+        "defaultName": "Nyt Waypoint"
+    }
+}
