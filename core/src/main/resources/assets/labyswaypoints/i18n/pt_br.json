@@ -1,5 +1,10 @@
 {
     "labyswaypoints": {
-        "defaultName": "Novo Waypoint"
+        "defaultName": "Novo Waypoint",
+        "settings": {
+            "enabled": {
+                "name": "Ativado"
+            }
+        }
     }
 }
