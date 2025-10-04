@@ -19,6 +19,12 @@
             "icon": {
                 "name": "Ícone"
             }
+        },
+        "gui": {
+            "manage": {
+                "color": "Cor",
+                "name": "Nome"
+            }
         }
     }
 }
