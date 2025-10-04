@@ -23,8 +23,14 @@
         "gui": {
             "manage": {
                 "color": "Cor",
-                "name": "Nome"
-            }
+                "name": "Nome",
+                "remove": {
+                    "button": "Remover"
+                },
+                "x": "X",
+                "y": "Y"
+            },
+            "showWaypoints": "Mostrar Waypoints"
         }
     }
 }
