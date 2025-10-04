@@ -15,6 +15,9 @@
                 "distance": {
                     "name": "Distância"
                 }
+            },
+            "icon": {
+                "name": "Ícone"
             }
         }
     }
