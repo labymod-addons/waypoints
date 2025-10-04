@@ -28,7 +28,8 @@
                     "button": "Remover"
                 },
                 "x": "X",
-                "y": "Y"
+                "y": "Y",
+                "z": "Z"
             },
             "showWaypoints": "Mostrar Waypoints"
         }
