@@ -9,6 +9,12 @@
             "header": {
                 "Waypoints": {
                     "name": "Nokta İşaretleyicileri"
+                },
+                "Settings": {
+                    "name": "Ayarlar"
+                },
+                "distance": {
+                    "name": "Mesafe"
                 }
             },
             "beaconBeam": {
@@ -25,6 +31,9 @@
             "outOfRangeDistance": {
                 "name": "Menzil Dışı Mesafe",
                 "description": "Nokta İşaretleyicilerinin gizlenmesi gereken bloklar halindeki mesafe."
+            },
+            "permanentHotkey": {
+                "name": "Nokta İşaretleyicisi Oluştur"
             }
         }
     }
