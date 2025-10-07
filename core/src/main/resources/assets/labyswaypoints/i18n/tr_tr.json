@@ -42,6 +42,16 @@
             "showHudIndicators": {
                 "name": "Nokta İşaretleyicisinin HUD göstergelerini göster",
                 "description": "Oyuncunun arkasındaki Nokta İşaretleyicisi için göstergeler HUD'da gösterilecektir."
+            },
+            "editClosestKey": {
+                "name": "En Yakın Nokta İşaretleyicisini Düzenle",
+                "description": "Şu anki konumunuza 15 blok mesafedeki en yakın işaret noktasını düzenleyin."
+            },
+            "background": {
+                "name": "Arka plan"
+            },
+            "icon": {
+                "name": "Simge"
             }
         }
     }
