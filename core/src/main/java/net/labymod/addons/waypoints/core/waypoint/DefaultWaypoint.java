@@ -116,12 +116,12 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
   @Override
   public boolean shouldRender() {
-    return !this.waypointObjectMeta.isOutOfRange();
+    return this.isEnabled() && !this.waypointObjectMeta.isOutOfRange();
   }
 
   @Override
   public boolean shouldRenderInOverlay() {
-    return this.addon.configuration().showHudIndicators().get();
+    return this.isEnabled() && this.addon.configuration().showHudIndicators().get();
   }
 
   @Override
@@ -276,5 +276,9 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
         .useFloatingPointPosition(true)
         .allowColors(true)
         .render(stack);
+  }
+
+  private boolean isEnabled() {
+    return this.addon.configuration().enabled().get();
   }
 }
