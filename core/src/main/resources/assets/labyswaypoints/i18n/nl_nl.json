@@ -1,1 +1,22 @@
-{}
+{
+    "labyswaypoints": {
+        "defaultName": "Nieuw routepunt",
+        "settings": {
+            "name": "Laby’s routepunten",
+            "enabled": {
+                "name": "Ingeschakeld"
+            },
+            "header": {
+                "Waypoints": {
+                    "name": "Wegpunten"
+                },
+                "Settings": {
+                    "name": "Instellingen"
+                },
+                "distance": {
+                    "name": "Afstand"
+                }
+            }
+        }
+    }
+}
