@@ -1,1 +1,16 @@
-{}
+{
+    "labyswaypoints": {
+        "defaultName": "Yeni Nokta İşaretlemesi",
+        "settings": {
+            "name": "Laby'nin Nokta İşaretleyicileri",
+            "enabled": {
+                "name": "Aktif"
+            },
+            "header": {
+                "Waypoints": {
+                    "name": "Nokta İşaretleyicileri"
+                }
+            }
+        }
+    }
+}
