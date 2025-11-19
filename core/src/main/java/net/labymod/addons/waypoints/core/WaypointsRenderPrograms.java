@@ -42,7 +42,7 @@ public final class WaypointsRenderPrograms {
 
   public static final RenderState BACKGROUND = RenderState.builder()
       .setId(buildStateId("background"))
-      .setVertexDescription(VertexDescriptions.POSITION_UV_COLOR)
+      .setVertexDescription(VertexDescriptions.POSITION_COLOR_UV_LIGHTMAP)
       .setBlendFunction(DefaultBlendFunctions.TRANSLUCENT)
       .setDepthTestStrategy(ComparisonStrategy.NEVER)
       .setShaderProgramDescription(SHADER)
@@ -51,7 +51,7 @@ public final class WaypointsRenderPrograms {
 
   public static final RenderState ICON = RenderState.builder()
       .setId(buildStateId("icon"))
-      .setVertexDescription(VertexDescriptions.POSITION_UV_COLOR)
+      .setVertexDescription(VertexDescriptions.POSITION_COLOR_UV_LIGHTMAP)
       .setBlendFunction(DefaultBlendFunctions.TRANSLUCENT)
       .setDepthTestStrategy(ComparisonStrategy.NEVER)
       .setShaderProgramDescription(SHADER)
@@ -60,7 +60,7 @@ public final class WaypointsRenderPrograms {
 
   public static final RenderState BEACON_BEAM = RenderState.builder()
       .setId(buildStateId("beacon_beam"))
-      .setVertexDescription(VertexDescriptions.POSITION_UV_COLOR)
+      .setVertexDescription(VertexDescriptions.POSITION_COLOR_UV_LIGHTMAP)
       .setBlendFunction(DefaultBlendFunctions.TRANSLUCENT)
       .setCull(false)
       .setShaderProgramDescription(SHADER)

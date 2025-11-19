@@ -26,6 +26,7 @@ import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta.Type;
 import net.labymod.api.Laby;
+import net.labymod.api.Textures;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gfx.shader.ShaderTextures;
 import net.labymod.api.client.gui.icon.Icon;
@@ -39,9 +40,11 @@ import net.labymod.api.client.render.matrix.Stack;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.client.world.MinecraftCamera;
 import net.labymod.api.client.world.object.AbstractWorldObject;
+import net.labymod.api.laby3d.pipeline.RenderStates;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.nio.file.ReadOnlyFileSystemException;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
@@ -193,7 +196,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     BatchResourceRenderer renderer = Laby.labyAPI()
         .renderPipeline()
         .resourceRenderer()
-        .beginBatch(stack, BEACON_BEAM);
+        .beginBatch(stack, WaypointsRenderPrograms.BEACON_BEAM, BEACON_BEAM);
     for (int i = 0; i < 4; i++) {
       stack.rotate(90, 0, 1, 0);
       stack.translate(-dynamicBeaconBeamSize, 0, 0);
@@ -212,21 +215,26 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     float iconWidth = this.addon.configuration().icon().get() ? ICON_SIZE + GAP : 0;
     this.rectX = (COMPONENT_RENDERER.width(text) + iconWidth - 1) / 2;
-    this.rectY = COMPONENT_RENDERER.height() / 2;
+    float textHeight = COMPONENT_RENDERER.height();
+    this.rectY = textHeight / 2;
 
     if (!this.addon.configuration().background().get()) {
       return;
     }
 
-    RECTANGLE_RENDER_CONTEXT.begin(stack);
-    RECTANGLE_RENDER_CONTEXT.render(
-        -this.rectX - padding,
-        -this.rectY - padding,
-        this.rectX + padding,
-        this.rectY + padding - 1F,
+    float x = -this.rectX - padding;
+    float y = -this.rectY - padding;
+    float width = this.rectX * 2.0F + padding;
+    float height = textHeight + padding - 1.0F;
+
+    RESOURCE_RENDER_CONTEXT.begin(stack, WaypointsRenderPrograms.BACKGROUND);
+    RESOURCE_RENDER_CONTEXT.blit(
+        x, y, width, height,
+        0, 0, 0, 0, 0, 0,
         Colors.BACKGROUND_COLOR
     );
-    RECTANGLE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.BACKGROUND);
+    ShaderTextures.setShaderTexture(0, Textures.WHITE);
+    RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.BACKGROUND);
   }
 
   public void renderIcon(Stack stack) {
@@ -236,7 +244,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
     ResourceLocation resourceLocation = this.meta().icon().getResourceLocation();
     if (resourceLocation != null) {
-      RESOURCE_RENDER_CONTEXT.begin(stack);
+      RESOURCE_RENDER_CONTEXT.begin(stack, WaypointsRenderPrograms.ICON);
       ShaderTextures.setShaderTexture(0, resourceLocation);
       Icon icon = this.meta.icon();
       icon.render(

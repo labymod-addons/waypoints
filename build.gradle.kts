@@ -27,7 +27,7 @@ labyMod {
         description = "Allows you to set waypoints in the world. Compatible with Laby's Minimap."
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
-        releaseChannel = ReleaseChannels.PRODUCTION
+        releaseChannel = ReleaseChannels.SNAPSHOT
     }
 }
 
