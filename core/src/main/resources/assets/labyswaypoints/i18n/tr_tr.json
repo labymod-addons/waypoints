@@ -15,7 +15,12 @@
                 "name": "İşaret Işını"
             },
             "alwaysShowWaypoints": {
-                "name": "Dinamik olarak ölçeklendir"
+                "name": "Dinamik olarak ölçeklendir",
+                "description": "Nokta İşaretleyicilerinin dinamik olarak ölçeklenmesi (uzun mesafeden görülebilmesi için) veya her zaman aynı boyutta olması."
+            },
+            "hideWhenOutOfRange": {
+                "name": "Menzil Dışında Gizle",
+                "description": "Nokta İşaretleyicilerinin menzil dışına çıktıklarında gizlenip gizlenmeyeceğini belirler."
             }
         }
     }
