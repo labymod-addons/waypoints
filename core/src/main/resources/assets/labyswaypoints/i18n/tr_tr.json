@@ -21,6 +21,10 @@
             "hideWhenOutOfRange": {
                 "name": "Menzil Dışında Gizle",
                 "description": "Nokta İşaretleyicilerinin menzil dışına çıktıklarında gizlenip gizlenmeyeceğini belirler."
+            },
+            "outOfRangeDistance": {
+                "name": "Menzil Dışı Mesafe",
+                "description": "Nokta İşaretleyicilerinin gizlenmesi gereken bloklar halindeki mesafe."
             }
         }
     }
