@@ -10,6 +10,12 @@
                 "Waypoints": {
                     "name": "Nokta İşaretleyicileri"
                 }
+            },
+            "beaconBeam": {
+                "name": "İşaret Işını"
+            },
+            "alwaysShowWaypoints": {
+                "name": "Dinamik olarak ölçeklendir"
             }
         }
     }
