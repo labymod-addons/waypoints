@@ -24,8 +24,44 @@
             },
             "icon": {
                 "name": "Ikon"
+            },
+            "alwaysShowWaypoints": {
+                "name": "Skaler dynamisk"
+            },
+            "hideWhenOutOfRange": {
+                "description": "Om waypoints skal skjules, når de er uden for rækkevidde."
+            },
+            "fadeOut": {
+                "description": "Om waypointet skal tones ud, inden det er uden for rækkevidde."
+            },
+            "distanceFormatting": {
+                "name": "Formatering"
+            },
+            "hideDistance": {
+                "name": "Skjul"
+            },
+            "convertToKilometers": {
+                "name": "Konvertér til kilometer"
             }
         },
-        "defaultName": "Nyt Waypoint"
+        "defaultName": "Nyt Waypoint",
+        "gui": {
+            "showWaypoints": "Vis Waypoints",
+            "manage": {
+                "remove": {
+                    "title": "Vil du virkelig fjerne dette waypoint?",
+                    "button": "Fjern"
+                },
+                "name": "Navn",
+                "color": "Farve",
+                "x": "X",
+                "y": "Y",
+                "z": "Z"
+            },
+            "create": {
+                "permanent": "Opret permanent waypoint",
+                "temporary": "Opret midlertidigt waypoint"
+            }
+        }
     }
 }
