@@ -67,6 +67,37 @@
             },
             "distanceBeforeName": {
                 "name": "İsimden Önce"
+            },
+            "hideDistance": {
+                "name": "Saklamak"
+            },
+            "convertToKilometers": {
+                "name": "Kilometreye Dönüştür"
+            },
+            "kilometersThreshold": {
+                "name": "Kilometre Eşiği",
+                "description": "Nokta İşaretleyicisi-mesafe-görüntülemesinin kilometreye dönüştürülmesi gereken kilometre cinsinden mesafe."
+            }
+        },
+        "gui": {
+            "showWaypoints": "Nokta İşaretleyicisini göster",
+            "manage": {
+                "remove": {
+                    "title": "Bu nokta işaretleyicisini gerçekten kaldırmak istiyor musunuz?",
+                    "button": "Kaldırmak"
+                },
+                "name": "İsim",
+                "color": "Renk",
+                "x": "X",
+                "y": "Y",
+                "z": "Z"
+            },
+            "overview": {
+                "temporary": "Bu sunucudan bağlantınız kesildiğinde bu nokta işaretleyicisi silinecektir."
+            },
+            "create": {
+                "permanent": "Kalıcı nokta işaretleyicisi oluştur",
+                "temporary": "Geçici nokta işaretleyicisi oluştur"
             }
         }
     }
