@@ -42,6 +42,10 @@
             },
             "convertToKilometers": {
                 "name": "Konvertér til kilometer"
+            },
+            "editClosestKey": {
+                "name": "Rediger nærmeste Waypoint",
+                "description": "Rediger det nærmeste waypoint inden for 15 blokke fra din nuværende position."
             }
         },
         "defaultName": "Nyt Waypoint",
