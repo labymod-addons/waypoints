@@ -72,6 +72,10 @@
             },
             "kilometersThreshold": {
                 "name": "Kilometerdrempel"
+            },
+            "hideWhenOutOfRange": {
+                "name": "Verberg Uit Woede",
+                "description": "Als de waypoints verbergt moeten worden als je buiten bereik bent."
             }
         }
     }
