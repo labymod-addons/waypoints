@@ -44,6 +44,8 @@ import net.labymod.api.laby3d.pipeline.RenderStates;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import java.nio.file.ReadOnlyFileSystemException;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
@@ -146,6 +148,10 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     this.renderBeaconBeam(cam, stack, x, y, z, delta);
     stack.pop();
 
+    if (!isVisible(cam, x, y, z)) {
+      return;
+    }
+
     stack.push();
     float alpha = this.waypointObjectMeta.getAlpha();
     if (alpha != 1.0F) {
@@ -173,6 +179,57 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     stack.pop();
   }
 
+  /**
+   * Determines if a waypoint is visible relative to a given camera's position and orientation. This
+   * is calculated by checking if the waypoint is in front of the camera using vector mathematics
+   * and a dot product calculation.
+   * <p>
+   * TODO: {@link AbstractWorldObject#shouldRender()} should probably provide the camera as a parameter in the future.
+   * TODO: There should probably be a fov check in the future to get even better culling
+   *
+   * @param cam The {@link MinecraftCamera} representing the camera's position and orientation in
+   *            the world. Must not be null.
+   * @param x   The relative x-coordinate of the waypoint to the camera.
+   * @param y   The relative y-coordinate of the waypoint to the camera.
+   * @param z   The relative z-coordinate of the waypoint to the camera.
+   * @return {@code true} if the waypoint is visible from the camera's perspective; {@code false}
+   * otherwise.
+   */
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+  private boolean isVisible(
+      final @NotNull MinecraftCamera cam,
+      double x,
+      double y,
+      double z
+  ) {
+    Quaternionf camRot = cam.cameraRotation();
+
+    // Calculate the camera's look vector from its rotation
+    Vector3f look = camRot.transform(new Vector3f(0, 0, -1));
+
+    // The provided x, y, z are already relative to the camera position
+    double wayX = x;
+    double wayY = y;
+    double wayZ = z;
+
+    // Normalize the direction vector
+    double length = Math.sqrt(wayX * wayX + wayY * wayY + wayZ * wayZ);
+    if (length > 0) {
+      wayX /= length;
+      wayY /= length;
+      wayZ /= length;
+    } else {
+      // If the camera is exactly on the waypoint, it should be visible
+      return true;
+    }
+
+    // Check if the waypoint is in front of the camera using the dot product
+    // If the dot product is negative, the waypoint is behind the camera
+    double dot = wayX * look.x + wayY * look.y + wayZ * look.z;
+
+    return dot >= 0;
+  }
+
   private void renderBeaconBeam(
       @NotNull MinecraftCamera cam,
       @NotNull Stack stack,
@@ -180,6 +237,10 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       float delta
   ) {
     if (!this.addon.configuration().beaconBeam().get()) {
+      return;
+    }
+
+    if (!isVisible(cam, x, y, z)) {
       return;
     }
 
