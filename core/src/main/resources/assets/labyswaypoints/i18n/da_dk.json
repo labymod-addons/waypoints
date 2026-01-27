@@ -46,6 +46,9 @@
             "editClosestKey": {
                 "name": "Rediger nærmeste Waypoint",
                 "description": "Rediger det nærmeste waypoint inden for 15 blokke fra din nuværende position."
+            },
+            "outOfRangeDistance": {
+                "name": "Ude af Rækkevidde"
             }
         },
         "defaultName": "Nyt Waypoint",
