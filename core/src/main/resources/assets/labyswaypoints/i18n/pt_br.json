@@ -4,6 +4,17 @@
         "settings": {
             "enabled": {
                 "name": "Ativado"
+            },
+            "header": {
+                "Waypoints": {
+                    "name": "Waypoints"
+                },
+                "Settings": {
+                    "name": "Configurações"
+                },
+                "distance": {
+                    "name": "Distância"
+                }
             }
         }
     }
