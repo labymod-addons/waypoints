@@ -25,9 +25,12 @@ import net.labymod.addons.waypoints.core.listener.WaypointUpdateListener;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointDimensionPacketHandler;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointPacketHandler;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointRemovePacketHandler;
+import net.labymod.addons.waypoints.core.waypoint.DefaultWaypoint;
 import net.labymod.addons.waypoints.core.waypoint.DefaultWaypointService;
+import net.labymod.addons.waypoints.core.waypoint.WaypointSubmitter;
 import net.labymod.api.Laby;
 import net.labymod.api.addon.LabyAddon;
+import net.labymod.api.client.world.object.WorldObjectDispatcher;
 import net.labymod.api.models.addon.annotation.AddonMain;
 import net.labymod.api.reference.annotation.Referenceable;
 import net.labymod.api.serverapi.LabyModProtocolService;
@@ -82,6 +85,10 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     protocol.registerHandler(WaypointPacket.class, new WaypointPacketHandler());
     protocol.registerHandler(WaypointRemovePacket.class, new WaypointRemovePacketHandler());
     protocol.registerHandler(WaypointDimensionPacket.class, dimensionPacketHandler);
+
+    WorldObjectDispatcher dispatcher = Laby.references().worldObjectDispatcher();
+    dispatcher.registerSubmitter(DefaultWaypoint.class, new WaypointSubmitter());
+
   }
 
   @Override

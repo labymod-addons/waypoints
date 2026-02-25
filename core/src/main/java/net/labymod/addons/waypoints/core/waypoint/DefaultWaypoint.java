@@ -15,64 +15,26 @@
  */
 package net.labymod.addons.waypoints.core.waypoint;
 
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.WaypointsAddon;
-import net.labymod.addons.waypoints.core.WaypointsRenderPrograms;
-import net.labymod.addons.waypoints.utils.Colors;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
-import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
-import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta.Type;
 import net.labymod.api.Laby;
-import net.labymod.api.Textures;
-import net.labymod.api.client.component.Component;
-import net.labymod.api.client.gfx.shader.ShaderTextures;
-import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.widget.Widget;
-import net.labymod.api.client.gui.screen.widget.util.WidgetMeta;
-import net.labymod.api.client.render.batch.RectangleRenderContext;
-import net.labymod.api.client.render.batch.ResourceRenderContext;
-import net.labymod.api.client.render.draw.batch.BatchResourceRenderer;
-import net.labymod.api.client.render.font.ComponentRenderer;
-import net.labymod.api.client.render.matrix.Stack;
-import net.labymod.api.client.resources.ResourceLocation;
-import net.labymod.api.client.world.MinecraftCamera;
+import net.labymod.api.client.world.ClientWorld;
 import net.labymod.api.client.world.object.AbstractWorldObject;
-import net.labymod.api.laby3d.pipeline.RenderStates;
+import net.labymod.api.client.world.object.CullVolume;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.nio.file.ReadOnlyFileSystemException;
 
 public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
 
-  private static final float BACKGROUND_DEPTH = 0.01F;
-  private static final float WAYPOINT_SCALE = 0.04F;
-  private static final float BEACON_BEAM_SIZE = 0.3F;
-  private static final float BEACON_BEAM_START_Y = -1024.0F;
-  private static final float BEACON_BEAM_END_Y = 1024.0F * 2.0F;
-  private static final float BEACON_BEAM_SPRITE_WIDTH = 256.0F;
-  private static final float BEACON_BEAM_SPRITE_HEIGHT = 256.0F * BEACON_BEAM_END_Y * 5.0F;
-
-  private static final float ICON_SIZE = 8;
-  private static final float GAP = 3;
-
-  private static final ResourceLocation BEACON_BEAM = Waypoints.ofPath("textures/beacon_beam.png");
-
-  private static final RectangleRenderContext RECTANGLE_RENDER_CONTEXT = Laby.references()
-      .rectangleRenderContext();
-  private static final ResourceRenderContext RESOURCE_RENDER_CONTEXT = Laby.references()
-      .resourceRenderContext();
-  private static final ComponentRenderer COMPONENT_RENDERER = Laby.references().componentRenderer();
-
-  private final WidgetMeta widgetMeta = new WidgetMeta();
+  private static final float HALF_WIDTH = 1.0F;
   private final WaypointObjectMeta waypointObjectMeta;
   private final WaypointMeta meta;
   private final WaypointsAddon addon;
   private final DoubleVector3 prevPosition;
-  private float rectX;
-  private float rectY;
   private boolean hasPrevPosition;
 
   public DefaultWaypoint(
@@ -111,14 +73,25 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
     this.hasPrevPosition = hasPrevPosition;
   }
 
-  @Override
-  public WaypointObjectMeta waypointObjectMeta() {
-    return this.waypointObjectMeta;
+  public WaypointsAddon addon() {
+    return this.addon;
   }
 
   @Override
-  public boolean shouldRender() {
-    return this.isEnabled() && !this.waypointObjectMeta.isOutOfRange();
+  public @NotNull CullVolume cullVolume() {
+    DoubleVector3 pos = this.position();
+    ClientWorld level = Laby.references().clientWorld();
+    int minBuildHeight = level.getMinBuildHeight();
+    int maxBuildHeight = level.getMaxBuildHeight();
+    return CullVolume.box(
+        pos.getX() - HALF_WIDTH, minBuildHeight, pos.getZ() - HALF_WIDTH,
+        pos.getX() + HALF_WIDTH, maxBuildHeight, pos.getZ() + HALF_WIDTH
+    );
+  }
+
+  @Override
+  public WaypointObjectMeta waypointObjectMeta() {
+    return this.waypointObjectMeta;
   }
 
   @Override
@@ -129,160 +102,6 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
   @Override
   public @Nullable Widget createWidget() {
     return new WaypointIndicatorWidget(this);
-  }
-
-  @Override
-  public void renderInWorld(
-      @NotNull MinecraftCamera cam,
-      @NotNull Stack stack,
-      double x,
-      double y,
-      double z,
-      float delta,
-      boolean darker
-  ) {
-    stack.push();
-    this.renderBeaconBeam(cam, stack, x, y, z, delta);
-    stack.pop();
-
-    stack.push();
-    float alpha = this.waypointObjectMeta.getAlpha();
-    if (alpha != 1.0F) {
-      this.widgetMeta.multiplyAlpha(alpha);
-    }
-
-    stack.scale(WAYPOINT_SCALE * this.waypointObjectMeta.getScale());
-
-    this.rotateHorizontally(cam, stack);
-    this.rotateVertically(cam, stack);
-
-    stack.push();
-    stack.translate(0, 0, BACKGROUND_DEPTH);
-
-    this.renderBackground(stack, 1F);
-
-    stack.pop();
-
-    this.renderIcon(stack);
-    this.renderText(stack);
-
-    if (alpha != 1.0F) {
-      this.widgetMeta.revertAlphaState();
-    }
-    stack.pop();
-  }
-
-  private void renderBeaconBeam(
-      @NotNull MinecraftCamera cam,
-      @NotNull Stack stack,
-      double x, double y, double z,
-      float delta
-  ) {
-    if (!this.addon.configuration().beaconBeam().get()) {
-      return;
-    }
-
-    float dynamicBeaconBeamSize = (float) (BEACON_BEAM_SIZE * (1 + (x + z) / 180));
-
-
-    float rotation = System.currentTimeMillis() % 3600 / 20F;
-    float upwards = System.currentTimeMillis() % 2000 / 1000F * dynamicBeaconBeamSize;
-    int color = this.meta.color().get();
-
-    stack.rotate(rotation, 0, 1, 0);
-    stack.translate(-dynamicBeaconBeamSize / 2, -upwards, -dynamicBeaconBeamSize / 2);
-
-    BatchResourceRenderer renderer = Laby.labyAPI()
-        .renderPipeline()
-        .resourceRenderer()
-        .beginBatch(stack, WaypointsRenderPrograms.BEACON_BEAM, BEACON_BEAM);
-    for (int i = 0; i < 4; i++) {
-      stack.rotate(90, 0, 1, 0);
-      stack.translate(-dynamicBeaconBeamSize, 0, 0);
-
-      renderer.pos(0, BEACON_BEAM_START_Y)
-          .size(dynamicBeaconBeamSize, BEACON_BEAM_END_Y)
-          .color(color)
-          .sprite(0, 0, BEACON_BEAM_SPRITE_WIDTH, BEACON_BEAM_SPRITE_HEIGHT)
-          .build();
-    }
-    renderer.upload(WaypointsRenderPrograms.BEACON_BEAM);
-  }
-
-  public void renderBackground(Stack stack, float padding) {
-    Component text = this.waypointObjectMeta().formatTitle(this.getType());
-
-    float iconWidth = this.addon.configuration().icon().get() ? ICON_SIZE + GAP : 0;
-    this.rectX = (COMPONENT_RENDERER.width(text) + iconWidth - 1) / 2;
-    float textHeight = COMPONENT_RENDERER.height();
-    this.rectY = textHeight / 2;
-
-    if (!this.addon.configuration().background().get()) {
-      return;
-    }
-
-    float x = -this.rectX - padding;
-    float y = -this.rectY - padding;
-    float width = this.rectX * 2.0F + padding;
-    float height = textHeight + padding - 1.0F;
-
-    RESOURCE_RENDER_CONTEXT.begin(stack, WaypointsRenderPrograms.BACKGROUND);
-    RESOURCE_RENDER_CONTEXT.blit(
-        x, y, width, height,
-        0, 0, 0, 0, 0, 0,
-        Colors.BACKGROUND_COLOR
-    );
-    ShaderTextures.setShaderTexture(0, Textures.WHITE);
-    RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.BACKGROUND);
-  }
-
-  public void renderIcon(Stack stack) {
-    if (!this.addon.configuration().icon().get()) {
-      return;
-    }
-
-    ResourceLocation resourceLocation = this.meta().icon().getResourceLocation();
-    if (resourceLocation != null) {
-      RESOURCE_RENDER_CONTEXT.begin(stack, WaypointsRenderPrograms.ICON);
-      ShaderTextures.setShaderTexture(0, resourceLocation);
-      Icon icon = this.meta.icon();
-      icon.render(
-          RESOURCE_RENDER_CONTEXT,
-          -this.rectX,
-          -this.rectY,
-          ICON_SIZE,
-          ICON_SIZE,
-          false,
-          this.meta.iconColor()
-      );
-      RESOURCE_RENDER_CONTEXT.uploadToBuffer(WaypointsRenderPrograms.ICON);
-    }
-  }
-
-  private WaypointObjectMeta.Type getType() {
-    return this.addon.configuration().beaconBeam().get() ? Type.WITHOUT_COLOR : Type.WITH_COLOR;
-  }
-
-  public void renderText(Stack stack) {
-    Component text = this.waypointObjectMeta().formatTitle(this.getType());
-
-    // render twice to fix that clouds are rendered in front of the text
-    float iconWidth = this.addon.configuration().icon().get() ? ICON_SIZE + GAP : 0;
-    COMPONENT_RENDERER.builder()
-        .text(text)
-        .shadow(false)
-        .pos(-this.rectX + iconWidth, -this.rectY)
-        .useFloatingPointPosition(true)
-        .allowColors(true)
-        .render(stack);
-    COMPONENT_RENDERER.builder()
-        .text(text)
-        .shadow(false)
-        .discrete(true)
-        .pos(-this.rectX + iconWidth, -this.rectY)
-        .useFloatingPointPosition(true)
-        .allowColors(true)
-        .render(stack);
   }
 
   private boolean isEnabled() {
