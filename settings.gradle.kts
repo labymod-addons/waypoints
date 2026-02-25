@@ -1,7 +1,7 @@
 rootProject.name = "waypoints"
 
 pluginManagement {
-    val labyGradlePluginVersion = "0.5.8-SNAPSHOT"
+    val labyGradlePluginVersion = "0.6.1"
     plugins {
         id("net.labymod.gradle") version (labyGradlePluginVersion)
     }

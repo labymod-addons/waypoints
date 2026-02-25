@@ -76,3 +76,5 @@ build-data.txt
 # Don't ignore libraries
 !libs/*.jar
 .assetsroot
+resources_index.json
+access_widener_index.json

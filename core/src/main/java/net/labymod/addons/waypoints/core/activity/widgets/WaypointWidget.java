@@ -13,7 +13,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.labymod.addons.waypoints.core.activity.widgets;
 
 import net.labymod.addons.waypoints.waypoint.WaypointIcon;
