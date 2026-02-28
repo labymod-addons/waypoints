@@ -16,6 +16,25 @@
                 "distance": {
                     "name": "Afstand"
                 }
+            },
+            "permanentHotkey": {
+                "name": "Maak routepunt"
+            },
+            "editClosestKey": {
+                "name": "Dichtstbijzijnde routepunt bewerken",
+                "description": "Bewerk het dichtstbijzijnde waypoint binnen 15 blokken van je huidige positie."
+            },
+            "background": {
+                "name": "Achtergrond"
+            },
+            "icon": {
+                "name": "Pictogram"
+            },
+            "beaconBeam": {
+                "name": "Beacon Beam"
+            },
+            "alwaysShowWaypoints": {
+                "name": "Dynamisch schalen"
             }
         }
     }
