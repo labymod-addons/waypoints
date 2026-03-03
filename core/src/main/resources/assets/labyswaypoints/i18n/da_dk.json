@@ -48,7 +48,14 @@
                 "description": "Rediger det nærmeste waypoint inden for 15 blokke fra din nuværende position."
             },
             "outOfRangeDistance": {
-                "name": "Ude af Rækkevidde"
+                "name": "Ude af Rækkevidde",
+                "description": "Afstanden i blokke, hvor Waypoints skal skjules."
+            },
+            "showHudIndicators": {
+                "name": "Vis Waypoint HUD indikatorer"
+            },
+            "openWaypoints": {
+                "name": "Rediger Waypoints"
             }
         },
         "defaultName": "Nyt Waypoint",
