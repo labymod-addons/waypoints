@@ -43,7 +43,7 @@ public class DefaultWaypoint extends AbstractWorldObject implements Waypoint {
       WaypointObjectMeta waypointObjectMeta
   ) {
     super(waypointObjectMeta.pos().copy());
-    this.prevPosition = new DoubleVector3();
+    this.prevPosition = waypointObjectMeta.pos().copy(); //Avoid a bugging waypoint by transitioning if it is out of view.
 
     this.addon = addon;
     this.waypointObjectMeta = waypointObjectMeta;

@@ -36,7 +36,6 @@ public class WaypointObjectMeta {
   private float scale;
   private double distanceToPlayer;
   private boolean outOfRange;
-  private boolean interpolatePosition = false;
   private float alpha = 1.0F;
 
   public WaypointObjectMeta(WaypointMeta meta) {
@@ -82,14 +81,6 @@ public class WaypointObjectMeta {
   @Deprecated
   public void setDistance(float distanceToPlayer) {
     this.setDistance((double) distanceToPlayer);
-  }
-
-  public boolean isInterpolatePosition() {
-    return this.interpolatePosition;
-  }
-
-  public void setInterpolatePosition(boolean interpolatePosition) {
-    this.interpolatePosition = interpolatePosition;
   }
 
   public float getAlpha() {

@@ -121,19 +121,6 @@ public class WaypointUpdateListener {
         }
 
         defaultWaypoint.applyPreviousPosition();
-        if (defaultWaypoint.waypointObjectMeta().isInterpolatePosition() && hasPrevPosition) {
-          double previousX = previousPosition.getX();
-          double previousY = previousPosition.getY();
-          double previousZ = previousPosition.getZ();
-
-          waypoint.position().set(
-              MathHelper.lerp(pos.getX(), previousX, partialTicks),
-              MathHelper.lerp(pos.getY(), previousY, partialTicks),
-              MathHelper.lerp(pos.getZ(), previousZ, partialTicks)
-          );
-        } else {
-          waypoint.position().set(pos);
-        }
       }
     }
 
@@ -175,7 +162,6 @@ public class WaypointUpdateListener {
 
       waypointObjectMeta.setScale(DEFAULT_SIZE);
       waypointObjectMeta.pos().set(location);
-      waypointObjectMeta.setInterpolatePosition(false);
       if (waypoint instanceof DefaultWaypoint defaultWaypoint) {
         defaultWaypoint.setHasPrevPosition(false);
       }
@@ -188,7 +174,6 @@ public class WaypointUpdateListener {
       if (distanceToPlayer > this.outOfRangeDistance) {
         waypointObjectMeta.setOutOfRange(true);
         waypointObjectMeta.pos().set(location);
-        waypointObjectMeta.setInterpolatePosition(false);
         if (waypoint instanceof DefaultWaypoint defaultWaypoint) {
           defaultWaypoint.setHasPrevPosition(false);
         }
