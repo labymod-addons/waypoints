@@ -34,7 +34,44 @@
                 "name": "Beacon Beam"
             },
             "alwaysShowWaypoints": {
-                "name": "Dynamisch schalen"
+                "name": "Dynamisch schalen",
+                "description": "Of de Waypoints dynamisch moeten schalen (zodat ze op lange afstand zichtbaar zijn) of altijd dezelfde grootte hebben."
+            },
+            "outOfRangeDistance": {
+                "name": "Afstand buiten bereik",
+                "description": "De afstand in blokken waarop de Waypoints verborgen moeten worden."
+            },
+            "fadeOut": {
+                "name": "Uitfaden voordat verborgen",
+                "description": "Of de Waypoint moet uitfaden voordat deze buiten bereik is."
+            },
+            "showHudIndicators": {
+                "name": "Waypoint HUD-indicatoren weergeven",
+                "description": "Indicatoren voor Waypoints achter de speler worden in de HUD weergegeven."
+            },
+            "openWaypoints": {
+                "name": "Waypoints bewerken"
+            },
+            "distanceFormatting": {
+                "name": "Opmaak"
+            },
+            "distanceBracketColor": {
+                "name": "Haaakjeskleur"
+            },
+            "distanceValueColor": {
+                "name": "Waardekleur"
+            },
+            "distanceBeforeName": {
+                "name": "Voor naam"
+            },
+            "hideDistance": {
+                "name": "Verbergen"
+            },
+            "convertToKilometers": {
+                "name": "Omzetten naar kilometers"
+            },
+            "kilometersThreshold": {
+                "name": "Kilometerdrempel"
             }
         }
     }
