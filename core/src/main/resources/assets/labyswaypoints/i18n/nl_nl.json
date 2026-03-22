@@ -71,11 +71,33 @@
                 "name": "Omzetten naar kilometers"
             },
             "kilometersThreshold": {
-                "name": "Kilometerdrempel"
+                "name": "Kilometerdrempel",
+                "description": "De afstand in kilometers waarbij de Waypoint-afstandweergave wordt omgezet naar kilometers."
             },
             "hideWhenOutOfRange": {
                 "name": "Verberg Uit zicht",
                 "description": "Als de waypoints verbergt moeten worden als je buiten bereik bent."
+            }
+        },
+        "gui": {
+            "showWaypoints": "Waypoints weergeven",
+            "manage": {
+                "remove": {
+                    "title": "Weet je zeker dat je deze waypoint wilt verwijderen?",
+                    "button": "Verwijderen"
+                },
+                "name": "Naam",
+                "color": "kleur",
+                "x": "x",
+                "y": "y",
+                "z": "Z"
+            },
+            "overview": {
+                "temporary": "Deze waypoint wordt verwijderd zodra je van deze server disconnect."
+            },
+            "create": {
+                "permanent": "Permanente waypoint maken",
+                "temporary": "Tijdelijke waypoint maken"
             }
         }
     }
