@@ -30,7 +30,8 @@
                 "description": "Om waypoints skal skalere dynamisk (for at være synlige på lang afstand) eller altid have samme størrelse."
             },
             "hideWhenOutOfRange": {
-                "description": "Om waypoints skal skjules, når de er uden for rækkevidde."
+                "description": "Om waypoints skal skjules, når de er uden for rækkevidde.",
+                "name": "Skjul uden for rækkevidde"
             },
             "fadeOut": {
                 "description": "Om waypointet skal tones ud, inden det er uden for rækkevidde."
