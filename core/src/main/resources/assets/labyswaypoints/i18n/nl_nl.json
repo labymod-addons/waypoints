@@ -46,7 +46,7 @@
                 "description": "Of de Waypoint moet uitfaden voordat deze buiten bereik is."
             },
             "showHudIndicators": {
-                "name": "Waypoint HUD-indicatoren weergeven",
+                "name": "Waypoint HUD indicatoren weergeven",
                 "description": "Indicatoren voor Waypoints achter de speler worden in de HUD weergegeven."
             },
             "openWaypoints": {
@@ -74,7 +74,7 @@
                 "name": "Kilometerdrempel"
             },
             "hideWhenOutOfRange": {
-                "name": "Verberg Uit Woede",
+                "name": "Verberg Uit zicht",
                 "description": "Als de waypoints verbergt moeten worden als je buiten bereik bent."
             }
         }
