@@ -87,9 +87,9 @@
                     "button": "Verwijderen"
                 },
                 "name": "Naam",
-                "color": "kleur",
-                "x": "x",
-                "y": "y",
+                "color": "Kleur",
+                "x": "X",
+                "y": "Y",
                 "z": "Z"
             },
             "overview": {
