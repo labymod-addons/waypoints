@@ -18,10 +18,10 @@
                 }
             },
             "permanentHotkey": {
-                "name": "Maak routepunt"
+                "name": "Maak Waypoint"
             },
             "editClosestKey": {
-                "name": "Dichtstbijzijnde routepunt bewerken",
+                "name": "Dichtstbijzijnde Waypoint bewerken",
                 "description": "Bewerk het dichtstbijzijnde waypoint binnen 15 blokken van je huidige positie."
             },
             "background": {
