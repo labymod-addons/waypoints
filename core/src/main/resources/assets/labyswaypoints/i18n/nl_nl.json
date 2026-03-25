@@ -1,14 +1,14 @@
 {
     "labyswaypoints": {
-        "defaultName": "Nieuw routepunt",
+        "defaultName": "Nieuw Waypoint",
         "settings": {
-            "name": "Laby’s routepunten",
+            "name": "Laby’s Waypoints",
             "enabled": {
                 "name": "Ingeschakeld"
             },
             "header": {
                 "Waypoints": {
-                    "name": "Wegpunten"
+                    "name": "Waypoints"
                 },
                 "Settings": {
                     "name": "Instellingen"
