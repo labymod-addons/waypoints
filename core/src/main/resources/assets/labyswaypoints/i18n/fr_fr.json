@@ -5,6 +5,14 @@
             "name": "Waypoints de Laby",
             "enabled": {
                 "name": "Activé"
+            },
+            "header": {
+                "Waypoints": {
+                    "name": "Waypoints"
+                },
+                "Settings": {
+                    "name": "Paramètres"
+                }
             }
         }
     }
