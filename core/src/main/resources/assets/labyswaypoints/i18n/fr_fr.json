@@ -1,1 +1,11 @@
-{}
+{
+    "labyswaypoints": {
+        "defaultName": "Nouveau point de repère",
+        "settings": {
+            "name": "Waypoints de Laby",
+            "enabled": {
+                "name": "Activé"
+            }
+        }
+    }
+}
