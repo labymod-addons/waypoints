@@ -1,1 +1,11 @@
-{}
+{
+    "labyswaypoints": {
+        "defaultName": "نقطة مسار جديدة",
+        "settings": {
+            "name": "نقاط مسار Laby",
+            "enabled": {
+                "name": "مفعّل"
+            }
+        }
+    }
+}
