@@ -34,7 +34,8 @@
                 "name": "Skjul uden for rækkevidde"
             },
             "fadeOut": {
-                "description": "Om waypointet skal tones ud, inden det er uden for rækkevidde."
+                "description": "Om waypointet skal tones ud, inden det er uden for rækkevidde.",
+                "name": "Fade ud før du gemmer dig"
             },
             "distanceFormatting": {
                 "name": "Formatering"
@@ -61,6 +62,13 @@
             },
             "beaconBeam": {
                 "name": "Beaconstråle"
+            },
+            "distanceValueColor": {
+                "name": "Værdifarve"
+            },
+            "kilometersThreshold": {
+                "name": "Kilometer Tærskel",
+                "description": "Afstanden i kilometer hvor waypoint-afstandsvisningen skal konverteres til kilometer."
             }
         },
         "defaultName": "Nyt Waypoint",
