@@ -95,6 +95,9 @@
             "create": {
                 "permanent": "Opret permanent waypoint",
                 "temporary": "Opret midlertidigt waypoint"
+            },
+            "overview": {
+                "temporary": "Dette waypoint vil blive slettet så snart du forlader serveren."
             }
         }
     }
