@@ -35,7 +35,7 @@
             },
             "fadeOut": {
                 "description": "Om waypointet skal tones ud, inden det er uden for rækkevidde.",
-                "name": "Fade ud før du gemmer dig"
+                "name": "Ton ud før den skjules"
             },
             "distanceFormatting": {
                 "name": "Formatering"
@@ -55,7 +55,8 @@
                 "description": "Afstanden i blokke, hvor Waypoints skal skjules."
             },
             "showHudIndicators": {
-                "name": "Vis Waypoint HUD indikatorer"
+                "name": "Vis Waypoint HUD indikatorer",
+                "description": "Indikatorer for Waypoints bag spilleren vil blive vist i HUD’en."
             },
             "openWaypoints": {
                 "name": "Rediger Waypoints"
@@ -69,6 +70,12 @@
             "kilometersThreshold": {
                 "name": "Kilometer Tærskel",
                 "description": "Afstanden i kilometer hvor waypoint-afstandsvisningen skal konverteres til kilometer."
+            },
+            "distanceBeforeName": {
+                "name": "Før navn"
+            },
+            "distanceBracketColor": {
+                "name": "Klammefarve"
             }
         },
         "defaultName": "Nyt Waypoint",
