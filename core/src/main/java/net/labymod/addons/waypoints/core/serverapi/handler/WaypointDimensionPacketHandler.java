@@ -17,6 +17,7 @@ package net.labymod.addons.waypoints.core.serverapi.handler;
 
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.api.client.network.server.ServerAddress;
 import net.labymod.serverapi.api.packet.PacketHandler;
 import net.labymod.serverapi.integration.waypoints.packets.WaypointDimensionPacket;
 import org.jetbrains.annotations.NotNull;
@@ -28,20 +29,20 @@ public class WaypointDimensionPacketHandler implements PacketHandler<WaypointDim
 
   private WaypointDimensionPacket.Until until;
   private String dimension;
+  private ServerAddress serverAddress;
 
   @Override
   public void handle(@NotNull UUID sender, @NotNull WaypointDimensionPacket packet) {
-    this.dimension = packet.getDimension();
-    this.until = packet.until();
-    if (this.dimension == null) {
-      this.until = null;
-    }
-
     WaypointService waypointService = Waypoints.references().waypointService();
-    if (this.dimension == null) {
+    String dimension = packet.getDimension();
+    if (dimension == null) {
+      this.clear();
       waypointService.setCurrentDimension();
     } else {
-      waypointService.setDimension(this.dimension);
+      this.dimension = dimension;
+      this.until = packet.until();
+      this.serverAddress = waypointService.getServerAddress();
+      waypointService.setDimension(dimension);
     }
 
     waypointService.refresh();
@@ -55,8 +56,17 @@ public class WaypointDimensionPacketHandler implements PacketHandler<WaypointDim
     return this.dimension;
   }
 
+  /**
+   * @return the address of the server the current dimension override was received from, or null
+   * if there is no override
+   */
+  public @Nullable ServerAddress getServerAddress() {
+    return this.serverAddress;
+  }
+
   public void clear() {
     this.dimension = null;
     this.until = null;
+    this.serverAddress = null;
   }
 }

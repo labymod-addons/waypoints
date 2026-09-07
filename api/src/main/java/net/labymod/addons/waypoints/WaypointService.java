@@ -126,16 +126,14 @@ public interface WaypointService {
   void setWaypointsRenderCache(boolean waypointRenderCache);
 
   /**
-   * @return the current single player world that {@link #getVisible()} was last populated with by
-   * {@link #refresh()}. Returns {@code null} if the player was not in a single player world or
-   * {@link #getVisible()} was not populated yet.
+   * @return the folder name of the single player world the player is currently in, or
+   * {@code null} if the player is not in a single player world.
    */
   @Nullable String getSinglePlayerWorld();
 
   /**
-   * @return the current single player world that {@link #getVisible()} was last populated with by
-   * {@link #refresh()}. Returns {@code null} if the player was not on a multi-player server or
-   * {@link #getVisible()} was not populated yet.
+   * @return the address of the server the player is currently on, or {@code null} if the player
+   * is not on a multi-player server.
    */
   @Nullable ServerAddress getServerAddress();
 

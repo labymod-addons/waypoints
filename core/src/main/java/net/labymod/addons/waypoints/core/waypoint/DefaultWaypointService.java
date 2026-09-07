@@ -33,7 +33,6 @@ import net.labymod.api.client.network.server.ServerAddress;
 import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.world.object.WorldObjectRegistry;
 import net.labymod.api.event.DefaultCancellable;
-import net.labymod.api.generated.ReferenceStorage;
 import net.labymod.api.models.Implements;
 import net.labymod.api.server.LocalWorld;
 import net.labymod.api.util.ThreadSafe;
@@ -65,8 +64,6 @@ public class DefaultWaypointService implements WaypointService {
   );
   private final WaypointConfigurationStorage configurationStorage;
   private WaypointsAddon addon;
-  private String actualWorld;
-  private ServerAddress serverAddress;
   private String dimension;
   private boolean waypointsRenderCache = false;
 
@@ -98,13 +95,10 @@ public class DefaultWaypointService implements WaypointService {
     ThreadSafe.ensureRenderThread();
 
     this.visibleWaypoints.clear();
-    ReferenceStorage references = Laby.references();
-    LocalWorld localWorld = references.integratedServer().getLocalWorld();
-    ServerData serverData = references.serverController().getCurrentServerData();
-    this.actualWorld = localWorld != null ? localWorld.folderName() : null;
-    this.serverAddress = serverData != null ? serverData.address() : null;
+    String singlePlayerWorld = this.getSinglePlayerWorld();
+    ServerAddress serverAddress = this.getServerAddress();
 
-    WaypointContext targetContext = this.serverAddress != null
+    WaypointContext targetContext = serverAddress != null
         ? WaypointContext.MULTI_PLAYER
         : WaypointContext.SINGLE_PLAYER;
     for (Waypoint waypoint : this.waypoints) {
@@ -117,9 +111,9 @@ public class DefaultWaypointService implements WaypointService {
       boolean target;
       String context = meta.getContext();
       if (targetContext == WaypointContext.SINGLE_PLAYER) {
-        target = context == null || Objects.equals(context, this.actualWorld); //When context is null it's a deprecated waypoint that is always visible
+        target = context == null || Objects.equals(context, singlePlayerWorld); //When context is null it's a deprecated waypoint that is always visible
       } else {
-        target = context == null || Objects.equals(context, this.serverAddress.toString()); //When context is null it's a deprecated waypoint that is always visible
+        target = context == null || Objects.equals(context, serverAddress.toString()); //When context is null it's a deprecated waypoint that is always visible
       }
 
       if (target && (meta.getDimension() == null || meta.getDimension().equals(this.dimension))) {
@@ -257,13 +251,15 @@ public class DefaultWaypointService implements WaypointService {
   }
 
   @Override
-  public String getSinglePlayerWorld() {
-    return this.actualWorld;
+  public @Nullable String getSinglePlayerWorld() {
+    LocalWorld localWorld = Laby.references().integratedServer().getLocalWorld();
+    return localWorld != null ? localWorld.folderName() : null;
   }
 
   @Override
-  public @NotNull ServerAddress getServerAddress() {
-    return this.serverAddress;
+  public @Nullable ServerAddress getServerAddress() {
+    ServerData serverData = Laby.references().serverController().getCurrentServerData();
+    return serverData != null ? serverData.address() : null;
   }
 
   @Override

@@ -18,6 +18,8 @@ package net.labymod.addons.waypoints.core.serverapi.handler;
 import java.util.UUID;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.core.WaypointsAddon;
+import net.labymod.addons.waypoints.core.listener.ServerWaypointListener;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
 import net.labymod.addons.waypoints.waypoint.WaypointIcon;
@@ -34,8 +36,26 @@ import org.jetbrains.annotations.NotNull;
 
 public class WaypointPacketHandler implements PacketHandler<WaypointPacket> {
 
+  private final WaypointsAddon addon;
+  private final ServerWaypointListener serverWaypointListener;
+
+  public WaypointPacketHandler(
+      WaypointsAddon addon,
+      ServerWaypointListener serverWaypointListener
+  ) {
+    this.addon = addon;
+    this.serverWaypointListener = serverWaypointListener;
+  }
+
   @Override
   public void handle(@NotNull UUID sender, @NotNull WaypointPacket packet) {
+    // Packets are also handled while the addon is switched off. It receives no events in that
+    // state, so make sure the dimension the waypoints are assigned to is the one the player is
+    // currently in. While the addon is switched on the events keep the dimension up to date.
+    if (!this.addon.configuration().enabled().get()) {
+      this.serverWaypointListener.resync();
+    }
+
     for (ServerWaypoint waypoint : packet.getWaypoints()) {
       try {
         this.addServerWaypoint(waypoint);
