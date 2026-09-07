@@ -16,7 +16,9 @@
 package net.labymod.addons.waypoints.waypoint;
 
 import java.util.Objects;
+import java.util.OptionalLong;
 import net.labymod.addons.waypoints.Waypoints;
+import net.labymod.addons.waypoints.utils.HashedSeeds;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.util.Color;
@@ -33,6 +35,8 @@ public class WaypointMeta {
   private final @Nullable String context; //Nullable for backwards compatibility
   private final WaypointType type;
   private String dimension;
+  private @Nullable Long hashedSeed;
+  private boolean worldBound;
   private Component title; // todo why is this a component? replace with string
   private Color color;
   private DoubleVector3 location;
@@ -55,6 +59,41 @@ public class WaypointMeta {
       @Nullable String dimension,
       boolean visible
   ) {
+    this(
+        id,
+        title,
+        color,
+        type,
+        location,
+        contextType,
+        context,
+        icon,
+        dimension,
+        visible,
+        null
+    );
+  }
+
+  /**
+   * Use the {@link WaypointBuilder} to create a new instance of this class instead.
+   *
+   * @param hashedSeed the hashed seed of the world the waypoint belongs to, or {@code null} if it
+   *                   belongs to every world of its context
+   */
+  @Internal
+  public WaypointMeta(
+      @NotNull String id,
+      @NotNull Component title,
+      @NotNull Color color,
+      @NotNull WaypointType type,
+      @NotNull DoubleVector3 location,
+      @Nullable WaypointContext contextType,
+      @Nullable String context,
+      @NotNull Icon icon,
+      @Nullable String dimension,
+      boolean visible,
+      @Nullable Long hashedSeed
+  ) {
     this.id = id;
     this.title = title;
     this.color = color;
@@ -65,6 +104,8 @@ public class WaypointMeta {
     this.context = context;
     this.icon = icon;
     this.dimension = dimension;
+    this.hashedSeed = hashedSeed;
+    this.worldBound = hashedSeed != null;
   }
 
   /**
@@ -275,6 +316,57 @@ public class WaypointMeta {
     Waypoints.refresh();
   }
 
+  /**
+   * @return the hashed seed of the world this waypoint was bound to, or {@code null} if it was
+   * never bound to a world
+   * @see #isWorldBound()
+   */
+  public @Nullable Long hashedSeed() {
+    return this.hashedSeed;
+  }
+
+  /**
+   * Binds this waypoint to the world with the given hashed seed and restricts it to that world, or
+   * forgets the world entirely if {@code null}. Unlike {@link #setDimension(String)} this does not
+   * refresh the waypoints, as it is usually called on a copy that is applied via
+   * {@link net.labymod.addons.waypoints.WaypointService#update(WaypointMeta)} afterwards.
+   *
+   * @param hashedSeed the hashed seed of the world, or {@code null} to unbind the waypoint
+   */
+  public void setHashedSeed(@Nullable Long hashedSeed) {
+    this.hashedSeed = hashedSeed;
+    this.worldBound = hashedSeed != null;
+  }
+
+  /**
+   * @return {@code true} if this waypoint is only shown in the world it was bound to
+   */
+  public boolean isWorldBound() {
+    return this.worldBound;
+  }
+
+  /**
+   * Restricts this waypoint to the world it was bound to, or lifts the restriction while keeping
+   * the bound world. Has no effect on the visibility of a waypoint that was never bound.
+   *
+   * @param worldBound whether the waypoint is only shown in its bound world
+   */
+  public void setWorldBound(boolean worldBound) {
+    this.worldBound = worldBound;
+  }
+
+  /**
+   * Checks whether this waypoint is shown in the world with the given hashed seed. A waypoint that
+   * is not {@link #isWorldBound() world bound} is shown everywhere; otherwise see
+   * {@link HashedSeeds#matches(Long, OptionalLong)}, in short an empty current seed always matches.
+   *
+   * @param currentSeed the hashed seed of the world the player is currently in
+   * @return {@code true} if this waypoint is shown in the current world
+   */
+  public boolean matchesWorld(@NotNull OptionalLong currentSeed) {
+    return !this.worldBound || HashedSeeds.matches(this.hashedSeed, currentSeed);
+  }
+
   @Override
   public boolean equals(Object object) {
     if (this == object) {
@@ -294,7 +386,7 @@ public class WaypointMeta {
   }
 
   public WaypointMeta copy() {
-    return new WaypointMeta(
+    WaypointMeta copy = new WaypointMeta(
         this.id,
         this.title.copy(),
         this.color,
@@ -304,7 +396,10 @@ public class WaypointMeta {
         this.context,
         this.icon,
         this.dimension,
-        this.visible
+        this.visible,
+        this.hashedSeed
     );
+    copy.worldBound = this.worldBound;
+    return copy;
   }
 }

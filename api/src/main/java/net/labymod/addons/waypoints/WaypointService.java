@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -44,9 +45,10 @@ public interface WaypointService {
   WaypointConfigurationStorage configurationStorage();
 
   /**
-   * Refreshes {@link #getVisible()} based on {@link #getDimension()} and the current server address
-   * or single player world. Fires {@link WaypointVisibleEvent} for each waypoint that passed the
-   * checks and {@link RefreshWaypointsEvent} when done.
+   * Refreshes {@link #getVisible()} based on {@link #getDimension()}, the current server address
+   * or single player world and the hashed seed of the current world (see
+   * {@link WaypointMeta#matchesWorld(OptionalLong)}). Fires {@link WaypointVisibleEvent} for each
+   * waypoint that passed the checks and {@link RefreshWaypointsEvent} when done.
    */
   void refresh();
 
@@ -136,6 +138,18 @@ public interface WaypointService {
    * is not on a multi-player server.
    */
   @Nullable ServerAddress getServerAddress();
+
+  /**
+   * Gets the hashed seed of the world the player is currently in, as sent by the server. This is
+   * the only information available to tell apart several worlds behind the same server address
+   * (e.g. lobby and survival world behind a proxy). Always read live, never cached.
+   *
+   * @return the hashed seed, or an empty {@link OptionalLong} if the player is not ingame, the
+   * Minecraft version does not send one (below 1.15) or the server hides its seed
+   */
+  default @NotNull OptionalLong currentHashedSeed() {
+    return Laby.labyAPI().minecraft().clientWorld().hashedSeed();
+  }
 
   /**
    * Gets the waypoint dimension

@@ -52,6 +52,25 @@
     height: fit-content;
     space-between-entries: 6;
   }
+
+  .world-row {
+    width: 100%;
+    height: fit-content;
+    orientation: horizontal;
+    space-between-entries: 6;
+
+    * {
+      alignment-y: center;
+    }
+
+    .label {
+      height: fit-content;
+    }
+
+    Switch {
+      width: 35;
+    }
+  }
 }
 
 .icon-picker-grid {

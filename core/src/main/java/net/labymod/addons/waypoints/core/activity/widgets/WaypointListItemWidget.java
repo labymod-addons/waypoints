@@ -17,6 +17,7 @@ package net.labymod.addons.waypoints.core.activity.widgets;
 
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
+import net.labymod.api.Textures.SpriteCommon;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.widgets.input.CheckBoxWidget;
@@ -26,14 +27,20 @@ import net.labymod.api.client.gui.screen.widget.widgets.input.CheckBoxWidget.Sta
 public class WaypointListItemWidget extends WaypointWidget {
 
   private final CheckBoxWidget checkbox;
+  private final boolean otherWorld;
 
-  public WaypointListItemWidget(WaypointMeta meta, WaypointObjectMeta worldObjectMeta) {
+  /**
+   * @param otherWorld whether the waypoint is bound to another world of the current server than
+   *                   the one the player is in, in which case it is marked as such
+   */
+  public WaypointListItemWidget(
+      WaypointMeta meta,
+      WaypointObjectMeta worldObjectMeta,
+      boolean otherWorld
+  ) {
     super(meta, worldObjectMeta);
     this.checkbox = new CheckBoxWidget();
-  }
-
-  public WaypointListItemWidget(WaypointMeta meta) {
-    this(meta, null);
+    this.otherWorld = otherWorld;
   }
 
   @Override
@@ -45,6 +52,11 @@ public class WaypointListItemWidget extends WaypointWidget {
     this.addContent(this.checkbox);
 
     super.initialize(parent);
+
+    if (this.otherWorld) {
+      this.addId("other-world");
+      this.addMarker(SpriteCommon.MULTIPLAYER, "labyswaypoints.gui.overview.otherWorld");
+    }
   }
 
   public CheckBoxWidget getCheckbox() {

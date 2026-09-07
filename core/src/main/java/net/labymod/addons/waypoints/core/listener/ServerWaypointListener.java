@@ -18,13 +18,17 @@ package net.labymod.addons.waypoints.core.listener;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointDimensionPacketHandler;
+import net.labymod.addons.waypoints.event.RefreshWaypointsEvent;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointContext;
 import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.client.network.server.ServerAddress;
+import net.labymod.api.client.network.server.ServerData;
 import net.labymod.api.client.resources.ResourceLocation;
+import net.labymod.api.event.Phase;
 import net.labymod.api.event.Subscribe;
+import net.labymod.api.event.client.lifecycle.GameTickEvent;
 import net.labymod.api.event.client.network.server.ServerDisconnectEvent;
 import net.labymod.api.event.client.network.server.ServerJoinEvent;
 import net.labymod.api.event.client.network.server.SubServerSwitchEvent;
@@ -35,6 +39,7 @@ import net.labymod.serverapi.integration.waypoints.packets.WaypointDimensionPack
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.OptionalLong;
 import java.util.function.Predicate;
 
 public class ServerWaypointListener {
@@ -42,9 +47,41 @@ public class ServerWaypointListener {
   private final WaypointService waypointService;
   private final WaypointDimensionPacketHandler packetHandler;
 
+  // The world the waypoints were last refreshed for, see onTick
+  private WorldIdentity lastRefreshedWorld;
+
   public ServerWaypointListener(WaypointDimensionPacketHandler packetHandler) {
     this.waypointService = Waypoints.references().waypointService();
     this.packetHandler = packetHandler;
+    this.lastRefreshedWorld = WorldIdentity.current(this.waypointService);
+  }
+
+  /**
+   * Refreshes the waypoints whenever the world the player is in changed without the events below
+   * noticing. The hashed seed is the only way to tell apart several worlds behind the same server
+   * address, but nothing fires when only the seed changes: a proxy switching the backend via a
+   * respawn packet fires no event at all, and {@link SubServerSwitchEvent} is not guaranteed to
+   * fire after LabyMod has captured the seed of the new login packet. Comparing a few values per
+   * tick is cheaper and more robust than tracking every path a world change can take.
+   */
+  @Subscribe
+  public void onTick(GameTickEvent event) {
+    if (event.phase() != Phase.POST) {
+      return;
+    }
+
+    if (!WorldIdentity.current(this.waypointService).equals(this.lastRefreshedWorld)) {
+      this.waypointService.refresh();
+    }
+  }
+
+  /**
+   * Every refresh, no matter who triggered it, records the world it ran for so that
+   * {@link #onTick} only refreshes again once the world changes afterwards.
+   */
+  @Subscribe
+  public void onRefresh(RefreshWaypointsEvent event) {
+    this.lastRefreshedWorld = WorldIdentity.current(this.waypointService);
   }
 
   @Subscribe
@@ -159,5 +196,25 @@ public class ServerWaypointListener {
     }
 
     return true;
+  }
+
+  /**
+   * The values that decide which waypoints {@link WaypointService#refresh()} shows, apart from the
+   * dimension, which is tracked by the events above. {@link ServerData} is compared by identity as
+   * LabyMod keeps the same instance for the whole connection, including sub-server switches.
+   */
+  private record WorldIdentity(
+      boolean ingame,
+      @Nullable ServerData serverData,
+      OptionalLong hashedSeed
+  ) {
+
+    static WorldIdentity current(WaypointService waypointService) {
+      return new WorldIdentity(
+          Laby.labyAPI().minecraft().isIngame(),
+          Laby.references().serverController().getCurrentServerData(),
+          waypointService.currentHashedSeed()
+      );
+    }
   }
 }

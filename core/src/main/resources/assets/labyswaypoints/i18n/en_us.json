@@ -90,10 +90,19 @@
         "color": "Color",
         "x": "X",
         "y": "Y",
-        "z": "Z"
+        "z": "Z",
+        "bindToWorld": {
+          "name": "Bind to this world",
+          "description": "Shows the waypoint only in the world you are in right now. On some servers this does not work as expected, for example the waypoint may disappear later even though you are in the same world. If that happens, turn this setting off."
+        },
+        "onlyShowInBoundWorld": {
+          "name": "Only show in bound world",
+          "description": "Shows the waypoint only in the world it was bound to. On some servers this does not work as expected, for example the waypoint may disappear even though you are in the same world. If that happens, turn this setting off."
+        }
       },
       "overview": {
-        "temporary": "This waypoint will be deleted once you disconnect from this server."
+        "temporary": "This waypoint will be deleted once you disconnect from this server.",
+        "otherWorld": "This waypoint belongs to another world on this server."
       },
       "create": {
         "permanent": "Create permanent waypoint",

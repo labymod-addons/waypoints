@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -97,6 +98,7 @@ public class DefaultWaypointService implements WaypointService {
     this.visibleWaypoints.clear();
     String singlePlayerWorld = this.getSinglePlayerWorld();
     ServerAddress serverAddress = this.getServerAddress();
+    OptionalLong currentSeed = this.currentHashedSeed();
 
     WaypointContext targetContext = serverAddress != null
         ? WaypointContext.MULTI_PLAYER
@@ -116,7 +118,10 @@ public class DefaultWaypointService implements WaypointService {
         target = context == null || Objects.equals(context, serverAddress.toString()); //When context is null it's a deprecated waypoint that is always visible
       }
 
-      if (target && (meta.getDimension() == null || meta.getDimension().equals(this.dimension))) {
+      // A waypoint without a seed and an empty current seed always match, so waypoints created
+      // before the seed existed and worlds that do not report one keep the old server-wide behavior
+      if (target && meta.matchesWorld(currentSeed)
+          && (meta.getDimension() == null || meta.getDimension().equals(this.dimension))) {
         if (!Laby.fireEvent(new WaypointVisibleEvent(waypoint)).isCancelled()) {
           this.visibleWaypoints.add(waypoint);
           this.worldObjectRegistry.register(waypoint);
