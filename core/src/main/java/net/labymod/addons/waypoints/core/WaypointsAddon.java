@@ -47,6 +47,8 @@ import javax.inject.Singleton;
 @Referenceable
 public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
 
+  private boolean externalDevices;
+
   @Override
   protected void preConfigurationLoad() {
     this.registerListener(new ConfigurationVersionUpdateListener());
@@ -89,6 +91,37 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     WorldObjectDispatcher dispatcher = Laby.references().worldObjectDispatcher();
     dispatcher.registerSubmitter(DefaultWaypoint.class, new WaypointSubmitter());
 
+    // Let a paired controller (a Stream Deck, the Laby app) set a waypoint through LabyMod's
+    // External Devices service. Guarded so the addon still works on client builds that don't ship
+    // the API yet; a LinkageError means an older one that has the service but not its control side.
+    try {
+      Class.forName("net.labymod.api.externaldevice.ExternalDeviceControl");
+      ExternalDeviceCommands.register();
+      this.externalDevices = true;
+    } catch (ClassNotFoundException | LinkageError ignored) {
+      this.logger().info(
+          "External Devices API not available in this client build, waypoints are not offered to "
+              + "paired controllers"
+      );
+    }
+  }
+
+  /**
+   * Switched off in the mods menu a listener simply stops receiving events, but the waypoint
+   * operation is pulled by the controller, so it has to be taken off the list itself.
+   */
+  @Override
+  protected void onDeactivated() {
+    if (this.externalDevices) {
+      ExternalDeviceCommands.unregister();
+    }
+  }
+
+  @Override
+  protected void onActivated() {
+    if (this.externalDevices) {
+      ExternalDeviceCommands.register();
+    }
   }
 
   @Override
