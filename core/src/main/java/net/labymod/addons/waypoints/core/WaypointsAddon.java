@@ -96,7 +96,6 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
 
     WorldObjectDispatcher dispatcher = Laby.references().worldObjectDispatcher();
     dispatcher.registerSubmitter(DefaultWaypoint.class, new WaypointSubmitter());
-  }
 
     // Let a paired controller (a Stream Deck, the Laby app) set a waypoint through LabyMod's
     // External Devices service. Guarded so the addon still works on client builds that don't ship
