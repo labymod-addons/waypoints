@@ -18,7 +18,6 @@ package net.labymod.addons.waypoints.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.WaypointsActivity;
 import net.labymod.addons.waypoints.event.WaypointAddEvent;
 import net.labymod.addons.waypoints.event.WaypointRemoveEvent;
@@ -53,8 +52,7 @@ import org.jetbrains.annotations.Unmodifiable;
 public class WaypointsConfiguration extends AddonConfig {
 
   @SwitchSetting
-  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true)
-      .addChangeListener(value -> Waypoints.refresh());
+  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true);
 
   @SettingSection("Waypoints")
   @KeyBindSetting(acceptMouseButtons = true)

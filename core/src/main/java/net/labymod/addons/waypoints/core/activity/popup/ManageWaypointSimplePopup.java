@@ -17,6 +17,7 @@ package net.labymod.addons.waypoints.core.activity.popup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
@@ -38,6 +39,7 @@ import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.NumberTextFieldWidget;
+import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.TextFieldWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.color.ColorPickerWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
@@ -60,6 +62,8 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
   private final List<Condition> conditions = new ArrayList<>();
   private final WaypointMeta waypoint;
   private final WaypointWidget waypointWidget;
+  // The hashed seed of the world the player is in, empty if the world does not report one
+  private final OptionalLong currentSeed;
 
   private Consumer<Waypoint> saveListener;
 
@@ -75,6 +79,8 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     };
 
     this.waypoint = waypoint;
+    this.currentSeed = Waypoints.references().waypointService().currentHashedSeed();
+
     this.doneButton = SimplePopupButton.create(
         Component.translatable("labymod.ui.button.save"),
         button -> this.saveWaypoint()
@@ -137,7 +143,8 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
             Math.floor(position.getZ()) + 0.5
         ))
         .applyCurrentContext()
-        .currentDimension();
+        .currentDimension()
+        .currentWorld();
   }
 
   @Override
@@ -229,6 +236,36 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
         value -> this.waypoint.location().setZ(value)
     ));
     container.addChild(positionWrapper);
+
+    // Without a seed there is no world to bind to, so a switch would be dead weight
+    // A saved waypoint that was bound once keeps its world; before that, switching on binds it to
+    // the world the player is in, which requires the world to report a seed. A new waypoint is
+    // pre-bound to the current world by the builder but has not been saved with it yet.
+    boolean boundOnce = this.action == Action.EDIT && this.waypoint.hashedSeed() != null;
+    if (boundOnce || this.currentSeed.isPresent()) {
+      String key = boundOnce
+          ? "labyswaypoints.gui.manage.onlyShowInBoundWorld"
+          : "labyswaypoints.gui.manage.bindToWorld";
+      FlexibleContentWidget worldRow = new FlexibleContentWidget();
+      worldRow.addId("world-row");
+      worldRow.setHoverComponent(Component.translatable(key + ".description"));
+
+      ComponentWidget label = ComponentWidget.component(Component.translatable(key + ".name"));
+      label.addId("label");
+      worldRow.addFlexibleContent(label);
+
+      SwitchWidget worldSwitch = SwitchWidget.create(value -> {
+        if (boundOnce) {
+          this.waypoint.setWorldBound(value);
+        } else {
+          this.waypoint.setHashedSeed(value ? this.currentSeed.getAsLong() : null);
+        }
+      });
+      worldSwitch.setValue(this.waypoint.isWorldBound());
+      worldRow.addContent(worldSwitch);
+
+      container.addChild(worldRow);
+    }
 
     this.doneButton.enabled(this.allConditionsMet());
   }

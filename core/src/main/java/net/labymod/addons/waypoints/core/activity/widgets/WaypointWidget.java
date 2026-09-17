@@ -66,13 +66,10 @@ public class WaypointWidget extends FlexibleContentWidget {
     this.addFlexibleContent(this.titleWidget);
 
     if (this.meta.type() == WaypointType.SERVER_SESSION) {
-      IconWidget typeWidget = new IconWidget(Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT);
-
-      typeWidget.addId("type");
-      typeWidget.setHoverComponent(Component.translatable("labyswaypoints.gui.overview"
-          + ".temporary"));
-
-      this.addContent(typeWidget);
+      this.addMarker(
+          Textures.SpriteCommon.EXCLAMATION_MARK_LIGHT,
+          "labyswaypoints.gui.overview.temporary"
+      );
     }
 
     if (this.worldObjectMeta == null) {
@@ -91,6 +88,19 @@ public class WaypointWidget extends FlexibleContentWidget {
   public void tick() {
     super.tick();
     this.updateDistance();
+  }
+
+  /**
+   * Adds a small icon next to the title that explains a special state of the waypoint on hover.
+   *
+   * @param icon           the icon to show
+   * @param translationKey the translation key of the hover text
+   */
+  protected void addMarker(Icon icon, String translationKey) {
+    IconWidget marker = new IconWidget(icon);
+    marker.addId("type");
+    marker.setHoverComponent(Component.translatable(translationKey));
+    this.addContent(marker);
   }
 
   public void updateTitle() {

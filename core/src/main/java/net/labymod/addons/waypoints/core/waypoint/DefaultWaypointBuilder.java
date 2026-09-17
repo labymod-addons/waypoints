@@ -30,6 +30,7 @@ import net.labymod.api.util.Color;
 import net.labymod.api.util.debug.Preconditions;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Implements(WaypointBuilder.class)
 public class DefaultWaypointBuilder implements WaypointBuilder {
@@ -44,6 +45,7 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   private String dimension;
   private WaypointContext contextType;
   private String context;
+  private Long hashedSeed;
 
   @Override
   public @NotNull WaypointBuilder identifier(String identifier) {
@@ -108,6 +110,12 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
   }
 
   @Override
+  public @NotNull WaypointBuilder hashedSeed(@Nullable Long hashedSeed) {
+    this.hashedSeed = hashedSeed;
+    return this;
+  }
+
+  @Override
   public @NotNull WaypointMeta build() {
     WaypointService waypointService = Waypoints.references().waypointService();
     if (this.identifier == null) {
@@ -134,7 +142,8 @@ public class DefaultWaypointBuilder implements WaypointBuilder {
         this.context,
         this.icon,
         this.dimension,
-        this.visible
+        this.visible,
+        this.hashedSeed
     );
   }
 }

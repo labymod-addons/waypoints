@@ -25,6 +25,9 @@ import net.labymod.api.util.Color;
 import net.labymod.api.util.math.vector.DoubleVector3;
 import net.labymod.api.util.math.vector.FloatVector3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.OptionalLong;
 
 @Referenceable
 public interface WaypointBuilder {
@@ -140,6 +143,17 @@ public interface WaypointBuilder {
   @NotNull WaypointBuilder dimension(String dimension);
 
   /**
+   * Binds the waypoint to the world with the given hashed seed. Default is {@code null}, meaning
+   * the waypoint belongs to every world of its context (server or single player world).
+   *
+   * @param hashedSeed the hashed seed of the target world, or {@code null} to not bind the
+   *                   waypoint to a world
+   * @return the builder instance
+   * @see WaypointMeta#matchesWorld(OptionalLong)
+   */
+  @NotNull WaypointBuilder hashedSeed(@Nullable Long hashedSeed);
+
+  /**
    * Builds the waypoint with the provided information.
    *
    * @return the built waypoint
@@ -221,6 +235,16 @@ public interface WaypointBuilder {
     }
 
     return this.dimension(dimension);
+  }
+
+  /**
+   * Binds the waypoint to the world the player is currently in.
+   *
+   * @return the builder instance
+   */
+  default @NotNull WaypointBuilder currentWorld() {
+    OptionalLong hashedSeed = Waypoints.references().waypointService().currentHashedSeed();
+    return this.hashedSeed(hashedSeed.isPresent() ? hashedSeed.getAsLong() : null);
   }
 
   /**

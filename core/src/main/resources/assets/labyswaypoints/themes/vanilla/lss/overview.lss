@@ -116,6 +116,11 @@ Header {
     min-height: 1;
   }
 
+  /* Bound to another world of this server; the icon next to the title is the primary marker */
+  &.other-world .title {
+    opacity: 0.6;
+  }
+
   &:selected {
     border: 1 gray;
     background-color: rgba(0, 0, 0, 0.45);

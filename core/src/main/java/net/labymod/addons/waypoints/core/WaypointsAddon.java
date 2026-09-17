@@ -34,6 +34,7 @@ import net.labymod.api.client.world.object.WorldObjectDispatcher;
 import net.labymod.api.models.addon.annotation.AddonMain;
 import net.labymod.api.reference.annotation.Referenceable;
 import net.labymod.api.serverapi.LabyModProtocolService;
+import net.labymod.api.util.ThreadSafe;
 import net.labymod.serverapi.core.AddonProtocol;
 import net.labymod.serverapi.integration.waypoints.WaypointsIntegration;
 import net.labymod.serverapi.integration.waypoints.packets.WaypointDimensionPacket;
@@ -47,6 +48,7 @@ import javax.inject.Singleton;
 @Referenceable
 public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
 
+  private ServerWaypointListener serverWaypointListener;
   private boolean externalDevices;
 
   @Override
@@ -72,9 +74,10 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     waypointService.setCurrentDimension();
 
     WaypointDimensionPacketHandler dimensionPacketHandler = new WaypointDimensionPacketHandler();
+    this.serverWaypointListener = new ServerWaypointListener(dimensionPacketHandler);
 
     this.registerListener(new WaypointHotkeyListener(this));
-    this.registerListener(new ServerWaypointListener(dimensionPacketHandler));
+    this.registerListener(this.serverWaypointListener);
     this.registerListener(new WaypointUpdateListener(this));
 
     LabyModProtocolService protocolService = Laby.references().labyModProtocolService();
@@ -84,7 +87,10 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     );
 
     AddonProtocol protocol = integration.waypointsProtocol();
-    protocol.registerHandler(WaypointPacket.class, new WaypointPacketHandler());
+    protocol.registerHandler(
+        WaypointPacket.class,
+        new WaypointPacketHandler(this, this.serverWaypointListener)
+    );
     protocol.registerHandler(WaypointRemovePacket.class, new WaypointRemovePacketHandler());
     protocol.registerHandler(WaypointDimensionPacket.class, dimensionPacketHandler);
 
@@ -122,6 +128,12 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
     if (this.externalDevices) {
       ExternalDeviceCommands.register();
     }
+
+    // No events were received while the addon was switched off, so the world state is stale
+    ThreadSafe.executeOnRenderThread(() -> {
+      this.serverWaypointListener.resync();
+      Waypoints.refresh();
+    });
   }
 
   @Override

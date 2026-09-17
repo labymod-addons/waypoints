@@ -18,6 +18,7 @@ package net.labymod.addons.waypoints.core.activity;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.OptionalLong;
 import net.labymod.addons.waypoints.WaypointService;
 import net.labymod.addons.waypoints.Waypoints;
 import net.labymod.addons.waypoints.core.activity.layout.WaypointCollection;
@@ -175,6 +176,10 @@ public class WaypointsActivity extends Activity {
       header.addEntry(ComponentWidget.text("Waypoints on " + collection.getName()));
       widgets.addChild(header);
 
+      // Only the active context can be compared to the world the player is in right now
+      boolean markOtherWorlds = collection == this.activeContext;
+      OptionalLong currentSeed = this.waypointService.currentHashedSeed();
+      String currentDimension = this.waypointService.getDimension();
       for (Object entry : collection.getEntries()) {
         //todo groups
         if (entry instanceof Waypoint waypoint) {
@@ -185,9 +190,15 @@ public class WaypointsActivity extends Activity {
             objectMeta = null;
           }
 
+          WaypointMeta meta = waypoint.meta();
+          boolean otherDimension = meta.getDimension() != null && currentDimension != null
+              && !meta.getDimension().equals(currentDimension);
+          boolean otherWorld = markOtherWorlds
+              && (!meta.matchesWorld(currentSeed) || otherDimension);
           WaypointListItemWidget listItemWidget = new WaypointListItemWidget(
               waypoint.meta(),
-              objectMeta
+              objectMeta,
+              otherWorld
           );
           listItemWidget.setPressable(() -> {
             this.waypointList.listSession().setSelectedEntry(listItemWidget);
