@@ -18,6 +18,9 @@
             },
             "icon": {
                 "name": "Ícone"
+            },
+            "editClosestKey": {
+                "description": "Edite o ponto de referência mais próximo dentro de 15 blocos da sua posição atual."
             }
         },
         "gui": {
