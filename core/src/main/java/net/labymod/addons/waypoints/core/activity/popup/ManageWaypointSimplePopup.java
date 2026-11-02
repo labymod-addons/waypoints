@@ -27,6 +27,7 @@ import net.labymod.addons.waypoints.core.activity.widgets.IconPickerWidget;
 import net.labymod.addons.waypoints.core.activity.widgets.WaypointWidget;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointBuilder;
+import net.labymod.addons.waypoints.waypoint.WaypointContext;
 import net.labymod.addons.waypoints.waypoint.WaypointIcon;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
 import net.labymod.addons.waypoints.waypoint.WaypointObjectMeta;
@@ -76,6 +77,7 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     this.title = switch (action) {
       case ADD -> Component.text("Create Waypoint");
       case EDIT -> Component.text("Edit Waypoint");
+      case RECEIVED -> Component.translatable("labyswaypoints.gui.manage.received.title");
     };
 
     this.waypoint = waypoint;
@@ -122,6 +124,15 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     this(Action.EDIT, waypoint.meta().copy(), waypoint.waypointObjectMeta());
   }
 
+  /**
+   * Shows a waypoint a friend shared, unsaved. Saving adds it as a new waypoint.
+   *
+   * @param waypoint the received waypoint with an identifier of its own
+   */
+  public static @NotNull ManageWaypointSimplePopup received(@NotNull WaypointMeta waypoint) {
+    return new ManageWaypointSimplePopup(Action.RECEIVED, waypoint, null);
+  }
+
   private static @NotNull WaypointBuilder createDefaultBuilder() {
     ClientPlayer player = Laby.labyAPI().minecraft().getClientPlayer();
     if (player == null) {
@@ -153,6 +164,18 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
 
     if (this.waypointWidget != null) {
       container.addChild(this.waypointWidget);
+    }
+
+    // A received waypoint keeps the server or world it was set on, say which one that is
+    if (this.action == Action.RECEIVED && this.waypoint.getContext() != null) {
+      String key = this.waypoint.contextType() == WaypointContext.SINGLE_PLAYER
+          ? "labyswaypoints.gui.manage.received.world"
+          : "labyswaypoints.gui.manage.received.server";
+      ComponentWidget contextLabel = ComponentWidget.component(
+          Component.translatable(key, Component.text(this.waypoint.getContext()))
+      );
+      contextLabel.addId("received-context");
+      container.addChild(contextLabel);
     }
 
     FlexibleContentWidget nameWrapper = new FlexibleContentWidget();
@@ -241,8 +264,10 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
     // A saved waypoint that was bound once keeps its world; before that, switching on binds it to
     // the world the player is in, which requires the world to report a seed. A new waypoint is
     // pre-bound to the current world by the builder but has not been saved with it yet.
-    boolean boundOnce = this.action == Action.EDIT && this.waypoint.hashedSeed() != null;
-    if (boundOnce || this.currentSeed.isPresent()) {
+    // A received waypoint can only keep or drop the world it was bound to, the world the player is
+    // in may belong to another server
+    boolean boundOnce = this.action != Action.ADD && this.waypoint.hashedSeed() != null;
+    if (boundOnce || this.action != Action.RECEIVED && this.currentSeed.isPresent()) {
       String key = boundOnce
           ? "labyswaypoints.gui.manage.onlyShowInBoundWorld"
           : "labyswaypoints.gui.manage.bindToWorld";
@@ -325,7 +350,7 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
   private void saveWaypoint() {
     WaypointService waypointService = Waypoints.references().waypointService();
     Waypoint waypoint;
-    if (this.action == Action.ADD) {
+    if (this.action == Action.ADD || this.action == Action.RECEIVED) {
       waypoint = waypointService.add(this.waypoint);
     } else {
       waypoint = waypointService.update(this.waypoint);
@@ -348,7 +373,11 @@ public class ManageWaypointSimplePopup extends SimpleAdvancedPopup {
 
   public enum Action {
     ADD,
-    EDIT
+    EDIT,
+    /**
+     * A waypoint a friend shared through the Laby Chat, added as a new one when saved.
+     */
+    RECEIVED
   }
 
   private static class Condition {
