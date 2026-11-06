@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Entry point to Laby Chat sharing. It names no type of the share API, not even in a signature,
  * a field or an argument, so it loads and verifies on clients without it; only
- * {@link WaypointShareable} does, and it is reached after {@link #register()} succeeded.
+ * {@link WaypointShareKind} does, and it is reached after {@link #register()} succeeded.
  */
 public final class WaypointChatShare {
 
@@ -38,7 +38,7 @@ public final class WaypointChatShare {
       return;
     }
 
-    WaypointShareable.register();
+    WaypointShareKind.register();
     available = true;
   }
 
@@ -51,7 +51,7 @@ public final class WaypointChatShare {
    * a server or world and lies inside it
    */
   public static boolean canShare(@NotNull WaypointMeta meta) {
-    return available && WaypointShareable.canShare(meta);
+    return available && WaypointShareKind.canShare(meta);
   }
 
   /**
@@ -59,7 +59,7 @@ public final class WaypointChatShare {
    */
   public static void share(@NotNull WaypointMeta meta) {
     if (available) {
-      WaypointShareable.share(meta);
+      WaypointShareKind.share(meta);
     }
   }
 }

@@ -29,10 +29,12 @@ import net.labymod.addons.waypoints.waypoint.WaypointType;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.component.serializer.plain.PlainTextComponentSerializer;
-import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.labyconnect.share.ChatSharePreview;
-import net.labymod.api.labyconnect.share.ChatShareable;
+import net.labymod.api.labyconnect.share.ShareCodec;
+import net.labymod.api.labyconnect.share.ShareKind;
+import net.labymod.api.labyconnect.share.ShareTarget;
+import net.labymod.api.labyconnect.share.ShareUndo;
 import net.labymod.api.util.Color;
 import net.labymod.api.util.I18n;
 import net.labymod.api.util.logging.Logging;
@@ -41,104 +43,111 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A single waypoint as something to share in the Laby Chat. There is no current state to share,
- * so it is only sent from the waypoint list. A received waypoint is always added as a new one and
- * keeps its server or world, so it only shows up there.
+ * A single waypoint as something to share in the Laby Chat. The kind has no source, so it is only
+ * sent from the waypoint list. A received waypoint is always added as a new one and keeps its
+ * server or world, so it only shows up there.
  */
-public final class WaypointShareable implements ChatShareable<SharedWaypoint> {
+public final class WaypointShareKind {
 
-  public static final String KIND = Waypoints.NAMESPACE + ":waypoint";
+  public static final String ID = Waypoints.NAMESPACE + ":waypoint";
 
-  private static final String LABEL = "Waypoint";
-  private static final Logging LOGGER = Logging.create(WaypointShareable.class);
+  static final String LABEL = "Waypoint";
 
-  private static @Nullable WaypointShareable instance;
+  /**
+   * One waypoint as {@link SharedWaypoint#write()} writes it.
+   */
+  static final ShareCodec<SharedWaypoint> CODEC = new ShareCodec<>() {
+    @Override
+    public int version() {
+      return 1;
+    }
+
+    @Override
+    public @NotNull JsonObject write(@NotNull SharedWaypoint value) {
+      return value.write();
+    }
+
+    @Override
+    public @Nullable SharedWaypoint read(@NotNull JsonObject data, int version) {
+      return SharedWaypoint.read(data);
+    }
+  };
+
+  private static @Nullable ShareKind<SharedWaypoint> kind;
+
+  private WaypointShareKind() {
+  }
 
   /**
    * Registers the kind with the Laby Chat. Only called through {@link WaypointChatShare}, which
    * makes sure the share API exists.
    */
   static void register() {
-    if (instance != null) {
+    if (kind != null) {
       return;
     }
 
-    WaypointShareable created = new WaypointShareable();
+    ShareKind<SharedWaypoint> created = create();
     Laby.references().chatShareRegistry().register(created);
-    instance = created;
+    kind = created;
+  }
+
+  static @NotNull ShareKind<SharedWaypoint> create() {
+    return ShareKind.builder(ID, CODEC, ShareTarget.sync(WaypointShareKind::add))
+        .label(LABEL)
+        .displayName(Component.translatable("labyswaypoints.share.name"))
+        .icon(WaypointIcon.DEFAULT)
+        .title(SharedWaypoint::title)
+        .preview(WaypointShareKind::preview)
+        .viewer(WaypointShareKind::view)
+        .build();
   }
 
   static boolean canShare(@NotNull WaypointMeta meta) {
-    return instance != null && toShared(meta) != null;
+    return kind != null && toShared(meta) != null;
   }
 
   /**
    * Lets the player pick a friend and sends them the waypoint.
    */
   static void share(@NotNull WaypointMeta meta) {
-    WaypointShareable kind = instance;
+    ShareKind<SharedWaypoint> registered = kind;
     SharedWaypoint value = toShared(meta);
-    if (kind != null && value != null) {
-      Laby.references().chatShareRegistry().share(kind, value);
+    if (registered != null && value != null) {
+      Laby.references().chatShareRegistry().share(registered, value);
     }
   }
 
-  @Override
-  public @NotNull String kind() {
-    return KIND;
-  }
-
-  @Override
-  public @NotNull String label() {
-    return LABEL;
-  }
-
-  @Override
-  public @NotNull Component displayName() {
-    return Component.translatable("labyswaypoints.share.name");
-  }
-
-  @Override
-  public @NotNull Icon icon() {
-    return WaypointIcon.DEFAULT;
-  }
-
   /**
-   * @return {@code null}, every waypoint is shared on its own from the waypoint list
+   * Adds the received waypoint as a new one. It never replaces one the player has, so there is
+   * nothing to undo.
    */
-  @Override
-  public @Nullable SharedWaypoint export() {
+  private static @Nullable ShareUndo add(SharedWaypoint value) {
+    WaypointService service = Waypoints.references().waypointService();
+    service.add(toMeta(value));
+    service.refresh();
     return null;
   }
 
-  @Override
-  public @NotNull JsonObject write(@NotNull SharedWaypoint value) {
-    return value.write();
-  }
-
-  @Override
-  public @Nullable SharedWaypoint read(@NotNull JsonObject data) {
-    return SharedWaypoint.read(data);
-  }
-
-  @Override
-  public @NotNull String title(@NotNull SharedWaypoint value) {
-    return value.title();
+  /**
+   * Opens the received waypoint in the editor, unsaved. Saving there adds it as a new one.
+   */
+  private static void view(SharedWaypoint value) {
+    ManageWaypointSimplePopup.received(toMeta(value)).displayInOverlay();
   }
 
   /**
    * The icon of the waypoint at its native size, the default marker in the waypoint's color like
    * in the world.
    */
-  @Override
-  public @Nullable ChatSharePreview preview(@NotNull SharedWaypoint value) {
+  private static @Nullable ChatSharePreview preview(SharedWaypoint value) {
     String path = value.iconPath() == null ? defaultIconPath() : value.iconPath();
     if (path == null) {
       return null;
     }
 
     BufferedImage image;
-    try (InputStream stream = WaypointShareable.class.getResourceAsStream(
+    try (InputStream stream = WaypointShareKind.class.getResourceAsStream(
         "/assets/" + Waypoints.NAMESPACE + "/" + path)) {
       // An icon this addon version does not have; the receiver shows the default one
       if (stream == null) {
@@ -147,7 +156,8 @@ public final class WaypointShareable implements ChatShareable<SharedWaypoint> {
 
       image = ImageIO.read(stream);
     } catch (IOException exception) {
-      LOGGER.warn("Could not read the waypoint icon " + path, exception);
+      Logging.create(WaypointShareKind.class)
+          .warn("Could not read the waypoint icon " + path, exception);
       return null;
     }
 
@@ -169,29 +179,6 @@ public final class WaypointShareable implements ChatShareable<SharedWaypoint> {
     }
 
     return ChatSharePreview.pixelArt(width, height, pixels);
-  }
-
-  /**
-   * Adds the received waypoint as a new one, it never replaces one the player has.
-   */
-  @Override
-  public void apply(@NotNull SharedWaypoint value) {
-    WaypointService service = Waypoints.references().waypointService();
-    service.add(toMeta(value));
-    service.refresh();
-  }
-
-  @Override
-  public boolean canView() {
-    return true;
-  }
-
-  /**
-   * Opens the received waypoint in the editor, unsaved. Saving there adds it as a new one.
-   */
-  @Override
-  public void view(@NotNull SharedWaypoint value) {
-    ManageWaypointSimplePopup.received(toMeta(value)).displayInOverlay();
   }
 
   /**
