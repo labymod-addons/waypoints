@@ -26,6 +26,7 @@ import net.labymod.addons.waypoints.core.activity.layout.WaypointContextCollecti
 import net.labymod.addons.waypoints.core.activity.popup.ManageWaypointSimplePopup;
 import net.labymod.addons.waypoints.core.activity.widgets.HeaderWidget;
 import net.labymod.addons.waypoints.core.activity.widgets.WaypointListItemWidget;
+import net.labymod.addons.waypoints.core.share.WaypointChatShare;
 import net.labymod.addons.waypoints.waypoint.Waypoint;
 import net.labymod.addons.waypoints.waypoint.WaypointContext;
 import net.labymod.addons.waypoints.waypoint.WaypointMeta;
@@ -67,6 +68,7 @@ public class WaypointsActivity extends Activity {
   private WaypointListItemWidget selectedWaypoint;
   private ButtonWidget removeButton;
   private ButtonWidget editButton;
+  private @Nullable ButtonWidget shareButton;
   private WaypointCollection selectedCollection;
 
   public WaypointsActivity() {
@@ -82,6 +84,7 @@ public class WaypointsActivity extends Activity {
           || selectedWidget.getWaypointMeta() != waypointListItemWidget.getWaypointMeta()) {
         this.editButton.setEnabled(true);
         this.removeButton.setEnabled(true);
+        this.updateShareButton(waypointListItemWidget);
       }
     });
 
@@ -272,6 +275,21 @@ public class WaypointsActivity extends Activity {
     this.removeButton.setEnabled(this.selectedWaypoint != null);
     menu.addEntry(this.removeButton);
 
+    if (WaypointChatShare.isAvailable()) {
+      this.shareButton = ButtonWidget.i18n(
+          "labyswaypoints.gui.overview.share",
+          () -> {
+            if (this.selectedWaypoint != null) {
+              WaypointChatShare.share(this.selectedWaypoint.getWaypointMeta());
+            }
+          }
+      );
+      this.updateShareButton(this.selectedWaypoint);
+      menu.addEntry(this.shareButton);
+    } else {
+      this.shareButton = null;
+    }
+
     container.addContent(menu);
 
     this.document().addChild(container);
@@ -306,6 +324,19 @@ public class WaypointsActivity extends Activity {
       this.selectedWaypoint = this.waypointList.listSession().getSelectedEntry();
       this.removeButton.setEnabled(this.selectedWaypoint != null);
       this.editButton.setEnabled(this.selectedWaypoint != null);
+      this.updateShareButton(this.selectedWaypoint);
+    }
+  }
+
+  /**
+   * Only waypoints that belong to a server or world can be shared, older ones are shown
+   * everywhere.
+   */
+  private void updateShareButton(@Nullable WaypointListItemWidget selected) {
+    if (this.shareButton != null) {
+      this.shareButton.setEnabled(
+          selected != null && WaypointChatShare.canShare(selected.getWaypointMeta())
+      );
     }
   }
 
