@@ -1,6 +1,9 @@
 {
   "labyswaypoints": {
     "defaultName": "New Waypoint",
+    "share": {
+      "name": "Waypoint"
+    },
     "settings": {
       "name": "Laby's Waypoints",
       "enabled": {
@@ -98,11 +101,17 @@
         "onlyShowInBoundWorld": {
           "name": "Only show in bound world",
           "description": "Shows the waypoint only in the world it was bound to. On some servers this does not work as expected, for example the waypoint may disappear even though you are in the same world. If that happens, turn this setting off."
+        },
+        "received": {
+          "title": "Received Waypoint",
+          "server": "Shown on %s",
+          "world": "Shown in the single player world %s"
         }
       },
       "overview": {
         "temporary": "This waypoint will be deleted once you disconnect from this server.",
-        "otherWorld": "This waypoint belongs to another world on this server."
+        "otherWorld": "This waypoint belongs to another world on this server.",
+        "share": "Share"
       },
       "create": {
         "permanent": "Create permanent waypoint",

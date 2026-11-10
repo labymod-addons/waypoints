@@ -25,6 +25,7 @@ import net.labymod.addons.waypoints.core.listener.WaypointUpdateListener;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointDimensionPacketHandler;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointPacketHandler;
 import net.labymod.addons.waypoints.core.serverapi.handler.WaypointRemovePacketHandler;
+import net.labymod.addons.waypoints.core.share.WaypointChatShare;
 import net.labymod.addons.waypoints.core.waypoint.DefaultWaypoint;
 import net.labymod.addons.waypoints.core.waypoint.DefaultWaypointService;
 import net.labymod.addons.waypoints.core.waypoint.WaypointSubmitter;
@@ -108,6 +109,16 @@ public class WaypointsAddon extends LabyAddon<WaypointsConfiguration> {
       this.logger().info(
           "External Devices API not available in this client build, waypoints are not offered to "
               + "paired controllers"
+      );
+    }
+
+    // Share single waypoints with friends through the Laby Chat, on client builds that have it
+    try {
+      Class.forName("net.labymod.api.labyconnect.share.ChatShareRegistry");
+      WaypointChatShare.register();
+    } catch (ClassNotFoundException | LinkageError ignored) {
+      this.logger().info(
+          "Laby Chat sharing not available in this client build, waypoints cannot be shared"
       );
     }
   }
